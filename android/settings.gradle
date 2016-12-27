@@ -1,0 +1,3 @@
+rootProject.name = 'marking'
+
+include ':app'
