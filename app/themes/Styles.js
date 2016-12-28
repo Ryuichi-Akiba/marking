@@ -7,7 +7,7 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#FFFFFF',
   },
   welcome: {
     fontSize: 20,
@@ -18,5 +18,13 @@ export default StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
+  },
+
+  // TabBar
+  tabBarStyle: {
+    borderTopWidth : .5,
+    borderColor    : '#b7b7b7',
+    backgroundColor: '#FFFFFF',
+    opacity        : 1
   },
 });
