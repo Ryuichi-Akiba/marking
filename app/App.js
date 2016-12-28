@@ -1,29 +1,24 @@
 import React from "react";
-import {Text} from "react-native";
-import {Scene, Router} from "react-native-router-flux";
-import Home from "./containers/Home";
-import MyPets from "./containers/MyPets";
-import MarkingMap from "./containers/MarkingMap";
+import {createStore, applyMiddleware, compose} from "redux";
+import {Provider} from "react-redux";
+import reducers from "./reducers";
+import AppRouter from "./AppRouter";
 
-// 一時的に
-class TabIcon extends React.Component {
-  render(){
+// ReduxとRouterのインテグレーション
+const middleware = [/* ...your middleware (i.e. thunk) */];
+const store = compose(applyMiddleware(...middleware))(createStore)(reducers);
+
+// アプリケーションのベース設定
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+  };
+
+  render() {
     return (
-      <Text style={{color: this.props.selected ? "red" :"black"}}>{this.props.title}</Text>
-    );
+      <Provider store={store}>
+        <AppRouter/>
+      </Provider>
+    )
   }
-}
-
-const App = () => (
-  <Router>
-    <Scene key="root">
-      <Scene key="Home" initial={true} hideNavBar={true} component={Home} title="HOME"/>
-      <Scene key="tabbar" tabs={true}>
-        <Scene key="MyPets" component={MyPets} title="PETS" icon={TabIcon}/>
-        <Scene key="MarkingMap" component={MarkingMap} title="MAP" icon={TabIcon}/>
-      </Scene>
-    </Scene>
-  </Router>
-);
-
-export default App;
+};
