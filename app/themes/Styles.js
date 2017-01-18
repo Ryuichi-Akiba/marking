@@ -27,4 +27,13 @@ export default StyleSheet.create({
     backgroundColor: '#FFFFFF',
     opacity        : 1
   },
+
+  // Map
+  map: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
 });
