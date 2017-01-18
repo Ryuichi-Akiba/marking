@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
 import {Actions} from 'react-native-router-flux';
+import MKGButton from '../components/MKGButton';
 import Styles from '../themes/Styles';
 // import {connect} from "react-redux";
 
@@ -21,6 +22,8 @@ class Home extends Component {
         <TouchableOpacity onPress={Actions.tabbar}>
           <Text style={Styles.instructions}>Go to MyPets Page</Text>
         </TouchableOpacity>
+
+        <MKGButton onPress={Actions.tabbar} caption={'Login with Facebook'} type={'primary'}></MKGButton>
       </View>
 //       <View style={Styles.row}>
 //         <Text style={Styles.rowLabel}>
