@@ -12,10 +12,18 @@ const LATITUDE_DELTA = 0.01
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
 
 class MarkingMap extends Component {
+
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      region: {
+        latitude: 37.78825,
+        longitude: -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      },
+    }
   }
 
   componentDidMount() {
@@ -58,12 +66,7 @@ class MarkingMap extends Component {
     return (
       <View style={Styles.container}>
         <MapView
-          region={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
+          region={this.state.region}
           style={Styles.map}
           onRegionChange={this.onRegionChange}
         />
@@ -76,14 +79,12 @@ MarkingMap.propTypes = {
   provider: MapView.ProviderPropType,
 };
 
-export default MarkingMap;
+function mapStateToProps(state) {
+  return {state};
+}
 
-// function mapStateToProps(state) {
-//   return {};
-// }
-//
-// function mapDispatchToProps(dispatch) {
-//   return {};
-// }
-//
-// export default connect(mapStateToProps, mapDispatchToProps)(MarkingMap);
+function mapDispatchToProps(dispatch) {
+  return {};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MarkingMap);
