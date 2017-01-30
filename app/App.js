@@ -55,7 +55,7 @@ export default class App extends React.Component {
         <RouterWithRedux>
           <Scene key="root">
             <Scene key="home" initial={true} hideNavBar={true} component={HomeComponent}/>
-            <Scene key="tabbar" tabs={true} tabBarStyle={Styles.tabBarStyle}>
+            <Scene key="main" tabs={true} tabBarStyle={Styles.tabBarStyle}>
               <Scene key="myPets" component={MyPetsComponent} title="PETS" icon={MyPetsTabIcon}/>
               <Scene key="markingMap" component={MarkingMapComponent} title="MAP" icon={MarkingMapTabIcon}/>
             </Scene>

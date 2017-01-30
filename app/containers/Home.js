@@ -8,7 +8,12 @@ import Styles from '../themes/Styles';
 import * as homeActions from '../reducers/home';
 
 class Home extends React.Component {
-  componentDidMount() {
+  // ステートの変更と画面描画の変更を検知後、条件を判断して画面遷移させる
+  componentDidUpdate() {
+    const {state} = this.props;
+    if (state.token && state.token.isLogin) {
+      Actions.main(); // メイン画面に画面遷移
+    }
   }
 
   render() {
@@ -22,20 +27,14 @@ class Home extends React.Component {
         if (result.isCanceled) {
           actions.onCancel(result);
         } else {
-          // Actions.markingMap();
           actions.onLogin(result);
         }
       }
     }
+
     let onLogoutFinished = function() {
       actions.onLogout();
     }
-    const json = JSON.stringify(this.props.state);
-
-    // 本当か？
-    // if (state.token && state.token.isLogin) {
-    //   Actions.myPets();
-    // }
 
     return (
       <View style={Styles.container}>
@@ -43,7 +42,7 @@ class Home extends React.Component {
           <Text style={{fontSize: 20, margin: 20, textAlign: 'center'}}>
             Marking
           </Text>
-          <Text>{json}</Text>
+          <Text>{JSON.stringify(this.props.state)}</Text>
         </View>
         <View style={{flex:1}}>
           <LoginButton
@@ -53,14 +52,15 @@ class Home extends React.Component {
             publishPermissions={['publish_actions']}
           />
         </View>
-        <View style={{flex:1}}>
-          <Button
-            onPress={() => {Actions.myPets();}}
-            title="Learn More"
-            color="#841584"
-            accessibilityLabel="Learn more about this purple button"
-          />
-        </View>
+        {(() => {
+          if (state.token.isLogin) {
+            return (
+              <View style={{flex:1}}>
+                <Button onPress={Actions.main} title="Go to Main" color="#841584"/>
+              </View>
+            )
+          }
+        })()}
       </View>
     );
   }
