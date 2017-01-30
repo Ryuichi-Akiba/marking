@@ -57,4 +57,7 @@ function mapDispatchToProps(dispatch) {
   return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MyPets);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps)
+(MyPets);
