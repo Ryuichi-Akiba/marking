@@ -1,7 +1,8 @@
 import React from "react";
+import {AsyncStorage} from "react-native";
 import {createStore, applyMiddleware, compose} from "redux";
-import {Provider} from "react-redux";
-import {connect} from "react-redux";
+import {Provider, connect} from "react-redux";
+import {persistStore, autoRehydrate} from 'redux-persist';
 import {Scene, Router, Actions} from "react-native-router-flux";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import thunkMiddleware from 'redux-thunk';
@@ -16,8 +17,12 @@ import MarkingMap from "./containers/MarkingMap";
 const loggerMiddleware = createLogger();
 const middleware = [thunkMiddleware, loggerMiddleware];
 const store = compose(
-  applyMiddleware(...middleware)
+  applyMiddleware(...middleware),
+  autoRehydrate()
 )(createStore)(reducers);
+
+// begin periodically persisting the store
+persistStore(store, {storage: AsyncStorage})
 
 // Router with Redux
 const RouterWithRedux = connect()(Router);

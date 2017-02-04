@@ -66,6 +66,7 @@ class MarkingMap extends Component {
     return (
       <View style={Styles.container}>
         <MapView
+          showsUserLocation={true}
           region={this.state.region}
           style={Styles.map}
           onRegionChange={this.onRegionChange}

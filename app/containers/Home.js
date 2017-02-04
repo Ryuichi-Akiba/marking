@@ -11,7 +11,8 @@ class Home extends React.Component {
   // ステートの変更と画面描画の変更を検知後、条件を判断して画面遷移させる
   componentDidUpdate() {
     const {state} = this.props;
-    if (state.token && state.token.isLogin) {
+    console.log(state);
+    if (state.isLogin) {
       Actions.main(); // メイン画面に画面遷移
     }
   }
@@ -53,7 +54,7 @@ class Home extends React.Component {
           />
         </View>
         {(() => {
-          if (state.token.isLogin) {
+          if (state.isLogin) {
             return (
               <View style={{flex:1}}>
                 <Button onPress={Actions.main} title="Go to Main" color="#841584"/>
