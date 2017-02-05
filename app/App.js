@@ -5,17 +5,22 @@ import {Provider, connect} from "react-redux";
 import {persistStore, autoRehydrate} from 'redux-persist';
 import {Scene, Router, Actions} from "react-native-router-flux";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import thunkMiddleware from 'redux-thunk';
+import createSagaMiddleware from 'redux-saga';
 import createLogger  from 'redux-logger';
-import reducers from "./reducers";
+import reducers from "./redux";
+import sagas from "./redux/sagas"
 import Styles from "./themes/Styles";
 import Home from "./containers/Home";
 import MyPets from "./containers/MyPets";
 import MarkingMap from "./containers/MarkingMap";
 
-// ReduxとRouterのインテグレーション
+// create the saga middleware
+const sagaMiddleware = createSagaMiddleware()
+// create redux logger middleware
 const loggerMiddleware = createLogger();
-const middleware = [thunkMiddleware, loggerMiddleware];
+
+// create store with middleware
+const middleware = [sagaMiddleware, loggerMiddleware];
 const store = compose(
   applyMiddleware(...middleware),
   autoRehydrate()
@@ -23,11 +28,11 @@ const store = compose(
 
 // begin periodically persisting the store
 persistStore(store, {storage: AsyncStorage})
+// run the saga
+sagaMiddleware.run(sagas)
 
 // Router with Redux
 const RouterWithRedux = connect()(Router);
-
-// シーンコンポーネントをReduxと接続したコンポーネントの定義
 const HomeComponent = connect()(Home);
 const MyPetsComponent = connect()(MyPets);
 const MarkingMapComponent = connect()(MarkingMap);

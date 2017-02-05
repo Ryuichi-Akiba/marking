@@ -5,13 +5,12 @@ import {connect} from "react-redux";
 import {LoginButton, GraphRequest, GraphRequestManager} from 'react-native-fbsdk';
 import {Actions} from 'react-native-router-flux'
 import Styles from '../themes/Styles';
-import * as homeActions from '../reducers/home';
+import * as homeActions from '../redux/reducers/home';
 
 class Home extends React.Component {
   // ステートの変更と画面描画の変更を検知後、条件を判断して画面遷移させる
   componentDidUpdate() {
     const {state} = this.props;
-    console.log(state);
     if (state.isLogin) {
       Actions.main(); // メイン画面に画面遷移
     }
@@ -19,8 +18,8 @@ class Home extends React.Component {
 
   render() {
     const {actions, state} = this.props;
-    console.log(this.props);
 
+    // ログイン完了時にキックするアクション
     let onLoginFinished = function(error, result) {
       if (error) {
         actions.onError(error);
@@ -28,11 +27,12 @@ class Home extends React.Component {
         if (result.isCanceled) {
           actions.onCancel(result);
         } else {
-          actions.onLogin(result);
+          actions.onLoginWithFacebook(result);
         }
       }
     }
 
+    // ログアウト成功時にキックするアクション
     let onLogoutFinished = function() {
       actions.onLogout();
     }
@@ -49,8 +49,7 @@ class Home extends React.Component {
           <LoginButton
             onLoginFinished={onLoginFinished}
             onLogoutFinished={onLogoutFinished}
-            readPermissions={['email','public_profile', 'user_photos']}
-            publishPermissions={['publish_actions']}
+            readPermissions={['public_profile', 'email', 'user_friends']}
           />
         </View>
         {(() => {
