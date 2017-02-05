@@ -1,6 +1,7 @@
 import {GraphRequest, GraphRequestManager, AccessToken} from 'react-native-fbsdk';
-import {Record} from 'immutable';
 import {REHYDRATE} from 'redux-persist/constants';
+import {Record} from 'immutable';
+import Session from '../../commons/Session'
 
 // -------------------- ActionCreator の定義 --------------------
 // const LOGIN_WITH_FACEBOOK = 'LOGIN_WITH_FACEBOOK';
@@ -68,6 +69,9 @@ export function failureLoginWithFacebook(error) {
 
 export const SUCCESS_GET_ACCESS_TOKEN = 'SUCCESS_GET_ACCESS_TOKEN';
 export function successGetAccessToken(payload) {
+  // store common session storage
+  Session.set(payload);
+  // return action
   return {
     type: SUCCESS_GET_ACCESS_TOKEN,
     payload: {isLogin:true, token:payload},
@@ -86,6 +90,25 @@ export function failureGetAccessToken(error) {
   }
 }
 
+export const SUCCESS_GET_ME = 'SUCCESS_GET_ME';
+export function successGetMe(payload) {
+  return {
+    type: SUCCESS_GET_ME,
+    payload: {user:payload},
+    meta: {payload},
+    error: false
+  }
+}
+
+export const FAILURE_GET_ME = 'FAILURE_GET_ME';
+export function failureGetMe(error) {
+  return {
+    type: FAILURE_GET_ME,
+    payload: {isLogin:false},
+    meta: {error},
+    error: true
+  }
+}
 
 
 export const ON_LOGIN = 'ON_LOGIN';
@@ -201,6 +224,11 @@ export function home(state = new SessionRecord(), action) {
     // アクセストークン取得失敗時のステート変更処理
     case FAILURE_GET_ACCESS_TOKEN:
       console.log('FAILURE_GET_ACCESS_TOKEN');
+
+    case SUCCESS_GET_ME:
+      return state.set('user', action.payload);
+    case FAILURE_GET_ME:
+      console.log('FAILURE_GET_ME');
 
     // ログアウト成功時のステート変更処理
     case ON_LOGOUT:

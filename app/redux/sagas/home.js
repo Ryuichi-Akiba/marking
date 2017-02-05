@@ -2,6 +2,7 @@ import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
 import {
   getAccessToken,
 } from '../../api/api'
+import API from '../../api/api'
 import {
   getFacebookAccessToken,
 } from '../../api/facebook';
@@ -10,8 +11,11 @@ import {
   failureLoginWithFacebook,
   successGetAccessToken,
   failureGetAccessToken,
+  successGetMe,
+  failureGetMe,
   ON_LOGIN_WITH_FACEBOOK,
   SUCCESS_LOGIN_WITH_FACEBOOK,
+  SUCCESS_GET_ACCESS_TOKEN,
 } from '../reducers/home'
 
 export function* handleRequestFacebookLogin() {
@@ -38,6 +42,17 @@ export function* handleGetAccessToken() {
   }
 }
 
+export function* handleGetMe() {
+  while (true) {
+    const action = yield take(SUCCESS_GET_ACCESS_TOKEN);
+    const {payload, error} = yield call(API.me);
+    if (payload && !error) {
+      yield put(successGetMe(payload));
+    } else {
+      yield put(failureGetMe(error));
+    }
+  }
+}
 
 // worker Saga: will be fired on USER_FETCH_REQUESTED actions
 // function* fetchUser(action) {
