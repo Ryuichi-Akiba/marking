@@ -3,7 +3,7 @@ import buffer from 'buffer'
 import Session from '../commons/Session'
 
 // TODO 環境依存設定なので、どこかに移動したい（動作環境に応じて設定を切り替えられるように）
-const server = 'http://localhost:8080';
+const server = 'http://192.168.1.61:8080';
 const clientId = 'majimenatestapp';
 const clientSecret = 'mySecretOAuthSecret';
 
