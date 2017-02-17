@@ -20,6 +20,10 @@ export default StyleSheet.create({
     marginBottom: 5,
   },
 
+  loginButton: {
+    padding: 5,
+  },
+
   // TabBar
   tabBarStyle: {
     borderTopWidth : .5,
