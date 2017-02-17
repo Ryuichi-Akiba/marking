@@ -6,6 +6,7 @@ import {
 } from './home'
 import {
   handleInitCurrentLocation,
+  handleClearWatchID,
 } from './markingMap'
 
 export default function* sagas() {
@@ -13,4 +14,5 @@ export default function* sagas() {
   yield fork(handleGetAccessToken);
   yield fork(handleGetMe);
   yield fork(handleInitCurrentLocation);
+  yield fork(handleClearWatchID);
 }

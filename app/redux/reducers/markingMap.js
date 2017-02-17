@@ -32,10 +32,41 @@ export function failureInitCurrentLocation(error) {
     }
 }
 
+// watchIDをクリアするアクション
+export const CLEAR_WATCH_ID = 'CLEAR_WATCH_ID';
+export function clearWatchID() {
+    return {
+        type: CLEAR_WATCH_ID,
+        payload: null,
+        meta: {},
+        error: false
+    }
+}
+
+export const SUCCESS_CLEAR_WATCH_ID = 'SUCCESS_CLEAR_WATCH_ID'
+export function successClearWatchID(payload) {
+    return {
+        type: SUCCESS_CLEAR_WATCH_ID,
+        payload: payload,
+        meta: {},
+        error: false
+    }
+}
+
+export const FAILURE_CLEAR_WATCH_ID = 'FAILURE_CLEAR_WATCH_ID'
+export function failureClearWatchID(error) {
+    return {
+        type: FAILURE_CLEAR_WATCH_ID,
+        payload: null,
+        meta: {error},
+        error: true
+    }
+}
+
 // -------------------- Immutable State Model の定義 --------------------
 export const MarkingMapRecord = new Record({
     region: {},
-    watchId: ''
+    watchID: null
 });
 
 // -------------------- Reducer の定義 --------------------
@@ -43,7 +74,7 @@ export function markingMap(state = new MarkingMapRecord(), action) {
 
     switch (action.type) {
         case REHYDRATE:
-            if (action.key == 'markingMap') {
+            if (action.key === 'markingMap') {
                 return new MarkingMapRecord(action.payload);
             }
             return state;
@@ -51,8 +82,13 @@ export function markingMap(state = new MarkingMapRecord(), action) {
         case INIT_CURRENT_LOCATION:
             return state;
         case SUCCESS_INIT_CURRENT_LOCATION:
-            console.log(state);
-            return state.set('region', action.payload);
+            // FIXME state.set だと異なる型と認識されるようで動かない。Redux-persistの影響？
+            //return state.set('region', action.payload.region);
+            return new MarkingMapRecord({region: action.payload.region});
+        case CLEAR_WATCH_ID:
+            return state;
+        case SUCCESS_CLEAR_WATCH_ID:
+            return state.set('watchID', action.payload);
 
         default:
             return state;
