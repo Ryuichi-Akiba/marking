@@ -4,37 +4,6 @@ import {Record} from 'immutable';
 import Session from '../../commons/Session'
 
 // -------------------- ActionCreator の定義 --------------------
-// const LOGIN_WITH_FACEBOOK = 'LOGIN_WITH_FACEBOOK';
-// function onLoginFinished(error, result) {
-//   var getUserFromFB = () => {
-//     const infoRequest = new GraphRequest(
-//       '/me?fields=id,name,first_name,last_name,email,gender,picture.width(350).height(350)',
-//       null,
-//       (error, result) => {
-//         if (error) {
-//           console.log('Error fetching data: ' + error.toString());
-//         } else {
-//           console.log('Success fetching data: ' + JSON.stringify(result));
-//         }
-//       },
-//     );
-//
-//     // Start the graph request.
-//     new GraphRequestManager().addRequest(infoRequest).start();
-//   }
-//
-//   // this.setState({loading: false});
-//   if (error) {
-//     alert('Error logging in.');
-//   } else {
-//     if (result.isCanceled) {
-//       alert('Login cancelled.');
-//     } else {
-//       console.log(JSON.stringify(result));
-//       getUserFromFB();
-//     }
-//   }
-// }
 
 // フェイスブックログイン成功時にキックするアクション
 export const ON_LOGIN_WITH_FACEBOOK = 'ON_LOGIN_WITH_FACEBOOK';
