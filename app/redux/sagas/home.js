@@ -1,11 +1,7 @@
 import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
-import {
-  getAccessToken,
-} from '../../api/api'
-import API from '../../api/api'
-import {
-  getFacebookAccessToken,
-} from '../../api/facebook';
+import {getAccessToken} from '../../common/api/api'
+import {getMe} from '../../common/api/me'
+import {getFacebookAccessToken} from '../../common/api/facebook';
 import {
   successLoginWithFacebook,
   failureLoginWithFacebook,
@@ -45,7 +41,7 @@ export function* handleGetAccessToken() {
 export function* handleGetMe() {
   while (true) {
     const action = yield take(SUCCESS_GET_ACCESS_TOKEN);
-    const {payload, error} = yield call(API.me);
+    const {payload, error} = yield call(getMe);
     if (payload && !error) {
       yield put(successGetMe(payload));
     } else {
@@ -53,32 +49,3 @@ export function* handleGetMe() {
     }
   }
 }
-
-// worker Saga: will be fired on USER_FETCH_REQUESTED actions
-// function* fetchUser(action) {
-//   try {
-//     const user = yield call(Api.fetchUser, action.payload.userId);
-//     yield put({type: "USER_FETCH_SUCCEEDED", user: user});
-//   } catch (e) {
-//     yield put({type: "USER_FETCH_FAILED", message: e.message});
-//   }
-// }
-
-/*
- Starts fetchUser on each dispatched `USER_FETCH_REQUESTED` action.
- Allows concurrent fetches of user.
- */
-// function* mySaga() {
-//   yield takeEvery("USER_FETCH_REQUESTED", fetchUser);
-// }
-
-/*
- Alternatively you may use takeLatest.
-
- Does not allow concurrent fetches of user. If "USER_FETCH_REQUESTED" gets
- dispatched while a fetch is already pending, that pending fetch is cancelled
- and only the latest one will be run.
- */
-// export default function login() {
-//   yield takeLatest("USER_FETCH_REQUESTED", fetchUser);
-// }

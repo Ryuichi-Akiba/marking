@@ -1,7 +1,7 @@
 import {GraphRequest, GraphRequestManager, AccessToken} from 'react-native-fbsdk';
 import {REHYDRATE} from 'redux-persist/constants';
 import {Record} from 'immutable';
-import Session from '../../commons/Session'
+import Session from '../../common/auth/Session'
 
 // -------------------- ActionCreator の定義 --------------------
 
@@ -38,9 +38,6 @@ export function failureLoginWithFacebook(error) {
 
 export const SUCCESS_GET_ACCESS_TOKEN = 'SUCCESS_GET_ACCESS_TOKEN';
 export function successGetAccessToken(payload) {
-  // store common session storage
-  Session.set(payload);
-  // return action
   return {
     type: SUCCESS_GET_ACCESS_TOKEN,
     payload: {isLogin:true, token:payload},
@@ -189,12 +186,14 @@ export function home(state = new SessionRecord(), action) {
 
     // アクセストークン取得成功時のステート変更処理
     case SUCCESS_GET_ACCESS_TOKEN:
+      Session.setToken(action.payload.token);
       return new SessionRecord(action.payload);
     // アクセストークン取得失敗時のステート変更処理
     case FAILURE_GET_ACCESS_TOKEN:
       console.log('FAILURE_GET_ACCESS_TOKEN');
 
     case SUCCESS_GET_ME:
+      Session.set(action.payload);
       return state.set('user', action.payload);
     case FAILURE_GET_ME:
       console.log('FAILURE_GET_ME');

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import buffer from 'buffer'
-import Session from '../commons/Session'
+import Session from '../auth/Session'
 
 // TODO 環境依存設定なので、どこかに移動したい（動作環境に応じて設定を切り替えられるように）
 // export const SERVER = 'http://localhost:8080';
@@ -26,7 +26,8 @@ export function getAccessToken(token) {
 }
 
 function getAuthorizationHeaders() {
-  return Session.get().then(session => {
+  return Session.getToken().then(session => {
+    console.log(session);
     return Promise.resolve({
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + session['access_token']
@@ -34,16 +35,35 @@ function getAuthorizationHeaders() {
   })
 }
 
-export default class API {
-  static me() {
-    return getAuthorizationHeaders().then(headers => {
-      return axios.get(`${SERVER}/api/v1/me`, {headers: headers, params: {}})
-        .then(response => {
-          return {payload:response.data};
-        })
-        .catch(error => {
-          return {error};
-        });
-    });
-  }
+// HTTP REQUEST [GET]
+export function get(uri, params) {
+  return getAuthorizationHeaders().then(headers => {
+    params = !!params ? params : {};
+    return axios.get(`${SERVER}${uri}`, {headers: headers, params: params})
+      .then(response => {
+        console.log(response);
+        return {payload:response.data};
+      })
+      .catch(error => {
+        console.error(error);
+        return {error};
+      });
+  });
+}
+
+// HTTP REQUEST [POST]
+export function post(uri, data, params) {
+  return getAuthorizationHeaders().then(headers => {
+    data = !!data ? data : {};
+    params = !!params ? params : {};
+    return axios.post(`${SERVER}${uri}`, data, {headers: headers, params: params})
+      .then(response => {
+        console.log(response);
+        return {payload:response.data};
+      })
+      .catch(error => {
+        console.error(error);
+        return {error};
+      });
+  });
 }

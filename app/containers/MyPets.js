@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import {Actions} from 'react-native-router-flux';
 import {Container, Content, List, ListItem, Thumbnail, Text} from 'native-base';
 import Styles from '../themes/Styles';
-import Session from '../commons/Session'
+import Session from '../common/auth/Session'
 
 class MyPets extends Component {
   constructor(props) {
