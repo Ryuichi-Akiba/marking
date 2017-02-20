@@ -23,6 +23,20 @@ class MyPets extends Component {
     });
   }
 
+  componentWillMount() {
+    this.guestWillTransfer(this.props);
+  }
+
+  componentWillUpdate(nextProps) {
+    this.guestWillTransfer(nextProps);
+  }
+
+  guestWillTransfer(props) {
+    if (!Session.isLoggedIn()) {
+      Actions.home(); // メイン画面に画面遷移
+    }
+  }
+
   render() {
     return (
       // <View style={[Styles.container, {marginTop:60}]}>

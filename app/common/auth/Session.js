@@ -43,4 +43,12 @@ export default class Session {
       }
     });
   }
+
+  static isLoggedIn() {
+    return this.getToken().then(token => {
+      return !!token;
+    }).catch(error => {
+      return false;
+    })
+  }
 }

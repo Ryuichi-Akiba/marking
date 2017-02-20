@@ -165,8 +165,6 @@ export const SessionRecord = new Record({
 
 // -------------------- Reducer の定義 --------------------
 export function home(state = new SessionRecord(), action) {
-  console.log(action);
-
   switch (action.type) {
     case REHYDRATE:
       if (action.key === 'home') {
