@@ -5,7 +5,8 @@ import { StyleSheet } from 'react-native'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    //justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
@@ -34,10 +35,6 @@ export default StyleSheet.create({
 
   // Map
   map: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    ...StyleSheet.absoluteFillObject,
   },
 });
