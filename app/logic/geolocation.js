@@ -1,10 +1,10 @@
 import {Dimensions} from "react-native";
 
-var {width, height} = Dimensions.get('window')
+let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 
-const LATITUDE_DELTA = 0.01
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
+const LATITUDE_DELTA = 0.01;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export function getCurrentRegion() {
     return getCurrentRegionPromise().then((result) => {
@@ -35,7 +35,7 @@ function getCurrentRegionPromise() {
 
 export function getWatchId() {
     return getWatchIdPromise().then((result) => {
-        return {payload: result};
+        return {payload: {watchId: result}};
     }).catch((error) => {
         return {error: error};
     });
@@ -48,4 +48,14 @@ function getWatchIdPromise() {
             (error) => reject(error)
         ));
     });
+}
+
+export function clearWatchId(watchId) {
+    return clearWatchIdPromise(watchId).then(() => {
+        return {payload: {watchId: null}};
+    });
+}
+
+function clearWatchIdPromise(watchId) {
+    return Promise.resolve(navigator.geolocation.clearWatch(watchId));
 }

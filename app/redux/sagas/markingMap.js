@@ -1,39 +1,56 @@
 import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
 import {
-    INIT_CURRENT_LOCATION,
-    successInitCurrentLocation,
-    failureInitCurrentLocation,
-    CLEAR_WATCH_ID,
-    successClearWatchID,
-    failureClearWatchID,
+    GET_CURRENT_LOCATION,
+    successGetCurrentLocation,
+    failureGetCurrentLocation,
+    INIT_WATCH_ID,
+    successInitWatchId,
+    failureInitWatchId,
+    CLEAR_LOCATION_WATCH,
+    successClearLocationWatch,
+    failureClearLocationWatch,
 } from '../reducers/markingMap'
 import {
     getCurrentRegion,
     getWatchId,
+    clearWatchId,
 } from '../../logic/geolocation'
 
 export function* handleInitCurrentLocation() {
     while (true) {
-        const action = yield take(INIT_CURRENT_LOCATION);
+        const action = yield take(GET_CURRENT_LOCATION);
         const {payload, error} = yield call(getCurrentRegion);
 
         if (payload && !error) {
-            yield put(successInitCurrentLocation(payload));
+            yield put(successGetCurrentLocation(payload));
         } else {
-            yield put(failureInitCurrentLocation(error));
+            yield put(failureGetCurrentLocation(error));
         }
     }
 }
 
-export function* handleClearWatchID() {
+export function* handleInitWatchId() {
     while (true) {
-        const action = yield take(CLEAR_WATCH_ID);
+        const action = yield take(INIT_WATCH_ID);
         const {payload, error} = yield call(getWatchId);
 
         if (payload && !error) {
-            yield put(successClearWatchID(payload));
+            yield put(successInitWatchId(payload));
         } else {
-            yield put(failureClearWatchID(error));
+            yield put(failureInitWatchId(error));
+        }
+    }
+}
+
+export function* handleClearLocationWatch() {
+    while (true) {
+        const action = yield take(CLEAR_LOCATION_WATCH);
+        const {payload, error} = yield call(clearWatchId, action.payload)
+
+        if (payload && !error) {
+            yield put(successClearLocationWatch(payload));
+        } else {
+            yield put(failureClearLocationWatch(error));
         }
     }
 }
