@@ -5,6 +5,9 @@ import {
   handleGetMe,
 } from './home'
 import {
+  handleRequestGetMePets,
+} from './myPets'
+import {
   handleInitCurrentLocation,
   handleInitWatchId,
   handleClearLocationWatch,
@@ -14,6 +17,7 @@ export default function* sagas() {
   yield fork(handleRequestFacebookLogin);
   yield fork(handleGetAccessToken);
   yield fork(handleGetMe);
+  yield fork(handleRequestGetMePets);
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
   yield fork(handleClearLocationWatch);
