@@ -25,6 +25,7 @@ class MyPets extends React.PureComponent {
   render() {
     const {state, actions} = this.props;
     const handlePress = function(id, data) {
+      // TODO 詳細画面にリンクするように
       console.log(id);
       console.log(data);
     };

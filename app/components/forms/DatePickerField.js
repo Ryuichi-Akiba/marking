@@ -1,10 +1,11 @@
+
 import React from 'react';
-import {TextInput, View, Text, StyleSheet} from 'react-native';
+import {DatePickerIOS, View, Text, StyleSheet} from 'react-native';
 
 /**
  * to be wrapped with redux-form Field component
  */
-export default function InputField(props) {
+export default function DatePickerField(props) {
   const {input, meta, ...inputProps} = props;
 
   const styles = StyleSheet.create({
@@ -14,17 +15,18 @@ export default function InputField(props) {
       height: 37,
       width: 250
     }
-  })
+  });
+
+  var date = new Date();
 
   return (
     <View>
       <Text>{props.label}</Text>
-      <TextInput style={styles.input}
+      <DatePickerIOS
         {...inputProps}
-        onChangeText={input.onChange}
-        onBlur={input.onBlur}
-        onFocus={input.onFocus}
-        value={input.value}
+        date={date}
+        mode="date"
+        onDateChange={input.onChange}
       />
     </View>
   );

@@ -1,9 +1,10 @@
-import React, {PropTypes} from "react"
-import {StyleSheet, Text, View, Button, TouchableOpacity, TouchableHighlight, Linking} from "react-native"
+import React, {PropTypes} from 'react'
+import {StyleSheet, Text, View, Button, TouchableOpacity, TouchableHighlight, Linking} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from "react-redux"
 import {Actions} from 'react-native-router-flux'
-import * as homeActions from '../redux/reducers/home';
+import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
+import PetForm from '../components/pets/PetForm'
 
 var styles = StyleSheet.create({
   container: {
@@ -37,50 +38,43 @@ var styles = StyleSheet.create({
 
 
 class AddMyPetForm extends React.Component {
-  static propTypes: {
-    form: PropTypes.object,
-  }
-
-  constructor(props) {
-    super(props);
-  }
-
-  onPress() {
-    console.log(this.props);
-    console.log(this.refs);
+  componentDidMount() {
+    this.props.actions.initializeAddMyPetFormContainer();
   }
 
   render() {
+    const handleSubmit = () => {
+      const {petForm} = this.props.form;
+      console.log(petForm.values);
+    };
+
     return (
       <View style={styles.container}>
-        <TouchableHighlight style={styles.button} onPress={this.onPress} underlayColor='#99d9f4'>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableHighlight>
+        <PetForm onSubmit={handleSubmit}/>
       </View>
     );
   }
 }
 
-// AddMyPetForm.propTypes = {
-//   state: PropTypes.object,
-//   actions: PropTypes.object
-// };
-//
-// function mapStateToProps(state) {
-//   return {
-//     state: state.home
-//   };
-// }
-//
-// function mapDispatchToProps(dispatch) {
-//   return {
-//     actions: bindActionCreators(Object.assign({}, homeActions), dispatch)
-//   };
-// }
-//
-// export default connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(AddMyPetForm);
+AddMyPetForm.propTypes = {
+  state: PropTypes.object,
+  actions: PropTypes.object
+};
 
-export default AddMyPetForm
+function mapStateToProps(state) {
+  return {
+    state: state.addMyPetForm,
+    form: state.form,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch)
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AddMyPetForm);
