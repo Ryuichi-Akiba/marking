@@ -21,7 +21,8 @@
     "redux": "^3.6.0",
     "redux-logger": "^2.7.4",
     "redux-persist": "^4.1.1",
-    "redux-saga": "^0.14.3"
+    "redux-saga": "^0.14.3",
+    "tcomb-form-native": "^0.6.4"
   },
   "devDependencies": {
     "babel-jest": "18.0.0",
