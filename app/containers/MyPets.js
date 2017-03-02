@@ -4,7 +4,8 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 import {Actions} from 'react-native-router-flux';
 import {Container, Content, List, ListItem, Thumbnail, Text} from 'native-base';
-import * as myPetsActions from '../redux/reducers/myPets';
+import * as myPetsActions from '../redux/reducers/myPets'
+import PetListView from '../components/pets/PetListView'
 
 class MyPets extends React.PureComponent {
   // constructor(props) {
@@ -17,60 +18,21 @@ class MyPets extends React.PureComponent {
   //   };
   // }
 
-  constructor(props) {
-    super(props);
-    let dataSource = new ListView.DataSource({
-      sectionHeaderHasChanged: (r1, r2) => r1 !== r2,
-      rowHasChanged: (r1, r2) => r1 !== r2,
-    });
-
-    this.state = {
-      dataSource: dataSource
-    }
-  }
-
   componentDidMount() {
     this.props.actions.initializeMyPetsContainer();
-    console.log(this.props.state.pets);
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRowsAndSections(this.props.state.pets)
-    })
-    console.log(this.props.state.pets);
   }
 
   render() {
     const {state, actions} = this.props;
-    console.log(state.pets);
-    console.log(this.state);
+    const handlePress = function(id, data) {
+      console.log(id);
+      console.log(data);
+    };
 
     return (
-      <View style={{marginTop:60}}>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={(rowData) => <Text>{rowData}</Text>}
-        />
+      <View style={{marginTop:62}}>
+        <PetListView pets={state.pets} onClick={handlePress}/>
       </View>
-      // <Container style={{marginTop:62}}>
-      //   <Content>
-      //     <List>
-      //       <ListItem>
-      //         <Thumbnail size={42} source={{uri:'http://i.imgur.com/ASj60DP.jpg'}} />
-      //         <Text>Kumar Pratik</Text>
-      //         <Text note>Doing what you like will always keep you happy . .</Text>
-      //       </ListItem>
-      //       <ListItem>
-      //         <Thumbnail size={42} source={{uri:'http://i.imgur.com/ASj60DP.jpg'}} />
-      //         <Text>Kumar Pratik</Text>
-      //         <Text note>Doing what you like will always keep you happy . .</Text>
-      //       </ListItem>
-      //       <ListItem>
-      //         <Thumbnail size={42} source={{uri:'http://i.imgur.com/ASj60DP.jpg'}} />
-      //         <Text>Kumar Pratik</Text>
-      //         <Text note>Doing what you like will always keep you happy . .</Text>
-      //       </ListItem>
-      //     </List>
-      //   </Content>
-      // </Container>
     );
   }
 }
