@@ -3,7 +3,6 @@ import {StyleSheet, Text, View, Button, TouchableOpacity, TouchableHighlight, Li
 import {bindActionCreators} from 'redux'
 import {connect} from "react-redux"
 import {Actions} from 'react-native-router-flux'
-import form from'tcomb-form-native';
 import * as homeActions from '../redux/reducers/home';
 
 var styles = StyleSheet.create({
@@ -28,7 +27,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#48BBEC',
     borderColor: '#48BBEC',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 2,
     marginBottom: 10,
     alignSelf: 'stretch',
     justifyContent: 'center'
@@ -36,8 +35,6 @@ var styles = StyleSheet.create({
 });
 
 
-
-var Form = form.form.Form;
 
 class AddMyPetForm extends React.Component {
   static propTypes: {
@@ -51,25 +48,11 @@ class AddMyPetForm extends React.Component {
   onPress() {
     console.log(this.props);
     console.log(this.refs);
-    // call getValue() to get the values of the form
-    var value = this.refs.form.getValue();
-    if (value) { // if validation fails, value will be null
-      console.log(value); // value here is an instance of Person
-    }
   }
 
   render() {
-    var Person = form.struct({
-      name: form.String,              // a required string
-      surname: form.maybe(form.String),  // an optional string
-      age: form.Number,               // a required number
-      rememberMe: form.Boolean        // a boolean
-    });
-    var options = {}; // optional rendering options (see documentation)
-
     return (
       <View style={styles.container}>
-        <Form ref="form" type={Person} options={options}/>
         <TouchableHighlight style={styles.button} onPress={this.onPress} underlayColor='#99d9f4'>
           <Text style={styles.buttonText}>Save</Text>
         </TouchableHighlight>
