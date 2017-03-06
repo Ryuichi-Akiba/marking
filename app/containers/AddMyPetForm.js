@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux'
 import {connect} from "react-redux"
 import {Actions} from 'react-native-router-flux'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
+import * as myPetsActions from '../redux/reducers/myPets'
 import PetForm from '../components/pets/PetForm'
 
 var styles = StyleSheet.create({
@@ -41,11 +42,16 @@ class AddMyPetForm extends React.Component {
   componentDidMount() {
     this.props.actions.initializeAddMyPetFormContainer();
   }
+  componentDidUpdate() {
+    if (this.props.state.created) {
+      Actions.pop();
+    }
+  }
 
   render() {
     const handleSubmit = () => {
       const {petForm} = this.props.form;
-      console.log(petForm.values);
+      this.props.actions.addMyPet(petForm.values);
     };
 
     return (
@@ -70,7 +76,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch)
+    actions: bindActionCreators(Object.assign({}, addMyPetFormActions, myPetsActions), dispatch)
   };
 }
 

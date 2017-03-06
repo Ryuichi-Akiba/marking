@@ -1,18 +1,20 @@
-import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
-import {getMePets} from '../../common/api/me'
+import {call, put, take} from 'redux-saga/effects'
+import {postMePets} from '../../common/api/me'
 import {
-  INITIALIZE_MY_PETS_CONTAINER,
-  successGetMyPets,
+  ADD_MY_PET,
+  successPostMyPet,
   failureCallApi
-} from '../reducers/myPets'
+} from '../reducers/addMyPetForm'
 
-export function* handleRequestGetMePets() {
+/**
+ * ADD_MY_PETをハンドルして、ペットを追加するAPIをコールする.
+ */
+export function* handleRequestPostMyPet() {
   while (true) {
-    yield take(INITIALIZE_MY_PETS_CONTAINER);
-    const {payload, error} = yield call(getMePets);
+    const action = yield take(ADD_MY_PET);
+    const {payload, error} = yield call(postMePets, action.payload);
     if (payload && !error) {
-      console.log(payload);
-      yield put(successGetMyPets(payload));
+      yield put(successPostMyPet(payload));
     } else {
       yield put(failureCallApi(error));
     }

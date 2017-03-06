@@ -41,11 +41,9 @@ export function get(uri, params) {
     params = !!params ? params : {};
     return axios.get(`${SERVER}${uri}`, {headers: headers, params: params})
       .then(response => {
-        console.log(response);
         return {payload:response.data};
       })
       .catch(error => {
-        console.error(error);
         return {error};
       });
   });
@@ -58,11 +56,12 @@ export function post(uri, data, params) {
     params = !!params ? params : {};
     return axios.post(`${SERVER}${uri}`, data, {headers: headers, params: params})
       .then(response => {
-        console.log(response);
+        if (!response.data || response.data === '') {
+          return {payload:{}};
+        }
         return {payload:response.data};
       })
       .catch(error => {
-        console.error(error);
         return {error};
       });
   });

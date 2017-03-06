@@ -14,11 +14,23 @@ export function initializeAddMyPetFormContainer() {
   }
 }
 
+export const ADD_MY_PET = 'ADD_MY_PET';
+export function addMyPet(values) {
+  // APIに合うようにフォームをトランスフォームする
+  values.user = {};
+  return {
+    type: ADD_MY_PET,
+    payload: values,
+    meta: {},
+    error: false
+  }
+}
+
 // マイペットの登録成功時のアクション
-export const SUCCESS_POST_MY_PET = 'SUCCESS_POST_MY_PETS';
+export const SUCCESS_POST_MY_PETS = 'SUCCESS_POST_MY_PETS';
 export function successPostMyPet(payload) {
   return {
-    type: SUCCESS_POST_MY_PET,
+    type: SUCCESS_POST_MY_PETS,
     payload: payload,
     meta: {response: payload},
     error: false
@@ -38,6 +50,8 @@ export function failureCallApi(error) {
 
 // -------------------- Immutable State Model の定義 --------------------
 export const AddMyPetFormRecord = new Record({
+  created: false,
+  loading: false,
   form: {}
 });
 
@@ -48,9 +62,21 @@ export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
     case REHYDRATE:
       return new AddMyPetFormRecord(action.payload.addMyPetForm);
 
+    // 登録フォームを初期化時のステート変更
+    case INITIALIZE_ADD_MY_PET_FORM:
+      return new AddMyPetFormRecord();
+
+    // ペットの登録処理を開始時のステート変更
+    case ADD_MY_PET:
+      return state.set('loading', true);
+    // ペットの登録処理完了後のステート変更
+    case SUCCESS_POST_MY_PETS:
+      return state.set('loading', false).set('created', true).set('form', {});
+
     case FAILURE_CALL_API:
       // TODO ここにエラー処理を書く（共通処理にしたいのでユーティリティ化する／ひとまずは自動ログアウトして再ログインを促すのが無難かな）
       console.error(action.error);
+      return state.set('loading', false);
 
     default:
       return state;

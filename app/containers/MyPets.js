@@ -21,6 +21,12 @@ class MyPets extends React.PureComponent {
   componentDidMount() {
     this.props.actions.initializeMyPetsContainer();
   }
+  componentWillUpdate() {
+    console.log('call MyPets#componentWillUpdate');
+  }
+  componentDidUpdate() {
+    console.log('call MyPets#componentDidUpdate');
+  }
 
   render() {
     const {state, actions} = this.props;
