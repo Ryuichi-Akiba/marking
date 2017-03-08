@@ -16,6 +16,7 @@
     "react-native-datepicker": "^1.4.4",
     "react-native-fbsdk": "^0.4.0",
     "react-native-maps": "^0.12.2",
+    "react-native-navbar": "^1.6.3",
     "react-native-router-flux": "^3.37.0",
     "react-native-vector-icons": "^3.0.0",
     "react-redux": "^5.0.1",

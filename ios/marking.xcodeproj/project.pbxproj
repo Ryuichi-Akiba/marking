@@ -599,7 +599,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = E8UERLN2F8;
+						DevelopmentTeam = 8U4W35X5HW;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -986,7 +986,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = E8UERLN2F8;
+				DEVELOPMENT_TEAM = 8U4W35X5HW;
 				FRAMEWORK_SEARCH_PATHS = "~/Documents/FacebookSDK";
 				INFOPLIST_FILE = marking/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
@@ -1009,7 +1009,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = E8UERLN2F8;
+				DEVELOPMENT_TEAM = 8U4W35X5HW;
 				FRAMEWORK_SEARCH_PATHS = "~/Documents/FacebookSDK";
 				INFOPLIST_FILE = marking/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;

@@ -1,5 +1,15 @@
 import React from 'react'
-import {View, TouchableOpacity, TouchableHighlight, ListView, Text} from 'react-native'
+import {View, ScrollView, TouchableOpacity, TouchableHighlight, ListView, Text, StyleSheet} from 'react-native'
+
+const styles = StyleSheet.create({
+  cell: {
+    padding: 15,
+    paddingLeft: 0,
+    marginLeft: 15,
+    borderColor: '#cccccc',
+    borderBottomWidth: 0.5,
+  },
+});
 
 export default class ValueListView extends React.PureComponent {
   static propTypes = {
@@ -9,13 +19,19 @@ export default class ValueListView extends React.PureComponent {
 
   constructor(props) {
     super(props);
-
     let ds = new ListView.DataSource({
-      sectionHeaderHasChanged: (r1, r2) => r1 !== r2,
-      rowHasChanged: (r1, r2) => r1 !== r2,
+      rowHasChanged: (r1, r2) => r1 !== r2 || r1.id !== r2.id,
     });
     this.state = {
       dataSource: ds.cloneWithRows(this.props.data)
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data !== this.props.data) {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(nextProps.data)
+      });
     }
   }
 
@@ -28,7 +44,7 @@ export default class ValueListView extends React.PureComponent {
 
     return (
       <TouchableHighlight underlayColor={'#f6f6f6'} onPress={handlePress}>
-        <View>
+        <View style={styles.cell}>
           <Text>{rowData}</Text>
         </View>
       </TouchableHighlight>
@@ -37,11 +53,13 @@ export default class ValueListView extends React.PureComponent {
 
   render() {
     return (
-      <ListView
-        automaticallyAdjustContentInsets={false}
-        dataSource={this.state.dataSource}
-        renderRow={this.renderRow.bind(this)}
-      />
+      <ScrollView>
+        <ListView
+          automaticallyAdjustContentInsets={false}
+          dataSource={this.state.dataSource}
+          renderRow={this.renderRow.bind(this)}
+        />
+      </ScrollView>
     );
   }
 }

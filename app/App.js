@@ -86,7 +86,7 @@ export default class App extends React.Component {
               <Scene key="myPets" component={MyPetsComponent} title="PETS" icon={MyPetsTabIcon} renderRightButton={addPetButton}/>
               <Scene key="markingMap" component={MarkingMapComponent} title="MAP" icon={MarkingMapTabIcon}/>
             </Scene>
-            <Scene key="addMyPetForm" scheme="modal" direction="vertical" component={AddMyPetFormComponent} title="Add My Pet" hideNavBar={false} hideBackImage={true} renderRightButton={closeMyPetFormButton}/>
+            <Scene key="addMyPetForm" component={AddMyPetFormComponent} hideNavBar={true}/>
           </Scene>
         </RouterWithRedux>
       </Provider>
