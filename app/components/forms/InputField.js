@@ -14,10 +14,21 @@ export default class InputField extends React.PureComponent {
 
   constructor(props) {
     super(props);
+    this.state = {value: props.input.value};
+  }
+
+  onChangeText(value) {
+    this.setState({value});
   }
 
   render() {
     const {input, ...inputProps} = this.props;
+    const onChangeText = (value) => {
+      // redux-formとtext-inputの相性が悪いので無理やり日本語入力できるように修正
+      this.onChangeText(value);
+      input.onChange(value);
+    };
+
     return (
       <View style={{flex: 1, flexDirection: 'row'}}>
         <View style={{width: 45, height: 30, paddingLeft: 5}}>
@@ -26,11 +37,12 @@ export default class InputField extends React.PureComponent {
         <View style={{flex: 1, position: 'relative', justifyContent: 'center'}}>
           <TextInput style={{height: 32, fontSize: 16, }}
             {...inputProps}
-                     onChangeText={input.onChange}
-                     onBlur={input.onBlur}
-                     onFocus={input.onFocus}
-                     value={input.value}
+                     onChangeText={onChangeText}
+                     onBlur={input.onChange}
+                     value={this.state.value}
                      placeholder={this.props.placeholder}
+                     placeholderTextColor={'#999999'}
+                     clearButtonMode="while-editing"
           />
         </View>
       </View>
