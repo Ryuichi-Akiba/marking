@@ -47,7 +47,7 @@ class AddMyPetForm extends React.Component {
         </ScrollView>
       </View>
     );
-  }z
+  }
 }
 
 AddMyPetForm.propTypes = {

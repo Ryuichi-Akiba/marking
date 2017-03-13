@@ -3,7 +3,6 @@ import {StyleSheet, Text, View, Button, TouchableOpacity, Linking} from "react-n
 import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
 import {LoginButton, GraphRequest, GraphRequestManager} from 'react-native-fbsdk';
-import {Actions} from 'react-native-router-flux'
 import Styles from '../themes/Styles';
 import * as homeActions from '../redux/reducers/home';
 
@@ -12,7 +11,7 @@ class Home extends React.Component {
   componentDidUpdate() {
     const {state} = this.props;
     if (state.isLogin) {
-      Actions.main(); // メイン画面に画面遷移
+      // Actions.main(); // メイン画面に画面遷移
     }
   }
 
@@ -56,7 +55,7 @@ class Home extends React.Component {
           if (state.isLogin) {
             return (
               <View style={{flex:1}}>
-                <Button onPress={Actions.main} title="Go to Main" color="#841584"/>
+                {/*<Button onPress={Actions.main} title="Go to Main" color="#841584"/>*/}
               </View>
             )
           }

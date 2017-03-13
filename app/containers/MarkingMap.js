@@ -1,13 +1,11 @@
 import React, {Component, PropTypes} from "react";
 import {StyleSheet, Text, View, TouchableOpacity, Modal} from "react-native";
 import {bindActionCreators} from 'redux';
-import Styles from '../themes/Styles';
 import {connect} from "react-redux";
 import MapView from 'react-native-maps'
 import * as markingMapActions from '../redux/reducers/markingMap'
 
 class MarkingMap extends Component {
-
   componentWillMount() {
     const {actions} = this.props;
 
@@ -30,12 +28,13 @@ class MarkingMap extends Component {
 
   render() {
     const {state, actions} = this.props;
+    console.log(this.props.drawer);
 
     return (
-      <View style={Styles.container}>
+      <View style={styles.container}>
         {/* 散歩の地図 */}
         <MapView
-          style={Styles.map}
+          style={styles.map}
           showsUserLocation={true}
           region={state.region}
           onRegionChange={actions.updateCurrentLocation}
@@ -72,6 +71,16 @@ class MarkingMap extends Component {
 
 // TODO Styles.jsに移動する
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    //justifyContent: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
   buttonContainer: {
     flexDirection: 'row',
     marginVertical: 60,
