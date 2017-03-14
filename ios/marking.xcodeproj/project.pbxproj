@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -52,6 +51,8 @@
 		EBD8DE8E171F46438E95A858 /* Arial Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF19089A7784433880D7A2FA /* Arial Black.ttf */; };
 		F8604DAAA72C451A927F56BA /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1CD2C09C026441CE8320D222 /* Arial.ttf */; };
 		FF58A822A83A4849948DE987 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BE4EA7DE0CEA4023A6804BCA /* Ionicons.ttf */; };
+		BB30F593DD6F48699CD9A6CB /* libimageCropPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CA81D7C1A5841F4AE609C8D /* libimageCropPicker.a */; };
+		583B918D0A6345FC8FED455E /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F448E427D01C4399B1EEE4AB /* MaterialCommunityIcons.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -272,6 +273,9 @@
 		DF19089A7784433880D7A2FA /* Arial Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Arial Black.ttf"; path = "../node_modules/native-base/Fonts/Arial Black.ttf"; sourceTree = "<group>"; };
 		E07BD8C22A264DD781C89913 /* Georgia.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Georgia.ttf; path = "../node_modules/native-base/Fonts/Georgia.ttf"; sourceTree = "<group>"; };
 		FCEE7D0DD6F94CD5AFCEB528 /* libAirMaps.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAirMaps.a; sourceTree = "<group>"; };
+		6A39127057EC493FA2A4FDE9 /* imageCropPicker.xcodeproj */ = {isa = PBXFileReference; name = "imageCropPicker.xcodeproj"; path = "../node_modules/react-native-image-crop-picker/ios/imageCropPicker.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		7CA81D7C1A5841F4AE609C8D /* libimageCropPicker.a */ = {isa = PBXFileReference; name = "libimageCropPicker.a"; path = "libimageCropPicker.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		F448E427D01C4399B1EEE4AB /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; name = "MaterialCommunityIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -305,6 +309,7 @@
 				324F0E841E364ADD002A1C3D /* FBSDKCoreKit.framework in Frameworks */,
 				40276CC2A23C4B9F93DD7601 /* libAirMaps.a in Frameworks */,
 				B59B9F37DD914E59A4A3EF6A /* libRCTFBSDK.a in Frameworks */,
+				BB30F593DD6F48699CD9A6CB /* libimageCropPicker.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -462,6 +467,7 @@
 				45CEFE9909154BB3B6083603 /* SF-UI-Text-Regular.otf */,
 				AB3CDD0BDF4042438A748F00 /* Skia.ttf */,
 				076D8D8661D74F2BB0B03AAE /* Times New Roman.ttf */,
+				F448E427D01C4399B1EEE4AB /* MaterialCommunityIcons.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -501,6 +507,7 @@
 				0270066EC05F446C9D359948 /* RNVectorIcons.xcodeproj */,
 				24D23C1E6BDA4743896AD3F5 /* AirMaps.xcodeproj */,
 				2B20B73732624E2DBA89757A /* RCTFBSDK.xcodeproj */,
+				6A39127057EC493FA2A4FDE9 /* imageCropPicker.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -595,7 +602,7 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = E8UERLN2F8;
+						DevelopmentTeam = 8U4W35X5HW;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
@@ -873,6 +880,7 @@
 				C59B5B6A6B934BD0973056AF /* SF-UI-Text-Regular.otf in Resources */,
 				E38C59D13BF043768883F2EB /* Skia.ttf in Resources */,
 				93911F54242E48FDA50BD8DC /* Times New Roman.ttf in Resources */,
+				583B918D0A6345FC8FED455E /* MaterialCommunityIcons.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -940,7 +948,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = E8UERLN2F8;
+				DEVELOPMENT_TEAM = 8U4W35X5HW;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -950,6 +958,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -964,12 +973,13 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = E8UERLN2F8;
+				DEVELOPMENT_TEAM = 8U4W35X5HW;
 				INFOPLIST_FILE = markingTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1067,6 +1077,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fbsdk/ios/RCTFBSDK/**",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1110,6 +1121,7 @@
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fbsdk/ios/RCTFBSDK/**",
+					"$(SRCROOT)/../node_modules/react-native-image-crop-picker/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

@@ -3,7 +3,6 @@ import {View, TouchableOpacity, AppRegistry, ListView} from 'react-native'
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux'
 import {Actions} from 'react-native-router-flux';
-import {Container, Content, List, ListItem, Thumbnail, Text} from 'native-base';
 import * as myPetsActions from '../redux/reducers/myPets'
 import PetListView from '../components/pets/PetListView'
 
