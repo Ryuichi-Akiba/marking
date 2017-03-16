@@ -3,9 +3,15 @@ import {StyleSheet, Text, View, TouchableOpacity, Modal} from "react-native";
 import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
 import MapView from 'react-native-maps'
+import MarkingNavbar from '../components/common/MarkingNavbar'
 import * as markingMapActions from '../redux/reducers/markingMap'
 
 class MarkingMap extends Component {
+  static propTypes = {
+    drawer: React.PropTypes.object.isRequired,
+    navigator: React.PropTypes.object.isRequired
+  };
+
   componentWillMount() {
     const {actions} = this.props;
 
@@ -28,25 +34,28 @@ class MarkingMap extends Component {
 
   render() {
     const {state, actions} = this.props;
-    console.log(this.props.drawer);
+    console.log(state.region);
 
     return (
-      <View style={styles.container}>
-        {/* 散歩の地図 */}
-        <MapView
-          style={styles.map}
-          showsUserLocation={true}
-          region={state.region}
-          onRegionChange={actions.updateCurrentLocation}
-        />
+      <View style={{flex:1, flexDirection:'column'}}>
+        <MarkingNavbar title="散歩マップ" drawer={this.props.drawer}/>
+        <View style={{flex:1}}>
+          {/* 散歩の地図 */}
+          <MapView
+            style={styles.map}
+            showsUserLocation={true}
+            region={state.region}
+            onRegionChange={actions.updateCurrentLocation}
+          />
 
-        {/* 散歩開始ボタン */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.bubble, styles.button]}
-            onPress={() => this.showPetsModal(true)}>
-            <Text>Start</Text>
-          </TouchableOpacity>
+          {/* 散歩開始ボタン */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.bubble, styles.button]}
+              onPress={() => this.showPetsModal(true)}>
+              <Text>Start</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* 散歩に連れていくペットの一覧(モーダル) */}
@@ -82,7 +91,10 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flex:1,
+    flexDirection: 'column',
+    justifyContent:'flex-end',
+    alignItems: 'center',
     marginVertical: 60,
     backgroundColor: 'transparent',
   },

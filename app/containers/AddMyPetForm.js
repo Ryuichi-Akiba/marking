@@ -16,12 +16,18 @@ var styles = StyleSheet.create({
 });
 
 class AddMyPetForm extends React.Component {
+  static propTypes = {
+    drawer: React.PropTypes.object.isRequired,
+    navigator: React.PropTypes.object.isRequired
+  };
+
   componentDidMount() {
     this.props.actions.initializeAddMyPetFormContainer();
   }
+
   componentDidUpdate() {
     if (this.props.state.created) {
-      Actions.pop();
+      // Actions.pop();
     }
   }
 
@@ -32,7 +38,7 @@ class AddMyPetForm extends React.Component {
     };
     const close = {
       title: 'Cancel',
-      handler: Actions.pop,
+      // handler: Actions.pop,
     };
     const submit = {
       title: 'Save',
@@ -41,7 +47,7 @@ class AddMyPetForm extends React.Component {
 
     return (
       <View style={styles.container}>
-        <MarkingNavbar title="ペットを追加" left={close} right={submit}/>
+        <MarkingNavbar title="ペットを追加" drawer={this.props.drawer} right={submit}/>
         <ScrollView>
           <PetForm onSubmit={handleSubmit}/>
         </ScrollView>

@@ -11,11 +11,15 @@ class Home extends React.Component {
   componentDidUpdate() {
     const {state} = this.props;
     if (state.isLogin) {
-      // Actions.main(); // メイン画面に画面遷移
+      var link = () => this.props.navigator.push({
+        name: 'AddMyPetForm',
+      });
+      link();
     }
   }
 
   render() {
+    console.log(this.props.navigator);
     const {actions, state} = this.props;
 
     // ログイン完了時にキックするアクション

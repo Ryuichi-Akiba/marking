@@ -12,7 +12,10 @@ export default class SideMenu extends React.PureComponent {
   }
 
   render() {
-    var link = () => this.props.navigator.push({
+    var map = () => this.props.navigator.push({
+      name: 'Map',
+    });
+    var logout = () => this.props.navigator.push({
       name: 'Login',
     });
 
@@ -33,7 +36,7 @@ export default class SideMenu extends React.PureComponent {
             <View style={{paddingTop:4, paddingBottom:4, margin:0, paddingRight:16}}>
               <MAIcon name="map" size={24} color={'#999999'} />
             </View>
-            <TouchableHighlight style={{flex:1, paddingTop:8, paddingBottom:8,}}>
+            <TouchableHighlight style={{flex:1, paddingTop:8, paddingBottom:8,}} onPress={map}>
               <Text style={{fontSize:16, color:'#333333'}}>散歩マップ</Text>
             </TouchableHighlight>
           </View>
@@ -55,9 +58,9 @@ export default class SideMenu extends React.PureComponent {
           </View>
           <View style={{flex:1, flexDirection:'row', paddingTop:8, paddingBottom:8}}>
             <View style={{paddingTop:4, paddingBottom:4, margin:0, paddingRight:16}}>
-              <MAIcon name="settings" size={24} color={'#999999'} />
+              <MAIcon name="exit-to-app" size={24} color={'#999999'} />
             </View>
-            <TouchableHighlight style={{flex:1, paddingTop:8, paddingBottom:8,}} onPress={link}>
+            <TouchableHighlight style={{flex:1, paddingTop:8, paddingBottom:8,}} onPress={logout}>
               <Text style={{fontSize:16, color:'#333333'}}>ログアウト</Text>
             </TouchableHighlight>
           </View>

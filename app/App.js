@@ -12,6 +12,7 @@ import createLogger  from 'redux-logger';
 import reducers from "./redux";
 import sagas from "./redux/sagas"
 import Styles from "./themes/Styles";
+import Container from './components/common/Container'
 import Home from "./containers/Home";
 import MyPets from "./containers/MyPets";
 import MarkingMap from "./containers/MarkingMap";
@@ -84,7 +85,6 @@ export default class App extends React.Component {
   };
 
   openControlPanel = () => {
-    console.log('call openControlPanel');
     this._drawer.open()
   }
 
@@ -92,7 +92,7 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <Navigator
-          initialRoute={{name:'Map'}}
+          initialRoute={{name:'Login'}}
           renderScene={this.renderScene.bind(this)}
         />
       </Provider>
@@ -100,19 +100,30 @@ export default class App extends React.Component {
   }
 
   renderScene(route, navigator) {
+    var drawer = {
+      open: this.openControlPanel.bind(this),
+      close: this.closeControlPanel.bind(this)
+    }
+
     var main;
     if (route.name == 'Login') {
       main = (
         <View style={{flex:1}}>
-          <HomeComponent />
+          <HomeComponent navigator={navigator} />
+        </View>
+      );
+    }
+    if (route.name == 'AddMyPetForm') {
+      main = (
+        <View style={{flex:1}}>
+          <AddMyPetFormComponent drawer={drawer} navigator={navigator} />
         </View>
       );
     }
     if (route.name === 'Map') {
       main = (
         <View style={{flex:1}}>
-          <MarkingNavbar title="散歩マップ" openDrawer={this.openControlPanel.bind(this)}/>
-          <MarkingMapComponent />
+          <MarkingMapComponent drawer={drawer} navigator={navigator}/>
         </View>
       );
     }
