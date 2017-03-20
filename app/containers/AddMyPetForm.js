@@ -1,8 +1,7 @@
 import React, {PropTypes} from 'react'
 import {StyleSheet, View, Text, ScrollView, Button, TouchableOpacity, TouchableHighlight, Linking} from 'react-native'
 import {bindActionCreators} from 'redux'
-import {connect} from "react-redux"
-import {Actions} from 'react-native-router-flux'
+import {connect} from 'react-redux'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
 import * as myPetsActions from '../redux/reducers/myPets'
 import PetForm from '../components/pets/PetForm'
@@ -22,6 +21,7 @@ class AddMyPetForm extends React.Component {
   };
 
   componentDidMount() {
+    console.log('component did mount.')
     this.props.actions.initializeAddMyPetFormContainer();
   }
 
@@ -47,9 +47,9 @@ class AddMyPetForm extends React.Component {
 
     return (
       <View style={styles.container}>
-        <MarkingNavbar title="ペットを追加" drawer={this.props.drawer} right={submit}/>
+        <MarkingNavbar title="ペットを追加" drawer={this.props.drawer}/>
         <ScrollView>
-          <PetForm onSubmit={handleSubmit}/>
+          <PetForm onSubmit={handleSubmit} navigator={this.props.navigator}/>
         </ScrollView>
       </View>
     );

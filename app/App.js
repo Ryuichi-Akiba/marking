@@ -12,6 +12,7 @@ import createLogger  from 'redux-logger';
 import reducers from "./redux";
 import sagas from "./redux/sagas"
 import Styles from "./themes/Styles";
+import Session from './common/auth/Session'
 import Container from './components/common/Container'
 import Home from "./containers/Home";
 import MyPets from "./containers/MyPets";
@@ -89,11 +90,18 @@ export default class App extends React.Component {
   }
 
   render() {
+    var initial = 'Login';
+    if (Session.isLoggedIn()) {
+      // ログイン済みの場合の描画コンテンツ
+      // initial = 'AddMyPetForm';
+    }
+
     return (
       <Provider store={store}>
         <Navigator
-          initialRoute={{name:'Login'}}
+          initialRoute={{name:initial}}
           renderScene={this.renderScene.bind(this)}
+          configureScene={(route, routeStack) => Navigator.SceneConfigs.FadeAndroid}
         />
       </Provider>
     )
@@ -103,7 +111,7 @@ export default class App extends React.Component {
     var drawer = {
       open: this.openControlPanel.bind(this),
       close: this.closeControlPanel.bind(this)
-    }
+    };
 
     var main;
     if (route.name == 'Login') {
@@ -144,8 +152,8 @@ export default class App extends React.Component {
 };
 
 const drawerStyles = {
-  drawer: {backgroundColor:'#ffffff', shadowColor:'#000000', shadowOpacity:0.8, shadowRadius:3},
-  main: {paddingLeft: 3},
+  drawer: {backgroundColor:'#ffffff', borderRightWidth:0.5, borderRightColor:'#ccc'},
+  main: {paddingLeft: 0},
 };
 
 

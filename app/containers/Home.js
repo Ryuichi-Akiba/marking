@@ -1,8 +1,9 @@
 import React, {PropTypes} from "react";
-import {StyleSheet, Text, View, Button, TouchableOpacity, Linking} from "react-native";
+import {StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity, Linking} from "react-native";
 import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
 import {LoginButton, GraphRequest, GraphRequestManager} from 'react-native-fbsdk';
+import {SocialIcon} from 'react-native-elements'
 import Styles from '../themes/Styles';
 import * as homeActions from '../redux/reducers/home';
 
@@ -33,37 +34,41 @@ class Home extends React.Component {
           actions.onLoginWithFacebook(result);
         }
       }
-    }
+    };
 
     // ログアウト成功時にキックするアクション
     let onLogoutFinished = function() {
       actions.onLogout();
-    }
+    };
+    let handleFacebookLink = () => {
+      console.log('click link');
+      this.props.navigator.push({name: 'AddMyPetForm'});
+    };
 
     return (
-      <View style={Styles.container}>
-        <View style={{flex:1}}>
-          <Text style={{fontSize: 20, margin: 20, textAlign: 'center'}}>
-            Marking
-          </Text>
-          <Text>{JSON.stringify(this.props.state)}</Text>
-        </View>
-        <View style={{flex:1}}>
-          <LoginButton
-            onLoginFinished={onLoginFinished}
-            onLogoutFinished={onLogoutFinished}
-            readPermissions={['public_profile', 'email', 'user_friends']}
-          />
-        </View>
-        {(() => {
-          if (state.isLogin) {
-            return (
-              <View style={{flex:1}}>
-                {/*<Button onPress={Actions.main} title="Go to Main" color="#841584"/>*/}
-              </View>
-            )
-          }
-        })()}
+      <View style={{flex:1}}>
+        <Image source={require('./images/login.jpg')} style={styles.backgroundImage}>
+          <View style={{flex:1, flexDirection: 'column', justifyContent: 'space-between'}}>
+            <View>
+              <Text style={{fontSize: 20, margin: 20, textAlign: 'center'}}>
+                Marking
+              </Text>
+              <Text>{JSON.stringify(this.props.state)}</Text>
+            </View>
+            <View>
+
+            </View>
+            <View>
+              <LoginButton
+                onLoginFinished={onLoginFinished}
+                onLogoutFinished={onLogoutFinished}
+                readPermissions={['public_profile', 'email', 'user_friends']}
+              />
+              <SocialIcon title='Sign In With Facebook' button={true} raised={false} type='facebook' style={{marginBottom:10}} onPress={handleFacebookLink}/>
+              <SocialIcon title='Sign In With Twitter' button={true} raised={false} type='twitter' style={{marginBottom:30}}/>
+            </View>
+          </View>
+        </Image>
       </View>
     );
   }
@@ -90,3 +95,14 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Home);
+
+var deviceWidth = Dimensions.get('window').width;
+let styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover', // or 'stretch'
+    justifyContent: 'center',
+    alignItems: 'center',
+    width:deviceWidth,
+  }
+});

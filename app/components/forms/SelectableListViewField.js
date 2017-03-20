@@ -4,11 +4,10 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import MarkingNavbar from '../common/MarkingNavbar'
 import ValueListView from '../common/ValueListView'
 
-/**
- * to be wrapped with redux-form Field component
- */
 export default class SelectableListViewField extends React.PureComponent {
   static propTypes = {
+    label: React.PropTypes.string.isRequired,
+    data: React.PropTypes.array.isRequired,
     icon: React.PropTypes.string,
     placeholder: React.PropTypes.string,
     onClick: React.PropTypes.func,
@@ -21,8 +20,10 @@ export default class SelectableListViewField extends React.PureComponent {
 
   setModalVisible(visible) {
     this.setState({visible: visible});
+    console.log(this.state.visible);
   }
-  viewModal() {
+  showModal() {
+    console.log('SHOE MODAL');
     this.setModalVisible(true);
   }
   hideModal() {
@@ -47,13 +48,13 @@ export default class SelectableListViewField extends React.PureComponent {
           <MAIcon name={this.props.icon} size={24} color={'#666666'} style={{paddingTop: 5, paddingBottom: 5}}/>
         </View>
 
-        <TouchableHighlight underlayColor={'#ffffff'} onPress={this.viewModal.bind(this)} style={{flex: 1, position: 'relative', justifyContent: 'center'}}>
+        <TouchableHighlight underlayColor={'#ffffff'} style={{flex: 1, position: 'relative', justifyContent: 'center'}} onPress={this.showModal.bind(this)}>
           {text}
         </TouchableHighlight>
 
         <Modal animationType="slide" transparent={false} visible={this.state.visible}>
           <MarkingNavbar title={this.props.label} right={cancel} />
-          <ValueListView data={this.state.data} onClick={handlePress}/>
+          <ValueListView data={this.props.data} onClick={handlePress}/>
         </Modal>
       </View>
     );

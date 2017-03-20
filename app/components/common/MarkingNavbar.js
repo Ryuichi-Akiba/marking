@@ -5,12 +5,10 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 
 export default class MarkingNavbar extends React.PureComponent {
   static propTypes = {
-    drawer: React.PropTypes.object,
     title: React.PropTypes.string.isRequired,
+    drawer: React.PropTypes.object,
     left: React.PropTypes.object,
     right: React.PropTypes.object,
-  };
-  static contextTypes = {
   };
 
   constructor(props) {
@@ -18,12 +16,13 @@ export default class MarkingNavbar extends React.PureComponent {
   }
 
   render() {
-    var leftButtonConfig = null;
+    var leftButton = null;
     if (this.props.drawer) {
-      leftButtonConfig = {
-        title: <MAIcon name="menu" size={24} color={'#333333'}/>,
-        handler: this.props.drawer.open,
-      };
+      leftButton = (
+        <View style={{flexDirection: 'row', marginLeft:8, marginTop:10}}>
+          <MAIcon name="menu" size={24} color={'#333333'} onPress={this.props.drawer.open}/>
+        </View>
+      );
     }
 
     const rightButtonConfig = !!this.props.right ? this.props.right : null;
@@ -35,7 +34,7 @@ export default class MarkingNavbar extends React.PureComponent {
       <View>
         <NavigationBar
           title={titleConfig}
-          leftButton={leftButtonConfig}
+          leftButton={leftButton}
           rightButton={rightButtonConfig}
         />
       </View>
