@@ -75,7 +75,7 @@ export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
 
     case FAILURE_CALL_API:
       // TODO ここにエラー処理を書く（共通処理にしたいのでユーティリティ化する／ひとまずは自動ログアウトして再ログインを促すのが無難かな）
-      console.error(action.error);
+      console.error(action);
       return state.set('loading', false);
 
     default:

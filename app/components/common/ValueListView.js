@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
 
 export default class ValueListView extends React.PureComponent {
   static propTypes = {
-    data: React.PropTypes.array.isRequired,
-    onClick: React.PropTypes.func,
+    data: React.PropTypes.array,
+    onSelect: React.PropTypes.func,
   };
 
   constructor(props) {
@@ -37,8 +37,8 @@ export default class ValueListView extends React.PureComponent {
 
   renderRow(rowData, sectionID, rowID) {
     const handlePress = () => {
-      if (!!this.props.onClick) {
-        this.props.onClick(rowData, sectionID, rowID);
+      if (!!this.props.onSelect) {
+        this.props.onSelect(rowData, sectionID, rowID);
       }
     };
 

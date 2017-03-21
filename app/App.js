@@ -18,6 +18,7 @@ import Home from "./containers/Home";
 import MyPets from "./containers/MyPets";
 import MarkingMap from "./containers/MarkingMap";
 import AddMyPetForm from './containers/AddMyPetForm'
+import SelectableListViewScene from './containers/SelectableListViewScene'
 import SideMenu from './components/common/SideMenu'
 import MarkingNavbar from './components/common/MarkingNavbar'
 
@@ -101,10 +102,17 @@ export default class App extends React.Component {
         <Navigator
           initialRoute={{name:initial}}
           renderScene={this.renderScene.bind(this)}
-          configureScene={(route, routeStack) => Navigator.SceneConfigs.FadeAndroid}
+          configureScene={this.configureScene.bind(this)}
         />
       </Provider>
     )
+  }
+
+  configureScene(route, routeStack) {
+    if (route.name === 'SelectableListViewScene') {
+      return Navigator.SceneConfigs.FloatFromBottom;
+    }
+    return Navigator.SceneConfigs.FadeAndroid;
   }
 
   renderScene(route, navigator) {
@@ -114,26 +122,24 @@ export default class App extends React.Component {
     };
 
     var main;
-    if (route.name == 'Login') {
+    if (route.name === 'Login') {
       main = (
-        <View style={{flex:1}}>
-          <HomeComponent navigator={navigator} />
-        </View>
+      <HomeComponent navigator={navigator} {...route.passProps}/>
       );
     }
-    if (route.name == 'AddMyPetForm') {
+    if (route.name === 'AddMyPetForm') {
       main = (
-        <View style={{flex:1}}>
-          <AddMyPetFormComponent drawer={drawer} navigator={navigator} />
-        </View>
+      <AddMyPetFormComponent drawer={drawer} navigator={navigator} {...route.passProps}/>
       );
     }
     if (route.name === 'Map') {
       main = (
-        <View style={{flex:1}}>
-          <MarkingMapComponent drawer={drawer} navigator={navigator}/>
-        </View>
+      <MarkingMapComponent drawer={drawer} navigator={navigator} {...route.passProps}/>
       );
+    }
+    if (route.name === 'SelectableListViewScene') {
+      console.log(route.name);
+      main = <SelectableListViewScene navigator={navigator} {...route.passProps}/>;
     }
 
     return (
@@ -145,7 +151,9 @@ export default class App extends React.Component {
         content={<SideMenu navigator={navigator} />}
         styles={drawerStyles}
       >
-        {main}
+        <View style={{flex:1}}>
+          {main}
+        </View>
       </Drawer>
     );
   }

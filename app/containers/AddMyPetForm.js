@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
 import * as myPetsActions from '../redux/reducers/myPets'
-import PetForm from '../components/pets/PetForm'
+import PetForm from './PetForm'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 
 var styles = StyleSheet.create({
@@ -21,35 +21,48 @@ class AddMyPetForm extends React.Component {
   };
 
   componentDidMount() {
-    console.log('component did mount.')
     this.props.actions.initializeAddMyPetFormContainer();
   }
 
-  componentDidUpdate() {
-    if (this.props.state.created) {
-      // Actions.pop();
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.state.created !== this.props.state.created) {
+  //     nextProps.navigator.push({
+  //       name: 'MarkingMap'
+  //     });
+  //   }
+  // }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.state !== this.props.state) {
+      if (nextProps.state.created) {
+        nextProps.navigator.push({
+          name: 'Map'
+        });
+      }
     }
   }
+  // componentDidUpdate() {
+  //   if (this.props.state.created) {
+  //     this.props.navigator.push({
+  //       name: 'MarkingMap'
+  //     });
+  //   }
+  // }
 
   render() {
-    const handleSubmit = () => {
-      const {petForm} = this.props.form;
-      this.props.actions.addMyPet(petForm.values);
-    };
-    const close = {
-      title: 'Cancel',
-      // handler: Actions.pop,
-    };
-    const submit = {
+    const handleSaveEvent = {
       title: 'Save',
-      handler: handleSubmit,
+      handler: () => {
+        const {petForm} = this.props.form;
+        this.props.actions.addMyPet(petForm.values);
+      },
     };
 
     return (
       <View style={styles.container}>
-        <MarkingNavbar title="ペットを追加" drawer={this.props.drawer}/>
+        <MarkingNavbar title="ペットを追加" drawer={this.props.drawer} right={handleSaveEvent}/>
         <ScrollView>
-          <PetForm onSubmit={handleSubmit} navigator={this.props.navigator}/>
+          <PetForm navigator={this.props.navigator}/>
         </ScrollView>
       </View>
     );

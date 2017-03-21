@@ -16,27 +16,26 @@ export default class MarkingNavbar extends React.PureComponent {
   }
 
   render() {
-    var leftButton = null;
-    if (this.props.drawer) {
-      leftButton = (
-        <View style={{flexDirection: 'row', marginLeft:8, marginTop:10}}>
-          <MAIcon name="menu" size={24} color={'#333333'} onPress={this.props.drawer.open}/>
-        </View>
-      );
-    }
-
-    const rightButtonConfig = !!this.props.right ? this.props.right : null;
     const titleConfig = {
       title: this.props.title,
     };
 
+    var leftButtonConfig = null;
+    if (this.props.drawer) {
+      leftButtonConfig = (
+        <View style={{flexDirection: 'row', marginLeft:8, marginTop:10}}>
+          <MAIcon name="menu" size={24} color={'#333333'} onPress={this.props.drawer.open}/>
+        </View>
+      );
+    } else if (this.props.left) {
+      leftButtonConfig = this.props.left;
+    }
+
+    const rightButtonConfig = !!this.props.right ? this.props.right : null;
+
     return (
       <View>
-        <NavigationBar
-          title={titleConfig}
-          leftButton={leftButton}
-          rightButton={rightButtonConfig}
-        />
+        <NavigationBar title={titleConfig} leftButton={leftButtonConfig} rightButton={rightButtonConfig}/>
       </View>
     );
   }
