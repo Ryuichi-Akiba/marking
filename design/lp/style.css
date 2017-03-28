@@ -159,14 +159,14 @@
 }
 */
 
-/*markingとは*/
+/*：：：：：：：：：markingとは：：：：：：：：：*/
 
 .all-container{
-  width: 960px;
+  width: 1080px;
   margin: 0 auto;
 }
 
-.about-container h1{
+.about-container h2{
   text-align: center;
   padding-top: 88px;
   font-family: '游ゴシック体', 'Yu Gothic', 'YuGothic';
@@ -180,7 +180,7 @@
 }
 
 .about-img{
-  width: 480px;
+  width: 500px;
   height: 320px;
   text-align: center;
 }
@@ -197,6 +197,7 @@
 
 .about-text h3{
   line-height: 130%;
+  font-size: 36px;
 }
 
 .about-text p{
@@ -213,10 +214,9 @@
 
 }
 
-.index-first{
-  margin-top: 160px;
-/*  margin-bottom: 80px;*/
-}
+/*.index-first{
+  margin-top: 240px;
+}*/
 
 .icon{
   width: 32px;
@@ -241,14 +241,24 @@
 .side-line-right{
   margin-left: 50px;
 }
-/*写真３連続　！うまくいかない！*/
+/*：：：：：：：：：：：：写真３連続：：：：：：：：：*/
 .how-to-img{
   width: 160px;
   height: 160px;
-  margin-left: 55px;
+  /*margin-left: 60px;*/
   margin-bottom: 20px;
   display: block;
+  margin: 0 auto;
  }
+
+figure img {
+  opacity: 1;
+  -webkit-transition: .3s ease-in-out;
+  transition: .3s ease-in-out;
+}
+figure:hover img {
+  opacity: .5;
+}
 
 .container{
   font-family: '游ゴシック体', 'Yu Gothic', 'YuGothic';
@@ -259,6 +269,8 @@
   font-family: 'Kaushan Script', cursive;
   text-align: center;
   font-size: 1.6rem;
+  margin-bottom: 80px;
+  margin-top: 16px;
 }
 
 .index-second{
@@ -269,35 +281,65 @@
   margin-top: 80px;
 }
 
+/*.howto-container{
+  width: 960px;
+  margin: 0 auto;
+  background-color: #f3f1e9;
+}
+*/
+
+
+.how-to-text-container{
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 80px;
+}
 /*：：：：：：：：：スクリーンショット：：：：：：：：*/
 
 .index-third{
   width: 350px;
   height: 45px;
   margin: 0 auto;
-  padding-top: 80px;
+  padding-top: 96px;
 }
 
 
 .index-first{
-  margin-top: 160px;
+  margin-top: 240px;
 /*  margin-bottom: 80px;*/
 }
 
 
 .screen-title{
   font-family: 'Kaushan Script', cursive;
-  margin: 0 auto;
   font-size: 1.6rem;
-  margin-top: 40px;
+  margin-top: 32px;
+  margin-bottom: 40px;
+  width: 160px;
   text-align: center;
+  margin-left: 550px;
+  margin-top: 48px;
+
 }
+
+
 
 .screen-container{
   width: 100%;
-  height: 1800px;
+/*  height: 1000px;*/
   margin-top: 100px;
   background-color: #f3f1e9;
+}
+
+.screen-container .all-container .row .col-md-4{
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 160px;
+}
+
+.screen-container .all-container .row .col-md-4 p{
+  margin-top: 16px;
+  font-family: '游ゴシック体', 'Yu Gothic', 'YuGothic';
 }
 
 /*.white-box{
@@ -525,7 +567,6 @@
 /*フッター*/
 footer{
   width: 100%;
-  height: 200px;
 /*  margin-top: 40px;*/
   background-color: #eae1cf;
 }
@@ -541,7 +582,9 @@ footer h1{
 
 footer ul {
   padding-top: 40px;
-  margin-left: 100px;
+  padding-bottom: 40px; 
+  margin-left: 104px;
+  margin-bottom: 0;
 }
 
 footer li{
@@ -550,6 +593,7 @@ footer li{
 
 footer a{
   color: black;
+  text-decoration: none;
 }
 
 .footer-last{
