@@ -3,6 +3,9 @@ import {View, Text, StyleSheet, TouchableHighlight, DatePickerIOS} from 'react-n
 import moment from 'moment'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 
+/**
+ * to be wrapped with redux-form Field component
+ */
 export default class DatePickerField extends React.PureComponent {
   static propTypes = {
     // TODO required?

@@ -36,9 +36,16 @@ class MarkingMap extends Component {
     const {state, actions} = this.props;
     console.log(state.region);
 
+    var left = {
+      title: 'Open',
+      handler: () => {
+        console.log('click open');
+        this.props.openMenu();
+      }
+    };
     return (
       <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="散歩マップ" drawer={this.props.drawer}/>
+        <MarkingNavbar title="散歩マップ" left={left}/>
         <View style={{flex:1}}>
           {/* 散歩の地図 */}
           <MapView

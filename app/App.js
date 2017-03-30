@@ -19,8 +19,9 @@ import MyPets from "./containers/MyPets";
 import MarkingMap from "./containers/MarkingMap";
 import AddMyPetForm from './containers/AddMyPetForm'
 import SelectableListViewScene from './containers/SelectableListViewScene'
-import SideMenu from './components/common/SideMenu'
+import SideMenuComponent from './components/common/SideMenu'
 import MarkingNavbar from './components/common/MarkingNavbar'
+import { SideMenu, List, ListItem } from 'react-native-elements'
 
 
 // create the saga middleware
@@ -79,16 +80,21 @@ const closeMyPetFormButton = () => (
 
 // アプリケーションのベース設定
 export default class App extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  // };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isOpen: false
+    };
+    this.toggleSideMenu = this.toggleSideMenu.bind(this);
+  };
+
   closeControlPanel = () => {
     this._drawer.close()
   };
 
   openControlPanel = () => {
     this._drawer.open()
-  }
+  };
 
   render() {
     var initial = 'Login';
@@ -115,6 +121,17 @@ export default class App extends React.Component {
     return Navigator.SceneConfigs.FadeAndroid;
   }
 
+  onSideMenuChange (isOpen: boolean) {
+    this.setState({
+      isOpen: isOpen
+    })
+  }
+  toggleSideMenu () {
+    this.setState({
+      isOpen: !this.state.isOpen
+    })
+  }
+
   renderScene(route, navigator) {
     var drawer = {
       open: this.openControlPanel.bind(this),
@@ -134,7 +151,7 @@ export default class App extends React.Component {
     }
     if (route.name === 'Map') {
       main = (
-      <MarkingMapComponent drawer={drawer} navigator={navigator} {...route.passProps}/>
+      <MarkingMapComponent openMenu={this.toggleSideMenu.bind(this)} drawer={drawer} navigator={navigator} {...route.passProps}/>
       );
     }
     if (route.name === 'SelectableListViewScene') {
@@ -143,18 +160,26 @@ export default class App extends React.Component {
     }
 
     return (
-      <Drawer
-        type="overlay"
-        openDrawerOffset={0.2}
-        acceptTap={true}
-        ref={(ref) => this._drawer = ref}
-        content={<SideMenu navigator={navigator} />}
-        styles={drawerStyles}
-      >
+      <SideMenu
+        isOpen={this.state.isOpen}
+        onChange={this.onSideMenuChange.bind(this)}
+        menu={<SideMenuComponent onChange={this.toggleSideMenu.bind(this)} navigator={navigator}/>}>
         <View style={{flex:1}}>
           {main}
         </View>
-      </Drawer>
+      </SideMenu>
+      // <Drawer
+      //   type="overlay"
+      //   openDrawerOffset={0.2}
+      //   acceptTap={true}
+      //   ref={(ref) => this._drawer = ref}
+      //   content={<SideMenu navigator={navigator} />}
+      //   styles={drawerStyles}
+      // >
+      //   <View style={{flex:1}}>
+      //     {main}
+      //   </View>
+      // </Drawer>
     );
   }
 };

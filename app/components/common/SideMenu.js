@@ -1,5 +1,6 @@
 import React from 'react'
 import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image} from 'react-native'
+import {List, ListItem} from 'react-native-elements'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 
 export default class SideMenu extends React.PureComponent {
@@ -12,12 +13,22 @@ export default class SideMenu extends React.PureComponent {
   }
 
   render() {
-    var map = () => this.props.navigator.push({
-      name: 'Map',
-    });
-    var logout = () => this.props.navigator.push({
-      name: 'Login',
-    });
+    var goMap = () => {
+      this.props.onChange();
+      this.props.navigator.push({
+        name: 'Map',
+      });
+    };
+    var logout = () => {
+      this.props.onChange();
+      this.props.navigator.pop({
+        name: 'Login',
+      });
+    };
+    var handlePress = () => {
+      this.props.onChange();
+      console.log('press link');
+    };
 
     return (
       <View>
@@ -31,12 +42,21 @@ export default class SideMenu extends React.PureComponent {
             <Text style={{fontSize:14, color:'#333333', paddingTop:2, paddingBottom:2}}>ken.todoroki@gmail.com</Text>
           </View>
         </View>
-        <ScrollView style={{paddingLeft:16, paddingRight:16}}>
+        <ScrollView>
+          <List>
+            <ListItem onPress={goMap} leftIcon={{name:'map', style:styles.icon}} title="散歩マップ" hideChevron={true}/>
+            <ListItem roundAvatar title='MOMO' onPress={handlePress} avatar={require('../../containers/images/login.jpg')} hideChevron={true} containerStyle={{padding:0, margin:0}}/>
+            <ListItem roundAvatar title='MOMO' onPress={handlePress} avatar={require('../../containers/images/login.jpg')} hideChevron={true} wrapperStyle={{padding:0}}/>
+            <ListItem roundAvatar title='MOMO' onPress={handlePress} avatar={require('../../containers/images/login.jpg')} hideChevron={true} titleContainerStyle={{padding:0}}/>
+            <ListItem leftIcon={{name:'settings', style:styles.icon}} title="設定" hideChevron={true}/>
+            <ListItem onPress={logout} leftIcon={{name:'exit-to-app', style:styles.icon}} title="ログアウト" hideChevron={true}/>
+          </List>
+
           <View style={{flex:1, flexDirection:'row', paddingTop:8, paddingBottom:8}}>
             <View style={{paddingTop:4, paddingBottom:4, margin:0, paddingRight:16}}>
               <MAIcon name="map" size={24} color={'#999999'} />
             </View>
-            <TouchableHighlight style={{flex:1, paddingTop:8, paddingBottom:8,}} onPress={map}>
+            <TouchableHighlight style={{flex:1, paddingTop:8, paddingBottom:8,}} onPress={goMap}>
               <Text style={{fontSize:16, color:'#333333'}}>散歩マップ</Text>
             </TouchableHighlight>
           </View>
@@ -76,4 +96,10 @@ var styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
   },
+
+  icon: {
+    fontSize:24,
+    paddingLeft:4,
+    paddingRight:6
+  }
 });

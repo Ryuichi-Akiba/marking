@@ -92,7 +92,7 @@ class PetForm extends React.PureComponent {
             <Field name="name" label="名前" placeholder="ペットの名前" icon="pets" component={InputField}/>
           </View>
           <View style={styles.field}>
-            <Field name="birthDate" label="生年月日" component={DatePickerField} icon="today" placeholder="生年月日"/>
+            <Field name="birthDate" label="生年月日" component={DatePickerField} icon="calendar" placeholder="生年月日"/>
           </View>
           <View style={styles.field}>
             <Field name="type" label="品種" component={SelectableListViewField} onPress={this.handlePressKindText.bind(this)} selected={this.state.selectedKind} icon="assignment" placeholder="ペットの品種"/>
@@ -138,9 +138,13 @@ PetForm = reduxForm({
 })(PetForm);
 
 PetForm = connect(
-  state => ({
-    initialValues: state.addMyPetForm.form
-  }),
+  state => {
+    console.log(state);
+    return ({
+      initialValues: state.addMyPetForm.form
+    });
+  }
+,
 )(PetForm);
 
 export default PetForm;
