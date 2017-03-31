@@ -45,7 +45,7 @@ export default class SideMenu extends React.PureComponent {
         <ScrollView>
           <List>
             <ListItem onPress={goMap} leftIcon={{name:'map', style:styles.icon}} title="散歩マップ" hideChevron={true}/>
-            <ListItem roundAvatar title='MOMO' onPress={handlePress} avatar={require('../../containers/images/login.jpg')} hideChevron={true} containerStyle={{padding:0, margin:0}}/>
+            <ListItem title='MOMO' onPress={handlePress} avatar={require('../../containers/images/login.jpg')} avatarStyle={{margin:0, padding:0}} hideChevron={true} containerStyle={{padding:0, margin:0}}/>
             <ListItem roundAvatar title='MOMO' onPress={handlePress} avatar={require('../../containers/images/login.jpg')} hideChevron={true} wrapperStyle={{padding:0}}/>
             <ListItem roundAvatar title='MOMO' onPress={handlePress} avatar={require('../../containers/images/login.jpg')} hideChevron={true} titleContainerStyle={{padding:0}}/>
             <ListItem leftIcon={{name:'settings', style:styles.icon}} title="設定" hideChevron={true}/>
