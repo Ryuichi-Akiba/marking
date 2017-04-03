@@ -25,7 +25,7 @@ export default class Session {
       if (!!json) {
         return Promise.resolve(JSON.parse(json));
       } else {
-        return Promise.resolve({});
+        return Promise.resolve(null);
       }
     });
   }
@@ -39,16 +39,16 @@ export default class Session {
       if (!!json) {
         return Promise.resolve(JSON.parse(json));
       } else {
-        return Promise.resolve({});
+        return Promise.resolve(null);
       }
     });
   }
 
   static isLoggedIn() {
     return this.getToken().then(token => {
-      return !!token;
+      return Promise.resolve(!!token && !!token['access_token']);
     }).catch(error => {
-      return false;
+      return Promise.resolve(false);
     })
   }
 
@@ -56,7 +56,6 @@ export default class Session {
    * セッションに保存されている情報を全て破棄する.
    */
   static destroy() {
-    this.set({});
-    this.setToken({});
+    return AsyncStorage.clear((result) => result);
   }
 }

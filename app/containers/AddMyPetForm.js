@@ -105,7 +105,7 @@ class AddMyPetForm extends React.Component {
   }
 
   componentDidMount() {
-    this.props.actions.initializeAddMyPetFormContainer();
+    this.props.myPetFormActions.initializeAddMyPetFormContainer();
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -140,7 +140,7 @@ class AddMyPetForm extends React.Component {
       title: 'Save',
       handler: () => {
         const {petForm} = this.props.form;
-        this.props.actions.addMyPet(petForm.values);
+        this.props.myPetFormActions.addMyPet(petForm.values);
       },
     };
 
@@ -153,6 +153,28 @@ class AddMyPetForm extends React.Component {
       }
     };
 
+    // temporary
+    const temp = <List>
+      <ListItem leftIcon={{name:'pets', style:styles.icon}} title={
+              <Field name="name" label="名前" placeholder="ペットの名前" component={InputField}/>
+            } hideChevron={true}/>
+      <ListItem leftIcon={{name:'pets', style:styles.icon}} title={
+              <Field name="name" label="名前" placeholder="ペットの名前" component={InputField}/>
+            } hideChevron={true}/>
+
+      <ListItem
+        roundAvatar
+        title='Limited supply! Its like digital gold!'
+        subtitle={
+                <View style={styles.subtitleView}>
+                  {/*<Image source={require('./images/login.jpg')}/>*/}
+                  <Text style={styles.ratingText}>5 months ago</Text>
+                </View>
+              }
+        avatar={require('./images/login.jpg')}
+      />
+    </List>;
+
     return (
       <View style={styles.container}>
         <MarkingNavbar title="ペットを追加" left={handleSkipEvent} right={handleSaveEvent}/>
@@ -162,7 +184,7 @@ class AddMyPetForm extends React.Component {
               <Field name="name" label="名前" placeholder="ペットの名前" icon="pets" component={InputField}/>
             </View>
             <View style={styles.field}>
-              <Field name="birthDate" label="生年月日" component={DatePickerField} icon="calendar" placeholder="生年月日"/>
+              <Field name="birthDate" label="生年月日" component={DatePickerField} icon="date-range" placeholder="生年月日"/>
             </View>
             <View style={styles.field}>
               <Field name="type" label="品種" component={SelectableListViewField} onPress={this.handlePressKindText.bind(this)} selected={this.state.selectedKind} icon="assignment" placeholder="ペットの品種"/>
@@ -174,26 +196,6 @@ class AddMyPetForm extends React.Component {
               <Field name="sex" label="性別" component={SelectableListViewField} onPress={this.handlePressGenderText.bind(this)} selected={this.state.selectedGender} icon="wc" placeholder="性別"/>
             </View>
           </View>
-          <List>
-            <ListItem leftIcon={{name:'pets', style:styles.icon}} title={
-              <Field name="name" label="名前" placeholder="ペットの名前" component={InputField}/>
-            } hideChevron={true}/>
-            <ListItem leftIcon={{name:'pets', style:styles.icon}} title={
-              <Field name="name" label="名前" placeholder="ペットの名前" component={InputField}/>
-            } hideChevron={true}/>
-
-            <ListItem
-              roundAvatar
-              title='Limited supply! Its like digital gold!'
-              subtitle={
-                <View style={styles.subtitleView}>
-                  {/*<Image source={require('./images/login.jpg')}/>*/}
-                  <Text style={styles.ratingText}>5 months ago</Text>
-                </View>
-              }
-              avatar={require('./images/login.jpg')}
-            />
-          </List>
         </ScrollView>
       </View>
     );

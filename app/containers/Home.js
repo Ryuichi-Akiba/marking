@@ -2,64 +2,57 @@ import React, {PropTypes} from "react";
 import {StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity, Linking} from "react-native";
 import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
-import {LoginButton, LoginManager, GraphRequestManager} from 'react-native-fbsdk';
+import {LoginManager} from 'react-native-fbsdk';
 import {SocialIcon} from 'react-native-elements'
-import Styles from '../themes/Styles';
 import * as homeActions from '../redux/reducers/home';
-import Session from '../common/auth/Session'
 
-class Home extends React.Component {
+class Home extends React.PureComponent {
   static propTypes = {
     homeState: PropTypes.object,
     homeActions: PropTypes.object
   };
 
-  // ステートの変更と画面描画の変更を検知後、条件を判断して画面遷移させる
-  componentDidUpdate() {
-    Session.isLoggedIn().then(isLoggedIn => {
-      if (isLoggedIn) {
+  // ログイン処理後、ステートの変更を検知し、成功していれば画面遷移する
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.homeState !== this.props.homeState) {
+      if (nextProps.homeState.isLoggedIn) {
         this.props.navigator.push({
           name: 'AddMyPetForm',
         });
       }
-    });
+    }
+  }
+
+  // フェイスブックログインのボタンクリック時のアクションを実行する
+  handlePressFacebookButton() {
+    // プロミスの中でpropsを参照することはできないので、一度変数化する（TODO 後でActionに持っていったほうが良いかも）
+    const actions = this.props.homeActions;
+    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_friends']).then(
+      function(result) {
+        if (result.isCancelled) {
+          actions.cancelLogin(result);
+        } else {
+          actions.loginWithFacebook(result);
+        }
+      },
+      function(error) {
+        actions.handleLoginError(error);
+      }
+    );
   }
 
   render() {
-    const {homeActions, state} = this.props;
-
-    // ログアウト成功時にキックするアクション
-    let onLogoutFinished = function() {
-      homeActions.onLogout();
-    };
-
-    // ログイン完了時にキックするアクション
-    const handlePressFacebookButton = () => {
-      LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_friends']).then(
-        function(result) {
-          if (result.isCancelled) {
-            homeActions.onCancel(result);
-          } else {
-            homeActions.onLoginWithFacebook(result);
-          }
-        },
-        function(error) {
-          homeActions.onError(error);
-        }
-      );
-    };
-
     return (
       <Image source={require('./images/login.jpg')} style={[styles.backgroundImage]}>
         <View style={styles.loginContainer}>
-          <View style={{flex:0.7,}}>
+          <View style={{flex:0.75}}>
             <Text style={{fontSize: 20, paddingTop:48, textAlign: 'center'}}>
               Marking
             </Text>
             <Text>{JSON.stringify(this.props.homeState)}</Text>
           </View>
-          <View style={{flex:0.3}}>
-            <SocialIcon title='Sign In With Facebook' button={true} raised={false} type='facebook' onPress={handlePressFacebookButton}/>
+          <View style={{flex:0.25}}>
+            <SocialIcon title='Sign In With Facebook' button={true} raised={false} type='facebook' onPress={this.handlePressFacebookButton.bind(this)}/>
             <SocialIcon title='Sign In With Twitter' button={true} raised={false} type='twitter'/>
           </View>
         </View>

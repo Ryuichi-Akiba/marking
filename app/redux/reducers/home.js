@@ -8,7 +8,7 @@ import {USER} from '../../common/auth/sessionKey'
 
 // フェイスブックログイン成功時にキックするアクション
 export const ON_LOGIN_WITH_FACEBOOK = 'ON_LOGIN_WITH_FACEBOOK';
-export function onLoginWithFacebook(results) {
+export function loginWithFacebook(results) {
   return {
     type: ON_LOGIN_WITH_FACEBOOK,
     payload: {},
@@ -31,7 +31,7 @@ export const FAILURE_LOGIN_WITH_FACEBOOK = 'FAILURE_LOGIN_WITH_FACEBOOK';
 export function failureLoginWithFacebook(error) {
   return {
     type: FAILURE_LOGIN_WITH_FACEBOOK,
-    payload: {isLogin:false},
+    payload: {isLoggedIn:false},
     meta: {error},
     error: true
   }
@@ -41,7 +41,7 @@ export const SUCCESS_GET_ACCESS_TOKEN = 'SUCCESS_GET_ACCESS_TOKEN';
 export function successGetAccessToken(payload) {
   return {
     type: SUCCESS_GET_ACCESS_TOKEN,
-    payload: {isLogin:true, token:payload},
+    payload: {isLoggedIn:true, token:payload},
     meta: {payload},
     error: false
   }
@@ -51,7 +51,7 @@ export const FAILURE_GET_ACCESS_TOKEN = 'FAILURE_GET_ACCESS_TOKEN';
 export function failureGetAccessToken(error) {
   return {
     type: FAILURE_GET_ACCESS_TOKEN,
-    payload: {isLogin:false},
+    payload: {isLoggedIn:false},
     meta: {error},
     error: true
   }
@@ -71,30 +71,37 @@ export const FAILURE_GET_ME = 'FAILURE_GET_ME';
 export function failureGetMe(error) {
   return {
     type: FAILURE_GET_ME,
-    payload: {isLogin:false},
+    payload: {isLoggedIn:false},
     meta: {error},
     error: true
   }
 }
 
-
 export const ON_LOGIN = 'ON_LOGIN';
 export function onLogin(results) {
   return {
     type: ON_LOGIN,
-    payload: {isLogin: true},
-    meta: {
-      results
-    },
+    payload: {isLoggedIn: true},
+    meta: {results},
     error: false
   }
 }
-export function onCancel(results) {
+
+/**
+ * ログイン処理を途中でキャンセルする.
+ * @param results
+ */
+export function cancelLogin(results) {
   console.log('cancel!!');
   console.log(results);
 }
-export function onError(error) {
-  console.log(error);
+
+/**
+ * ログインエラーをハンドリングする.
+ * @param error
+ */
+export function handleLoginError(error) {
+  console.error(error);
 }
 
 export const ON_LOGOUT = 'ON_LOGOUT';
@@ -102,45 +109,7 @@ export function onLogout() {
   console.log('onLogout');
   return {
     type: ON_LOGOUT,
-    payload: {isLogin: false},
-    meta: {},
-    error: false
-  }
-}
-
-export function loginWithFacebook() {
-  var getUserFromFB = () => {
-    const infoRequest = new GraphRequest(
-      '/me?fields=id,name,first_name,last_name,email,gender,picture.width(350).height(350)',
-      null,
-      (error, result) => {
-        if (error) {
-          console.log('Error fetching data: ' + error.toString());
-        } else {
-          console.log('Success fetching data: ' + JSON.stringify(result));
-        }
-      },
-    );
-
-    // Start the graph request.
-    new GraphRequestManager().addRequest(infoRequest).start();
-  };
-
-  // this.setState({loading: false});
-  if (error) {
-    alert('Error logging in.');
-  } else {
-    if (result.isCanceled) {
-      alert('Login cancelled.');
-    } else {
-      console.log(JSON.stringify(result));
-      getUserFromFB();
-    }
-  }
-
-  return {
-    type: LOGIN_WITH_FACEBOOK,
-    payload: {},
+    payload: {isLoggedIn: false},
     meta: {},
     error: false
   }
@@ -158,7 +127,7 @@ export function loginWithGoogle() {
 
 // -------------------- Immutable State Model の定義 --------------------
 export const SessionRecord = new Record({
-  isLogin: false,
+  isLoggedIn: false,
   facebookAccessToken: {},
   token: {},
   user: {}
@@ -167,12 +136,6 @@ export const SessionRecord = new Record({
 // -------------------- Reducer の定義 --------------------
 export function home(state = new SessionRecord(), action) {
   switch (action.type) {
-    case REHYDRATE:
-      if (action.key === 'home') {
-        return new SessionRecord(action.payload);
-      }
-      return state;
-
     // フェイスブックログイン処理後のステート変更処理
     case ON_LOGIN_WITH_FACEBOOK:
       return new SessionRecord(action.payload);
@@ -188,6 +151,7 @@ export function home(state = new SessionRecord(), action) {
       console.log(action.payload);
       Session.setToken(action.payload.token);
       return new SessionRecord(action.payload);
+
     // アクセストークン取得失敗時のステート変更処理
     case FAILURE_GET_ACCESS_TOKEN:
       console.log('FAILURE_GET_ACCESS_TOKEN');

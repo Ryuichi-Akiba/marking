@@ -47,36 +47,6 @@ sagaMiddleware.run(sagas)
 // const AddMyPetFormComponent = connect()(AddMyPetForm);
 // const SideMenuContainer = connect()(SideMenuComponent);
 
-// タブ定義
-class MyPetsTabIcon extends React.PureComponent {
-  render() {
-    return (
-      <FAIcon name="paw" size={24} color={this.props.selected ? '#333333' : '#999999'}/>
-    );
-  }
-}
-class MarkingMapTabIcon extends React.PureComponent {
-  render() {
-    return (
-      <FAIcon name="map-o" size={24} color={this.props.selected ? '#333333' : '#999999'}/>
-    );
-  }
-}
-
-// ---------- MyPets Scene's Component
-// ペット追加ボタン
-const addPetButton = () => (
-  <TouchableOpacity onPress={() => {Actions.addMyPetForm()}}>
-    <MAIcon name="add" size={24} color={'#333333'}/>
-  </TouchableOpacity>
-);
-// ペットフォームモーダル閉じるボタン
-const closeMyPetFormButton = () => (
-  <TouchableOpacity onPress={() => {Actions.pop()}}>
-    <MAIcon name="close" size={24} color={'#333333'}/>
-  </TouchableOpacity>
-);
-
 // アプリケーションのベース設定
 export default class App extends React.Component {
   constructor(props) {
@@ -96,11 +66,17 @@ export default class App extends React.Component {
   };
 
   render() {
+    // TODO 別のシーンに分割して、プロミス部分はSAGAに移す
     var initial = 'Login';
-    if (Session.isLoggedIn()) {
-      // ログイン済みの場合の描画コンテンツ
-      // initial = 'AddMyPetForm';
-    }
+//    Session.isLoggedIn().then(isLoggedIn => {
+//      if (isLoggedIn) {
+//         // ログイン済みの場合の描画コンテンツ
+//         console.log(isLoggedIn);
+//         initial = 'AddMyPetForm';
+//       } else {
+//         initial = 'Login';
+//       }
+//     });
 
     return (
       <Provider store={store}>

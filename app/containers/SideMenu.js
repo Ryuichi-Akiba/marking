@@ -2,7 +2,7 @@ import React from 'react'
 import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {LoginManager} from 'react-native-fbsdk'
+import {LoginManager, AccessToken} from 'react-native-fbsdk'
 import * as menuActions from '../redux/reducers/sidemenu'
 import {List, ListItem} from 'react-native-elements'
 import Session from '../common/auth/Session'
@@ -23,11 +23,19 @@ class SideMenu extends React.PureComponent {
   }
 
   logout() {
-    LoginManager.logOut();
-    this.props.onChange();
-    this.props.navigator.push({
-      name: 'Login',
-    });
+    const navigator = this.props.navigator;
+    const handleChange = this.props.onChange;
+
+    if (AccessToken.getCurrentAccessToken() != null) {
+      LoginManager.logOut();
+      Session.destroy().then(result => {
+        console.log(result);
+        handleChange();
+        navigator.push({
+          name: 'Login',
+        });
+      });
+    }
   }
 
   render() {

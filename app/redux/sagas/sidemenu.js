@@ -33,8 +33,9 @@ export function* handleInitializeMenuContainer() {
  * @returns {Promise.<TResult>|Promise<R2|R1>|*|Promise.<U>|Promise<R>}
  */
 function loadMePetsIfUseExistsCache() {
-  return Session.isLoggedIn().then((isLoggedIn) => {
+  return Session.isLoggedIn().then(isLoggedIn => {
     if (isLoggedIn) {
+      console.log(isLoggedIn);
       // ログインしている場合はセッションかAPI経由でペット一覧を取得する
       return Session.get(PETS).then(pets => {
         if (!!pets && pets.length > 0) {
@@ -47,7 +48,7 @@ function loadMePetsIfUseExistsCache() {
       });
     } else {
       // ログインしていない場合はペット一覧は空にする
-      return Promise.resolve([]);
+      return Promise.resolve({payload: []});
     }
   });
 }
