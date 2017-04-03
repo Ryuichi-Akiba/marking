@@ -26,7 +26,6 @@ export function getAccessToken(token) {
 
 function getAuthorizationHeaders() {
   return Session.getToken().then(session => {
-    console.log(session);
     return Promise.resolve({
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + session['access_token']
@@ -38,6 +37,8 @@ function getAuthorizationHeaders() {
 export function get(uri, params) {
   return getAuthorizationHeaders().then(headers => {
     params = !!params ? params : {};
+    console.log(`call api [GET] ${SERVER}${uri}?${params}`);
+
     return axios.get(`${SERVER}${uri}`, {headers: headers, params: params})
       .then(response => {
         return {payload:response.data};
@@ -53,6 +54,8 @@ export function post(uri, data, params) {
   return getAuthorizationHeaders().then(headers => {
     data = !!data ? data : {};
     params = !!params ? params : {};
+    console.log(`call api [POST] ${SERVER}${uri}?${params}`);
+
     return axios.post(`${SERVER}${uri}`, data, {headers: headers, params: params})
       .then(response => {
         if (!response.data || response.data === '') {

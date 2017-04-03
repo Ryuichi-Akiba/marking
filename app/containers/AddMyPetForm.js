@@ -5,7 +5,7 @@ import {connect} from 'react-redux'
 import {Field, reduxForm} from 'redux-form'
 import { List, ListItem } from 'react-native-elements'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
-import * as myPetsActions from '../redux/reducers/myPets'
+import * as myPetsActions from '../redux/reducers/sidemenu'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
 import SelectableListViewField from '../components/forms/SelectableListViewField'
@@ -55,7 +55,11 @@ var styles = StyleSheet.create({
 class AddMyPetForm extends React.Component {
   static propTypes = {
     drawer: React.PropTypes.object.isRequired,
-    navigator: React.PropTypes.object.isRequired
+    navigator: React.PropTypes.object.isRequired,
+    myPetFormState: PropTypes.object,
+    reduxFormState: PropTypes.object,
+    initialValues: PropTypes.object,
+    myPetFormActions: PropTypes.object,
   };
 
   constructor(props) {
@@ -139,6 +143,7 @@ class AddMyPetForm extends React.Component {
         this.props.actions.addMyPet(petForm.values);
       },
     };
+
     const handleSkipEvent = {
       title: 'Skip',
       handler: () => {
@@ -222,24 +227,17 @@ AddMyPetForm = reduxForm({
   validate
 })(AddMyPetForm);
 
-AddMyPetForm.propTypes = {
-  state: PropTypes.object,
-  form: PropTypes.object,
-  initialValues: PropTypes.object,
-  actions: PropTypes.object
-};
-
 function mapStateToProps(state) {
   return {
-    state: state.addMyPetForm,
-    form: state.form,
+    myPetFormState: state.addMyPetForm,
+    reduxFormState: state.form,
     initialValues: state.addMyPetForm.form
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, addMyPetFormActions, myPetsActions), dispatch)
+    myPetFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
   };
 }
 

@@ -73846,7 +73846,7 @@ var Session = function () {
 
 exports.default = Session;
 }, 785, null, "marking/app/common/auth/Session.js");
-__d(/* marking/app/redux/reducers/myPets.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+__d(/* marking/app/redux/reducers/sidemenu.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.MyPetsRecord = exports.FAILURE_CALL_API = exports.SUCCESS_GET_MY_PETS = exports.INITIALIZE_MY_PETS_CONTAINER = undefined;
@@ -73911,7 +73911,7 @@ function myPets() {
       return state;
   }
 }
-}, 786, null, "marking/app/redux/reducers/myPets.js");
+}, 786, null, "marking/app/redux/reducers/sidemenu.js");
 __d(/* marking/app/redux/reducers/addMyPetForm.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -77050,7 +77050,7 @@ function getFacebookAccessToken() {
   });
 };
 }, 821, null, "marking/app/common/api/facebook.js");
-__d(/* marking/app/redux/sagas/myPets.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+__d(/* marking/app/redux/sagas/sidemenu.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.handleRequestGetMePets = handleRequestGetMePets;
@@ -77169,7 +77169,7 @@ function handleRequestSuccessPostMePets() {
     }
   }, _marked[1], this);
 }
-}, 822, null, "marking/app/redux/sagas/myPets.js");
+}, 822, null, "marking/app/redux/sagas/sidemenu.js");
 __d(/* marking/app/redux/sagas/addMyPetForm.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });

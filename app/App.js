@@ -15,11 +15,10 @@ import Styles from "./themes/Styles";
 import Session from './common/auth/Session'
 import Container from './components/common/Container'
 import Home from "./containers/Home";
-import MyPets from "./containers/MyPets";
 import MarkingMap from "./containers/MarkingMap";
 import AddMyPetForm from './containers/AddMyPetForm'
 import SelectableListViewScene from './containers/SelectableListViewScene'
-import SideMenuComponent from './components/common/SideMenu'
+import SideMenuComponent from './containers/SideMenu'
 import MarkingNavbar from './components/common/MarkingNavbar'
 import { SideMenu, List, ListItem } from 'react-native-elements'
 
@@ -33,20 +32,20 @@ const loggerMiddleware = createLogger();
 const middleware = [sagaMiddleware, loggerMiddleware];
 const store = compose(
   applyMiddleware(...middleware),
-  autoRehydrate()
+  // autoRehydrate()
 )(createStore)(reducers);
 
 // begin periodically persisting the store
-persistStore(store, {storage: AsyncStorage})
+// persistStore(store, {storage: AsyncStorage})
 // run the saga
 sagaMiddleware.run(sagas)
 
 // Router with Redux
-const RouterWithRedux = connect()(Router);
-const HomeComponent = connect()(Home);
-const MyPetsComponent = connect()(MyPets);
-const MarkingMapComponent = connect()(MarkingMap);
-const AddMyPetFormComponent = connect()(AddMyPetForm);
+// const RouterWithRedux = connect()(Router);
+// const HomeComponent = connect()(Home);
+// const MarkingMapComponent = connect()(MarkingMap);
+// const AddMyPetFormComponent = connect()(AddMyPetForm);
+// const SideMenuContainer = connect()(SideMenuComponent);
 
 // タブ定義
 class MyPetsTabIcon extends React.PureComponent {
@@ -141,17 +140,17 @@ export default class App extends React.Component {
     var main;
     if (route.name === 'Login') {
       main = (
-      <HomeComponent navigator={navigator} {...route.passProps}/>
+      <Home navigator={navigator} {...route.passProps}/>
       );
     }
     if (route.name === 'AddMyPetForm') {
       main = (
-      <AddMyPetFormComponent drawer={drawer} navigator={navigator} {...route.passProps}/>
+      <AddMyPetForm drawer={drawer} navigator={navigator} {...route.passProps}/>
       );
     }
     if (route.name === 'Map') {
       main = (
-      <MarkingMapComponent openMenu={this.toggleSideMenu.bind(this)} drawer={drawer} navigator={navigator} {...route.passProps}/>
+      <MarkingMap openMenu={this.toggleSideMenu.bind(this)} drawer={drawer} navigator={navigator} {...route.passProps}/>
       );
     }
     if (route.name === 'SelectableListViewScene') {

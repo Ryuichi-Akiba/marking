@@ -58,10 +58,6 @@ export const AddMyPetFormRecord = new Record({
 // -------------------- Reducer の定義 --------------------
 export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
   switch (action.type) {
-    // 画面復旧時にリハイドレートする
-    case REHYDRATE:
-      return new AddMyPetFormRecord(action.payload.addMyPetForm);
-
     // 登録フォームを初期化時のステート変更
     case INITIALIZE_ADD_MY_PET_FORM:
       return new AddMyPetFormRecord();

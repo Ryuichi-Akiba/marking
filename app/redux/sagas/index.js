@@ -5,9 +5,9 @@ import {
   handleGetMe,
 } from './home'
 import {
-  handleRequestGetMePets,
+  handleInitializeMenuContainer,
   handleRequestSuccessPostMePets,
-} from './myPets'
+} from './sidemenu'
 import {
   handleRequestPostMyPet,
 } from './addMyPetForm'
@@ -23,7 +23,7 @@ export default function* sagas() {
   yield fork(handleGetAccessToken);
   yield fork(handleGetMe);
   // MY PETS
-  yield fork(handleRequestGetMePets);
+  yield fork(handleInitializeMenuContainer);
   yield fork(handleRequestSuccessPostMePets);
   yield fork(handleRequestPostMyPet);
   // MAP

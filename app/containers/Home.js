@@ -2,92 +2,81 @@ import React, {PropTypes} from "react";
 import {StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity, Linking} from "react-native";
 import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
-import {LoginButton, GraphRequest, GraphRequestManager} from 'react-native-fbsdk';
+import {LoginButton, LoginManager, GraphRequestManager} from 'react-native-fbsdk';
 import {SocialIcon} from 'react-native-elements'
 import Styles from '../themes/Styles';
 import * as homeActions from '../redux/reducers/home';
+import Session from '../common/auth/Session'
 
 class Home extends React.Component {
+  static propTypes = {
+    homeState: PropTypes.object,
+    homeActions: PropTypes.object
+  };
+
   // ステートの変更と画面描画の変更を検知後、条件を判断して画面遷移させる
   componentDidUpdate() {
-    const {state} = this.props;
-    if (state.isLogin) {
-      var link = () => this.props.navigator.push({
-        name: 'AddMyPetForm',
-      });
-      link();
-    }
+    Session.isLoggedIn().then(isLoggedIn => {
+      if (isLoggedIn) {
+        this.props.navigator.push({
+          name: 'AddMyPetForm',
+        });
+      }
+    });
   }
 
   render() {
-    console.log(this.props.navigator);
-    const {actions, state} = this.props;
-
-    // ログイン完了時にキックするアクション
-    let onLoginFinished = function(error, result) {
-      if (error) {
-        actions.onError(error);
-      } else {
-        if (result.isCanceled) {
-          actions.onCancel(result);
-        } else {
-          actions.onLoginWithFacebook(result);
-        }
-      }
-    };
+    const {homeActions, state} = this.props;
 
     // ログアウト成功時にキックするアクション
     let onLogoutFinished = function() {
-      actions.onLogout();
+      homeActions.onLogout();
     };
-    let handleFacebookLink = () => {
-      console.log('click link');
-      this.props.navigator.push({name: 'AddMyPetForm'});
+
+    // ログイン完了時にキックするアクション
+    const handlePressFacebookButton = () => {
+      LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_friends']).then(
+        function(result) {
+          if (result.isCancelled) {
+            homeActions.onCancel(result);
+          } else {
+            homeActions.onLoginWithFacebook(result);
+          }
+        },
+        function(error) {
+          homeActions.onError(error);
+        }
+      );
     };
 
     return (
-      <View style={{flex:1}}>
-        <Image source={require('./images/login.jpg')} style={styles.backgroundImage}>
-          <View style={{flex:1, flexDirection: 'column', justifyContent: 'space-between'}}>
-            <View>
-              <Text style={{fontSize: 20, margin: 20, textAlign: 'center'}}>
-                Marking
-              </Text>
-              <Text>{JSON.stringify(this.props.state)}</Text>
-            </View>
-            <View>
-
-            </View>
-            <View>
-              <LoginButton
-                onLoginFinished={onLoginFinished}
-                onLogoutFinished={onLogoutFinished}
-                readPermissions={['public_profile', 'email', 'user_friends']}
-              />
-              <SocialIcon title='Sign In With Facebook' button={true} raised={false} type='facebook' style={{marginBottom:10}} onPress={handleFacebookLink}/>
-              <SocialIcon title='Sign In With Twitter' button={true} raised={false} type='twitter' style={{marginBottom:30}}/>
-            </View>
+      <Image source={require('./images/login.jpg')} style={[styles.backgroundImage]}>
+        <View style={styles.loginContainer}>
+          <View style={{flex:0.7,}}>
+            <Text style={{fontSize: 20, paddingTop:48, textAlign: 'center'}}>
+              Marking
+            </Text>
+            <Text>{JSON.stringify(this.props.homeState)}</Text>
           </View>
-        </Image>
-      </View>
+          <View style={{flex:0.3}}>
+            <SocialIcon title='Sign In With Facebook' button={true} raised={false} type='facebook' onPress={handlePressFacebookButton}/>
+            <SocialIcon title='Sign In With Twitter' button={true} raised={false} type='twitter'/>
+          </View>
+        </View>
+      </Image>
     );
   }
 }
 
-Home.propTypes = {
-  state: PropTypes.object,
-  actions: PropTypes.object
-};
-
 function mapStateToProps(state) {
   return {
-    state: state.home
+    homeState: state.home
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, homeActions), dispatch)
+    homeActions: bindActionCreators(Object.assign({}, homeActions), dispatch)
   };
 }
 
@@ -103,6 +92,15 @@ let styles = StyleSheet.create({
     resizeMode: 'cover', // or 'stretch'
     justifyContent: 'center',
     alignItems: 'center',
+    // force layout fixed width
     width:deviceWidth,
+  },
+  loginContainer: {
+    flex: 1,
+    margin:0,
+    paddingLeft:16,
+    paddingRight:16,
+    // force layout fixed width
+    width: deviceWidth,
   }
 });

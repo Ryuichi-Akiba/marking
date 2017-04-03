@@ -12,26 +12,26 @@ export default class Session {
    * @param object オブジェクト
    * @returns {*|Promise}
    */
-  static set(object : Object) {
-    return AsyncStorage.setItem(SESSION_STORE_KEY, JSON.stringify(object));
-  }
-
-  static setToken(object : Object) {
-    return AsyncStorage.setItem(TOKEN_STORE_KEY, JSON.stringify(object));
+  static set(key : string, object : Object) {
+    return AsyncStorage.setItem(SESSION_STORE_KEY + "_" + key, JSON.stringify(object));
   }
 
   /**
    * セッションに保存したオブジェクトを取得します.
    * @returns {Promise.<U>|Promise.<TResult>|Promise<R>|Promise<R2|R1>}
    */
-  static get() {
-    return AsyncStorage.getItem(SESSION_STORE_KEY).then(json => {
+  static get(key : string) {
+    return AsyncStorage.getItem(SESSION_STORE_KEY + "_" + key).then(json => {
       if (!!json) {
         return Promise.resolve(JSON.parse(json));
       } else {
         return Promise.resolve({});
       }
     });
+  }
+
+  static setToken(object : Object) {
+    return AsyncStorage.setItem(TOKEN_STORE_KEY, JSON.stringify(object));
   }
 
   static getToken() {
@@ -50,5 +50,13 @@ export default class Session {
     }).catch(error => {
       return false;
     })
+  }
+
+  /**
+   * セッションに保存されている情報を全て破棄する.
+   */
+  static destroy() {
+    this.set({});
+    this.setToken({});
   }
 }
