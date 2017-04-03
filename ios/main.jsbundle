@@ -68391,7 +68391,7 @@ function reducer() {
   }
 }
 }, 763, null, "marking/app/redux/routes.js");
-__d(/* marking/app/redux/reducers/home.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+__d(/* marking/app/redux/reducers/login.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.SessionRecord = exports.ON_LOGOUT = exports.ON_LOGIN = exports.FAILURE_GET_ME = exports.SUCCESS_GET_ME = exports.FAILURE_GET_ACCESS_TOKEN = exports.SUCCESS_GET_ACCESS_TOKEN = exports.FAILURE_LOGIN_WITH_FACEBOOK = exports.SUCCESS_LOGIN_WITH_FACEBOOK = exports.ON_LOGIN_WITH_FACEBOOK = undefined;
@@ -68608,7 +68608,7 @@ function home() {
       return state;
   }
 }
-}, 764, null, "marking/app/redux/reducers/home.js");
+}, 764, null, "marking/app/redux/reducers/login.js");
 __d(/* react-native-fbsdk/js/index.js */function(global, require, module, exports) {
 
 'use strict';
@@ -74234,7 +74234,7 @@ function sagas() {
 }, 789, null, "marking/app/redux/sagas/index.js");
 __d(/* redux-saga/effects.js */function(global, require, module, exports) {module.exports = require(670            ); // 670 = ./lib/effects
 }, 790, null, "redux-saga/effects.js");
-__d(/* marking/app/redux/sagas/home.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+__d(/* marking/app/redux/sagas/login.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.handleRequestFacebookLogin = handleRequestFacebookLogin;
@@ -74411,7 +74411,7 @@ function handleGetMe() {
     }
   }, _marked[2], this);
 }
-}, 791, null, "marking/app/redux/sagas/home.js");
+}, 791, null, "marking/app/redux/sagas/login.js");
 __d(/* marking/app/common/api/api.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -77518,7 +77518,7 @@ exports.default = _reactNative.StyleSheet.create({
   map: babelHelpers.extends({}, _reactNative.StyleSheet.absoluteFillObject)
 });
 }, 826, null, "marking/app/themes/Styles.js");
-__d(/* marking/app/containers/Home.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+__d(/* marking/app/containers/Login.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
@@ -77635,7 +77635,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Home);
-}, 827, null, "marking/app/containers/Home.js");
+}, 827, null, "marking/app/containers/Login.js");
 __d(/* marking/app/containers/MyPets.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });

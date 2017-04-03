@@ -4,18 +4,18 @@ import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
 import {LoginManager} from 'react-native-fbsdk';
 import {SocialIcon} from 'react-native-elements'
-import * as homeActions from '../redux/reducers/home';
+import * as loginActions from '../redux/reducers/login';
 
-class Home extends React.PureComponent {
+class Login extends React.PureComponent {
   static propTypes = {
-    homeState: PropTypes.object,
-    homeActions: PropTypes.object
+    loginState: PropTypes.object,
+    loginActions: PropTypes.object
   };
 
   // ログイン処理後、ステートの変更を検知し、成功していれば画面遷移する
   componentWillUpdate(nextProps, nextState) {
-    if (nextProps.homeState !== this.props.homeState) {
-      if (nextProps.homeState.isLoggedIn) {
+    if (nextProps.loginState !== this.props.loginState) {
+      if (nextProps.loginState.isLoggedIn) {
         this.props.navigator.push({
           name: 'AddMyPetForm',
         });
@@ -26,7 +26,7 @@ class Home extends React.PureComponent {
   // フェイスブックログインのボタンクリック時のアクションを実行する
   handlePressFacebookButton() {
     // プロミスの中でpropsを参照することはできないので、一度変数化する（TODO 後でActionに持っていったほうが良いかも）
-    const actions = this.props.homeActions;
+    const actions = this.props.loginActions;
     LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_friends']).then(
       function(result) {
         if (result.isCancelled) {
@@ -49,7 +49,7 @@ class Home extends React.PureComponent {
             <Text style={{fontSize: 20, paddingTop:48, textAlign: 'center'}}>
               Marking
             </Text>
-            <Text>{JSON.stringify(this.props.homeState)}</Text>
+            <Text>{JSON.stringify(this.props.loginState)}</Text>
           </View>
           <View style={{flex:0.25}}>
             <SocialIcon title='Sign In With Facebook' button={true} raised={false} type='facebook' onPress={this.handlePressFacebookButton.bind(this)}/>
@@ -63,20 +63,20 @@ class Home extends React.PureComponent {
 
 function mapStateToProps(state) {
   return {
-    homeState: state.home
+    loginState: state.login
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    homeActions: bindActionCreators(Object.assign({}, homeActions), dispatch)
+    loginActions: bindActionCreators(Object.assign({}, loginActions), dispatch)
   };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Home);
+)(Login);
 
 var deviceWidth = Dimensions.get('window').width;
 let styles = StyleSheet.create({

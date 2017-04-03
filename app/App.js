@@ -14,7 +14,7 @@ import sagas from "./redux/sagas"
 import Styles from "./themes/Styles";
 import Session from './common/auth/Session'
 import Container from './components/common/Container'
-import Home from "./containers/Home";
+import Home from "./containers/Login";
 import MarkingMap from "./containers/MarkingMap";
 import AddMyPetForm from './containers/AddMyPetForm'
 import SelectableListViewScene from './containers/SelectableListViewScene'

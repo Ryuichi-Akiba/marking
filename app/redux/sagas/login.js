@@ -12,7 +12,7 @@ import {
   ON_LOGIN_WITH_FACEBOOK,
   SUCCESS_LOGIN_WITH_FACEBOOK,
   SUCCESS_GET_ACCESS_TOKEN,
-} from '../reducers/home'
+} from '../reducers/login'
 
 export function* handleRequestFacebookLogin() {
   while (true) {

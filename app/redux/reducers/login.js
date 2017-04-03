@@ -17,6 +17,7 @@ export function loginWithFacebook(results) {
   }
 }
 
+// フェイスブックログイン成功時のアクション
 export const SUCCESS_LOGIN_WITH_FACEBOOK = 'SUCCESS_LOGIN_WITH_FACEBOOK';
 export function successLoginWithFacebook(payload) {
   return {
@@ -26,7 +27,7 @@ export function successLoginWithFacebook(payload) {
     error: false
   }
 }
-
+// フェイスブックログイン失敗時のアクション
 export const FAILURE_LOGIN_WITH_FACEBOOK = 'FAILURE_LOGIN_WITH_FACEBOOK';
 export function failureLoginWithFacebook(error) {
   return {
@@ -37,6 +38,7 @@ export function failureLoginWithFacebook(error) {
   }
 }
 
+// ペティカルのトークン取得成功時のアクション
 export const SUCCESS_GET_ACCESS_TOKEN = 'SUCCESS_GET_ACCESS_TOKEN';
 export function successGetAccessToken(payload) {
   return {
@@ -46,7 +48,7 @@ export function successGetAccessToken(payload) {
     error: false
   }
 }
-
+// ペティカルのトークン取得失敗時のアクション
 export const FAILURE_GET_ACCESS_TOKEN = 'FAILURE_GET_ACCESS_TOKEN';
 export function failureGetAccessToken(error) {
   return {
@@ -57,6 +59,7 @@ export function failureGetAccessToken(error) {
   }
 }
 
+// ログインユーザー情報取得成功時のアクション
 export const SUCCESS_GET_ME = 'SUCCESS_GET_ME';
 export function successGetMe(payload) {
   return {
@@ -66,7 +69,7 @@ export function successGetMe(payload) {
     error: false
   }
 }
-
+// ログインユーザー情報取得失敗時のアクション
 export const FAILURE_GET_ME = 'FAILURE_GET_ME';
 export function failureGetMe(error) {
   return {
@@ -77,6 +80,7 @@ export function failureGetMe(error) {
   }
 }
 
+// ログイン成功時のアクション（経路はどこからであってもログイン処理最後に呼び出す共通のアクション）
 export const ON_LOGIN = 'ON_LOGIN';
 export function onLogin(results) {
   return {
@@ -86,24 +90,18 @@ export function onLogin(results) {
     error: false
   }
 }
-
-/**
- * ログイン処理を途中でキャンセルする.
- * @param results
- */
+// ログイン処理を途中でキャンセルするアクション
 export function cancelLogin(results) {
   console.log('cancel!!');
   console.log(results);
 }
-
-/**
- * ログインエラーをハンドリングする.
- * @param error
- */
+// ログインエラーをハンドリングするアクション
 export function handleLoginError(error) {
   console.error(error);
 }
 
+
+// TODO 以下はまだ未使用
 export const ON_LOGOUT = 'ON_LOGOUT';
 export function onLogout() {
   console.log('onLogout');
@@ -114,7 +112,6 @@ export function onLogout() {
     error: false
   }
 }
-
 const LOGIN_WITH_GOOGLE = 'LOGIN_WITH_GOOGLE';
 export function loginWithGoogle() {
   return {
@@ -126,7 +123,7 @@ export function loginWithGoogle() {
 }
 
 // -------------------- Immutable State Model の定義 --------------------
-export const SessionRecord = new Record({
+export const LoginRecord = new Record({
   isLoggedIn: false,
   facebookAccessToken: {},
   token: {},
@@ -134,15 +131,15 @@ export const SessionRecord = new Record({
 });
 
 // -------------------- Reducer の定義 --------------------
-export function home(state = new SessionRecord(), action) {
+export function loginReducer(state = new LoginRecord(), action) {
   switch (action.type) {
     // フェイスブックログイン処理後のステート変更処理
     case ON_LOGIN_WITH_FACEBOOK:
-      return new SessionRecord(action.payload);
+      return new LoginRecord(action.payload);
 
     // フェイスブックログイン成功時のステート変更処理
     case SUCCESS_LOGIN_WITH_FACEBOOK:
-      return new SessionRecord(action.payload);
+      return new LoginRecord(action.payload);
     case FAILURE_LOGIN_WITH_FACEBOOK:
       console.log('FAILURE_LOGIN_WITH_FACEBOOK');
 
@@ -150,7 +147,7 @@ export function home(state = new SessionRecord(), action) {
     case SUCCESS_GET_ACCESS_TOKEN:
       console.log(action.payload);
       Session.setToken(action.payload.token);
-      return new SessionRecord(action.payload);
+      return new LoginRecord(action.payload);
 
     // アクセストークン取得失敗時のステート変更処理
     case FAILURE_GET_ACCESS_TOKEN:
@@ -165,7 +162,7 @@ export function home(state = new SessionRecord(), action) {
 
     // ログアウト成功時のステート変更処理
     case ON_LOGOUT:
-      return new SessionRecord();
+      return new LoginRecord();
 
     default:
       return state;

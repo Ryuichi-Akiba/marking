@@ -26,9 +26,11 @@ class SideMenu extends React.PureComponent {
     const navigator = this.props.navigator;
     const handleChange = this.props.onChange;
 
+    // TODO ここのアクションは共通かログインのところに持っていっても良いような気がする
     if (AccessToken.getCurrentAccessToken() != null) {
       LoginManager.logOut();
       Session.destroy().then(result => {
+        // TODO ついでにステートも空にしないとダメな気がする
         console.log(result);
         handleChange();
         navigator.push({

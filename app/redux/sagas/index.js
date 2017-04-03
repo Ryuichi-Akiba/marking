@@ -3,7 +3,7 @@ import {
   handleRequestFacebookLogin,
   handleGetAccessToken,
   handleGetMe,
-} from './home'
+} from './login'
 import {
   handleInitializeMenuContainer,
   handleRequestSuccessPostMePets,
