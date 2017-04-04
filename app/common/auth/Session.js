@@ -56,6 +56,8 @@ export default class Session {
    * セッションに保存されている情報を全て破棄する.
    */
   static destroy() {
-    return AsyncStorage.clear((result) => result);
+    return AsyncStorage.getAllKeys().then((resolve) => {
+      return AsyncStorage.multiRemove(resolve);
+    });
   }
 }

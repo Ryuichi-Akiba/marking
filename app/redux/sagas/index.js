@@ -3,6 +3,7 @@ import {
   handleRequestFacebookLogin,
   handleGetAccessToken,
   handleGetMe,
+  handleLogout,
 } from './login'
 import {
   handleInitializeMenuContainer,
@@ -22,6 +23,7 @@ export default function* sagas() {
   yield fork(handleRequestFacebookLogin);
   yield fork(handleGetAccessToken);
   yield fork(handleGetMe);
+  yield fork(handleLogout);
   // MY PETS
   yield fork(handleInitializeMenuContainer);
   yield fork(handleRequestSuccessPostMePets);

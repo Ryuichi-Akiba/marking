@@ -16,7 +16,7 @@ class Login extends React.PureComponent {
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.loginState !== this.props.loginState) {
       if (nextProps.loginState.isLoggedIn) {
-        this.props.navigator.push({
+        this.props.navigator.replace({
           name: 'AddMyPetForm',
         });
       }
