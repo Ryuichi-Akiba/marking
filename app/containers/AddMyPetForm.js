@@ -121,7 +121,7 @@ class AddMyPetForm extends React.Component {
       if (nextProps.state.created) {
         console.log(this.props);
         this.props.resetForm();
-        nextProps.navigator.push({
+        this.props.navigator.replace({
           name: 'Map'
         });
       }
@@ -147,7 +147,7 @@ class AddMyPetForm extends React.Component {
     const handleSkipEvent = {
       title: 'Skip',
       handler: () => {
-        this.props.navigator.push({
+        this.props.navigator.replace({
           name: 'Map'
         });
       }

@@ -25,14 +25,13 @@ class SideMenu extends React.PureComponent {
     this.props.menuActions.initialize();
   }
 
-  // ログイン処理後、ステートの変更を検知し、成功していれば画面遷移する
+  // ログアウト処理後、ステートの変更を検知し、成功していれば画面遷移する
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.loginState !== this.props.loginState) {
       console.log(nextProps.loginState);
       if (!nextProps.loginState.isLoggedIn) {
-        // TODO プッシュがBESTなやり方なのかイマイチわからない
         this.props.onChange();
-        this.props.navigator.push({
+        this.props.navigator.replace({
           name: 'Login',
         });
       }
