@@ -1,6 +1,5 @@
-import {GraphRequest, GraphRequestManager, AccessToken} from 'react-native-fbsdk';
-import {REHYDRATE} from 'redux-persist/constants';
-import {Record} from 'immutable';
+import {AccessToken, LoginManager} from 'react-native-fbsdk'
+import {Record} from 'immutable'
 import Session from '../../common/auth/Session'
 import {USER} from '../../common/auth/sessionKey'
 
@@ -100,22 +99,25 @@ export function handleLoginError(error) {
   console.error(error);
 }
 
-
-// TODO 以下はまだ未使用
-export const ON_LOGOUT = 'ON_LOGOUT';
-export function onLogout() {
-  console.log('onLogout');
+// ログアウトを行うアクション
+export const LOGOUT = 'LOGOUT';
+export function logout() {
   return {
-    type: ON_LOGOUT,
-    payload: {isLoggedIn: false},
+    type: LOGOUT,
+    payload: {isLoggedIn: true},
     meta: {},
     error: false
   }
 }
-const LOGIN_WITH_GOOGLE = 'LOGIN_WITH_GOOGLE';
-export function loginWithGoogle() {
+// 内部で持つセッションストレージのクリアに成功したときのアクション
+export const SUCCESS_DESTROY_SESSION = 'SUCCESS_DESTROY_SESSION';
+export function successDestroySession() {
+  // セッションがクリアできているので、フェイスブックのトークン等も削除する
+  if (AccessToken.getCurrentAccessToken() != null) {
+    LoginManager.logOut();
+  }
   return {
-    type: LOGIN_WITH_GOOGLE,
+    type: SUCCESS_DESTROY_SESSION,
     payload: {},
     meta: {},
     error: false
@@ -161,7 +163,7 @@ export function loginReducer(state = new LoginRecord(), action) {
       console.log('FAILURE_GET_ME');
 
     // ログアウト成功時のステート変更処理
-    case ON_LOGOUT:
+    case SUCCESS_DESTROY_SESSION:
       return new LoginRecord();
 
     default:

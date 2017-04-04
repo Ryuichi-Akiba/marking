@@ -9,10 +9,13 @@ import {
   failureGetAccessToken,
   successGetMe,
   failureGetMe,
+  successDestroySession,
   ON_LOGIN_WITH_FACEBOOK,
   SUCCESS_LOGIN_WITH_FACEBOOK,
   SUCCESS_GET_ACCESS_TOKEN,
+  LOGOUT,
 } from '../reducers/login'
+import Session from '../../common/auth/Session'
 
 export function* handleRequestFacebookLogin() {
   while (true) {
@@ -47,5 +50,16 @@ export function* handleGetMe() {
     } else {
       yield put(failureGetMe(error));
     }
+  }
+}
+
+/**
+ * ログアウト処理後に非同期で行う必要のあるログアウト処理を実行する.
+ */
+export function* handleLogout() {
+  while (true) {
+    yield take(LOGOUT);
+    yield call(Session.destroy);
+    yield put(successDestroySession());
   }
 }

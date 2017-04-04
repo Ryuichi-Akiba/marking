@@ -113,27 +113,28 @@ export default class App extends React.Component {
       close: this.closeControlPanel.bind(this)
     };
 
-    var main;
     if (route.name === 'Login') {
-      main = (
-      <Home navigator={navigator} {...route.passProps}/>
+      return (
+        <Home navigator={navigator} {...route.passProps}/>
       );
     }
     if (route.name === 'AddMyPetForm') {
-      main = (
-      <AddMyPetForm drawer={drawer} navigator={navigator} {...route.passProps}/>
-      );
-    }
-    if (route.name === 'Map') {
-      main = (
-      <MarkingMap openMenu={this.toggleSideMenu.bind(this)} drawer={drawer} navigator={navigator} {...route.passProps}/>
+      return (
+        <AddMyPetForm drawer={drawer} navigator={navigator} {...route.passProps}/>
       );
     }
     if (route.name === 'SelectableListViewScene') {
-      console.log(route.name);
-      main = <SelectableListViewScene navigator={navigator} {...route.passProps}/>;
+      return (
+        <SelectableListViewScene navigator={navigator} {...route.passProps}/>
+      );
     }
 
+    var main;
+    if (route.name === 'Map') {
+      main = (
+        <MarkingMap openMenu={this.toggleSideMenu.bind(this)} drawer={drawer} navigator={navigator} {...route.passProps}/>
+      );
+    }
     return (
       <SideMenu
         isOpen={this.state.isOpen}
@@ -143,18 +144,6 @@ export default class App extends React.Component {
           {main}
         </View>
       </SideMenu>
-      // <Drawer
-      //   type="overlay"
-      //   openDrawerOffset={0.2}
-      //   acceptTap={true}
-      //   ref={(ref) => this._drawer = ref}
-      //   content={<SideMenu navigator={navigator} />}
-      //   styles={drawerStyles}
-      // >
-      //   <View style={{flex:1}}>
-      //     {main}
-      //   </View>
-      // </Drawer>
     );
   }
 };
@@ -163,16 +152,3 @@ const drawerStyles = {
   drawer: {backgroundColor:'#ffffff', borderRightWidth:0.5, borderRightColor:'#ccc'},
   main: {paddingLeft: 0},
 };
-
-
-
-// <RouterWithRedux>
-//   <Scene key="root">
-//     <Scene key="home" initial={true} hideNavBar={true} component={HomeComponent}/>
-//     <Scene key="main" tabs={true} tabBarStyle={Styles.tabBarStyle}>
-//       <Scene key="myPets" component={MyPetsComponent} title="PETS" icon={MyPetsTabIcon} renderRightButton={addPetButton}/>
-//       <Scene key="markingMap" component={MarkingMapComponent} title="MAP" icon={MarkingMapTabIcon}/>
-//     </Scene>
-//     <Scene key="addMyPetForm" component={AddMyPetFormComponent} hideNavBar={true}/>
-//   </Scene>
-// </RouterWithRedux>

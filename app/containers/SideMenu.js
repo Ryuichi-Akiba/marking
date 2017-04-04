@@ -4,14 +4,17 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {LoginManager, AccessToken} from 'react-native-fbsdk'
 import * as menuActions from '../redux/reducers/sidemenu'
+import * as loginActions from '../redux/reducers/login'
 import {List, ListItem} from 'react-native-elements'
 import Session from '../common/auth/Session'
 
 class SideMenu extends React.PureComponent {
   static propTypes = {
     navigator: React.PropTypes.object.isRequired,
+    // mapping from redux
     menuState: React.PropTypes.object,
-    menuActions: React.PropTypes.object
+    menuActions: React.PropTypes.object,
+    loginActions: React.PropTypes.object,
   };
 
   constructor(props) {
@@ -22,22 +25,22 @@ class SideMenu extends React.PureComponent {
     this.props.menuActions.initialize();
   }
 
-  logout() {
-    const navigator = this.props.navigator;
-    const handleChange = this.props.onChange;
-
-    // TODO ここのアクションは共通かログインのところに持っていっても良いような気がする
-    if (AccessToken.getCurrentAccessToken() != null) {
-      LoginManager.logOut();
-      Session.destroy().then(result => {
-        // TODO ついでにステートも空にしないとダメな気がする
-        console.log(result);
-        handleChange();
-        navigator.push({
+  // ログイン処理後、ステートの変更を検知し、成功していれば画面遷移する
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.loginState !== this.props.loginState) {
+      console.log(nextProps.loginState);
+      if (!nextProps.loginState.isLoggedIn) {
+        // TODO プッシュがBESTなやり方なのかイマイチわからない
+        this.props.onChange();
+        this.props.navigator.push({
           name: 'Login',
         });
-      });
+      }
     }
+  }
+
+  logout() {
+    this.props.loginActions.logout();
   }
 
   render() {
@@ -97,17 +100,19 @@ var styles = StyleSheet.create({
   }
 });
 
-// ---------- Redux Reducer Defs ----------
+// ---------- Redux Defs ----------
 
 function mapStateToProps(state) {
   return {
     menuState: state.menu,
+    loginState: state.login,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     menuActions: bindActionCreators(Object.assign({}, menuActions), dispatch),
+    loginActions: bindActionCreators(Object.assign({}, loginActions), dispatch),
   };
 }
 
