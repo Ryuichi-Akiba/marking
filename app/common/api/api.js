@@ -3,12 +3,12 @@ import buffer from 'buffer'
 import Session from '../auth/Session'
 
 // TODO 環境依存設定なので、どこかに移動したい（動作環境に応じて設定を切り替えられるように）
-export const SERVER = 'http://petical-api-develop.ap-northeast-1.elasticbeanstalk.com';
-const CLIENT_ID = 'peticalconsole';
-const CLIENT_SECRET = 'p3dWz5lKF7WaFeP4lQRy';
-// export const SERVER = 'http://localhost:8080';
-// const CLIENT_ID = 'majimenatestapp';
-// const CLIENT_SECRET = 'mySecretOAuthSecret';
+// export const SERVER = 'http://petical-api-develop.ap-northeast-1.elasticbeanstalk.com';
+// const CLIENT_ID = 'peticalconsole';
+// const CLIENT_SECRET = 'p3dWz5lKF7WaFeP4lQRy';
+export const SERVER = 'http://localhost:8080';
+const CLIENT_ID = 'majimenatestapp';
+const CLIENT_SECRET = 'mySecretOAuthSecret';
 
 export function getAccessToken(token) {
   var auth = new buffer.Buffer(CLIENT_ID + ':' + CLIENT_SECRET);

@@ -1,6 +1,7 @@
 import {combineReducers} from 'redux'
 import {reducer as formReducer} from 'redux-form'
 import {reducer as routeReducer} from './routes'
+import {rootReducer} from './reducers/root'
 import {commonReducer} from './reducers/common'
 import {loginReducer} from './reducers/login'
 import {menuReducer} from './reducers/sidemenu'
@@ -10,6 +11,7 @@ import {markingMap} from './reducers/markingMap'
 
 export default combineReducers({
   form: formReducer,
+  root: rootReducer,
   common: commonReducer,
   route: routeReducer,
   login: loginReducer,

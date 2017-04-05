@@ -1,5 +1,8 @@
 import {fork} from 'redux-saga/effects'
 import {
+  handleInitializeRootScene
+} from './root'
+import {
   handleRequestFacebookLogin,
   handleGetAccessToken,
   handleGetMe,
@@ -19,6 +22,8 @@ import {
 } from './markingMap'
 
 export default function* sagas() {
+  // ROOT SCENE
+  yield fork(handleInitializeRootScene);
   // LOGIN
   yield fork(handleRequestFacebookLogin);
   yield fork(handleGetAccessToken);

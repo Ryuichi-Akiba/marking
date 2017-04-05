@@ -5,20 +5,32 @@ import {connect} from "react-redux";
 import {LoginManager} from 'react-native-fbsdk';
 import {SocialIcon} from 'react-native-elements'
 import * as loginActions from '../redux/reducers/login';
+import * as rootActions from '../redux/reducers/root';
 
 class Login extends React.PureComponent {
   static propTypes = {
     loginState: PropTypes.object,
-    loginActions: PropTypes.object
+    loginActions: PropTypes.object,
+    rootState: PropTypes.object,
+    rootActions: PropTypes.object,
   };
 
-  // ログイン処理後、ステートの変更を検知し、成功していれば画面遷移する
   componentWillUpdate(nextProps, nextState) {
+    // ログイン処理後、ログインステートの変更を検知し、ログインが成功していれば画面遷移する
     if (nextProps.loginState !== this.props.loginState) {
       if (nextProps.loginState.isLoggedIn) {
+        this.props.rootActions.destroyLoadingScene();
         this.props.navigator.replace({
           name: 'AddMyPetForm',
         });
+      }
+    }
+
+    // フェイスブックログイン済みだった場合は、新しくトークン発行し直すだけで、ログイン画面はスキップする
+    if (nextProps.rootState !== this.props.rootState) {
+      if (nextProps.rootState.isAlreadyLoggedInFacebook) {
+        const token = nextProps.rootState.facebookToken;
+        this.props.loginActions.successLoginWithFacebook(token);
       }
     }
   }
@@ -49,6 +61,7 @@ class Login extends React.PureComponent {
             <Text style={{fontSize: 20, paddingTop:48, textAlign: 'center'}}>
               Marking
             </Text>
+            <Text>{JSON.stringify(this.props.rootState)}</Text>
             <Text>{JSON.stringify(this.props.loginState)}</Text>
           </View>
           <View style={{flex:0.25}}>
@@ -63,13 +76,15 @@ class Login extends React.PureComponent {
 
 function mapStateToProps(state) {
   return {
-    loginState: state.login
+    loginState: state.login,
+    rootState: state.root,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    loginActions: bindActionCreators(Object.assign({}, loginActions), dispatch)
+    loginActions: bindActionCreators(Object.assign({}, loginActions), dispatch),
+    rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
   };
 }
 

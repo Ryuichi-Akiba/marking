@@ -2,11 +2,9 @@ import React from 'react'
 import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {LoginManager, AccessToken} from 'react-native-fbsdk'
 import * as menuActions from '../redux/reducers/sidemenu'
 import * as loginActions from '../redux/reducers/login'
 import {List, ListItem} from 'react-native-elements'
-import Session from '../common/auth/Session'
 
 class SideMenu extends React.PureComponent {
   static propTypes = {
@@ -14,6 +12,7 @@ class SideMenu extends React.PureComponent {
     // mapping from redux
     menuState: React.PropTypes.object,
     menuActions: React.PropTypes.object,
+    loginState: React.PropTypes.object,
     loginActions: React.PropTypes.object,
   };
 
@@ -58,6 +57,7 @@ class SideMenu extends React.PureComponent {
       };
       list.push(<ListItem key={i} title={pet.name} onPress={handlePress} avatar={require('./images/login.jpg')} avatarStyle={{width:24, height:24, marginLeft:4, marginRight:4}} hideChevron={true} containerStyle={{padding:0, margin:0}}/>);
     });
+    const profileImage = {uri: this.props.loginState.user.imageUrl};
 
     // Render View
     return (
@@ -65,11 +65,13 @@ class SideMenu extends React.PureComponent {
         <View style={{paddingTop:16, paddingBottom:8, margin:0,}}>
           <View style={{justifyContent:'center', alignItems:'center'}}>
             <View style={{paddingTop:32, paddingBottom:8}}>
-              <Image style={styles.image} source={{uri:'https://scontent.xx.fbcdn.net/v/t1.0-1/p320x320/1965038_642971409111875_735658247_n.jpg?oh=9af256c695dd2a96d07d11ca2f05dd40&oe=5971F2B3'}}/>
+              <Image style={styles.image} source={profileImage}/>
             </View>
           </View>
           <View style={{justifyContent:'center', alignItems:'center', padding:0, margin:0}}>
-            <Text style={{fontSize:16, color:'#333333', fontWeight:'bold', paddingTop:2, paddingBottom:2, padding:0, margin:0}}>Ken Todoroki</Text>
+            <Text style={{fontSize:16, color:'#333333', fontWeight:'bold', paddingTop:2, paddingBottom:2, padding:0, margin:0}}>
+              {this.props.loginState.user.username}
+            </Text>
           </View>
         </View>
         <ScrollView style={{flex:1, margin:0, padding:0,}}>

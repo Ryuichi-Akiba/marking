@@ -8,7 +8,7 @@ import * as markingMapActions from '../redux/reducers/markingMap'
 
 class MarkingMap extends Component {
   static propTypes = {
-    drawer: React.PropTypes.object.isRequired,
+    drawer: React.PropTypes.object,
     navigator: React.PropTypes.object.isRequired
   };
 

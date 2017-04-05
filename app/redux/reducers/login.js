@@ -155,12 +155,10 @@ export function loginReducer(state = new LoginRecord(), action) {
     case FAILURE_GET_ACCESS_TOKEN:
       console.log('FAILURE_GET_ACCESS_TOKEN');
 
+    // ログイン後にユーザー情報の取得に成功した際のステート変更処理
     case SUCCESS_GET_ME:
       Session.set(USER, action.payload);
       return state.set(USER, action.payload);
-
-    case FAILURE_GET_ME:
-      console.log('FAILURE_GET_ME');
 
     // ログアウト成功時のステート変更処理
     case SUCCESS_DESTROY_SESSION:
