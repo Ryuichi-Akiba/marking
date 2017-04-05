@@ -1,18 +1,14 @@
-import {REHYDRATE} from 'redux-persist/constants';
-import {Record} from 'immutable';
+import {createAction} from 'redux-actions'
+import {Record} from 'immutable'
 
 // -------------------- ActionCreator の定義 --------------------
 
 // マイペット登録ページのコンテナを初期化するアクション
-export const INITIALIZE_ADD_MY_PET_FORM = 'INITIALIZE_ADD_MY_PET_FORM';
-export function initializeAddMyPetFormContainer() {
-  return {
-    type: INITIALIZE_ADD_MY_PET_FORM,
-    payload: {},
-    meta: {},
-    error: false
-  }
-}
+export const INITIALIZE_PET_FORM_SCENE = 'INITIALIZE_PET_FORM_SCENE';
+export const initializePetForm = createAction(INITIALIZE_PET_FORM_SCENE);
+
+export const SUCCESS_GET_MY_PETS = 'SUCCESS_GET_MY_PETS';
+export const successGetMyPets = createAction(SUCCESS_GET_MY_PETS, (payload) => payload);
 
 export const ADD_MY_PET = 'ADD_MY_PET';
 export function addMyPet(values) {
@@ -37,42 +33,21 @@ export function successPostMyPet(payload) {
   }
 }
 
-// API呼び出し失敗時のアクション
-export const FAILURE_CALL_API = 'FAILURE_CALL_API';
-export function failureCallApi(error) {
-  return {
-    type: FAILURE_CALL_API,
-    payload: {},
-    meta: {error},
-    error: true
-  }
-}
-
 // -------------------- Immutable State Model の定義 --------------------
 export const AddMyPetFormRecord = new Record({
   created: false,
-  loading: false,
   form: {}
 });
 
 // -------------------- Reducer の定義 --------------------
 export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
   switch (action.type) {
-    // 登録フォームを初期化時のステート変更
-    case INITIALIZE_ADD_MY_PET_FORM:
-      return new AddMyPetFormRecord();
+    case SUCCESS_GET_MY_PETS:
+      console.log(action.payload);
+      return state.set('created', (action.payload && 0 < action.payload.length));
 
-    // ペットの登録処理を開始時のステート変更
-    case ADD_MY_PET:
-      return state.set('loading', true);
-    // ペットの登録処理完了後のステート変更
     case SUCCESS_POST_MY_PETS:
-      return state.set('loading', false).set('created', true).set('form', {});
-
-    case FAILURE_CALL_API:
-      // TODO ここにエラー処理を書く（共通処理にしたいのでユーティリティ化する／ひとまずは自動ログアウトして再ログインを促すのが無難かな）
-      console.error(action);
-      return state.set('loading', false);
+      return state.set('created', true).set('form', {});
 
     default:
       return state;

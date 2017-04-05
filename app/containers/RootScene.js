@@ -7,7 +7,7 @@ import * as rootActions from '../redux/reducers/root'
 import LoadingScene from './LoadingScene'
 import Login from './Login'
 import MarkingMap from './MarkingMap'
-import AddMyPetForm from './AddMyPetForm'
+import PetFormScene from './PetFormScene'
 import SelectableListViewScene from './SelectableListViewScene'
 import SideMenuComponent from './SideMenu'
 
@@ -71,8 +71,8 @@ class RootScene extends React.PureComponent {
     if (route.name === 'Login') {
       return this.wrap(<Login navigator={navigator} {...route.passProps}/>);
     }
-    if (route.name === 'AddMyPetForm') {
-      return this.wrap(<AddMyPetForm navigator={navigator} {...route.passProps}/>);
+    if (route.name === 'PetFormScene') {
+      return this.wrap(<PetFormScene navigator={navigator} {...route.passProps}/>);
     }
     if (route.name === 'SelectableListViewScene') {
       return <SelectableListViewScene navigator={navigator} {...route.passProps}/>;

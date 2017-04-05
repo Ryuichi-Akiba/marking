@@ -1,10 +1,27 @@
 import {call, put, take} from 'redux-saga/effects'
 import {postMePets} from '../../common/api/me'
 import {
+  failureCallApi,
+} from '../reducers/common'
+import {
+  INITIALIZE_PET_FORM_SCENE,
   ADD_MY_PET,
   successPostMyPet,
-  failureCallApi
+  successGetMyPets,
 } from '../reducers/addMyPetForm'
+import {loadMyPets} from '../../logic/pet'
+
+export function* handleInitializePetFormScene() {
+  while (true) {
+    yield take(INITIALIZE_PET_FORM_SCENE);
+    const {payload, error} = yield call(loadMyPets);
+    if (payload && !error) {
+      yield put(successGetMyPets(payload));
+    } else {
+      yield put(failureCallApi(error));
+    }
+  }
+}
 
 /**
  * ADD_MY_PETをハンドルして、ペットを追加するAPIをコールする.

@@ -1,41 +1,15 @@
-import {REHYDRATE} from 'redux-persist/constants'
+import {createAction} from 'redux-actions'
 import {Record} from 'immutable'
-import Session from '../../common/auth/Session'
-import {PETS} from '../../common/auth/sessionKey'
 
 // -------------------- ActionCreator の定義 --------------------
 
 // マイペットページのコンテナを初期化するアクション
 export const INITIALIZE_MENU_CONTAINER = 'INITIALIZE_MENU_CONTAINER';
-export function initialize() {
-  return {
-    type: INITIALIZE_MENU_CONTAINER,
-    payload: {},
-    meta: {},
-    error: false
-  }
-}
-
-export const LOGOUT = 'LOGOUT';
-export function logout() {
-  return {
-    type: LOGOUT,
-    payload: {},
-    meta: {},
-    error: false
-  }
-}
+export const initialize = createAction(INITIALIZE_MENU_CONTAINER);
 
 // マイペットの取得成功時のアクション
 export const SUCCESS_GET_MY_PETS = 'SUCCESS_GET_MY_PETS';
-export function successGetMyPets(payload) {
-  return {
-    type: SUCCESS_GET_MY_PETS,
-    payload: payload,
-    meta: {response: payload},
-    error: false
-  }
-}
+export const successGetMyPets = createAction(SUCCESS_GET_MY_PETS, (payload) => payload);
 
 // -------------------- Immutable State Model の定義 --------------------
 export const MenuRecord = new Record({
@@ -51,13 +25,7 @@ export function menuReducer(state = new MenuRecord(), action) {
 
     // 自分が飼育しているペットをステートに保存する
     case SUCCESS_GET_MY_PETS:
-      Session.set(PETS, action.payload);
-      return state.set(PETS, action.payload);
-
-    // ログアウト
-    case LOGOUT:
-      Session.destroy();
-      return new MenuRecord();
+      return state.set('pets', action.payload);
 
     default:
       return state;

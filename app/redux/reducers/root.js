@@ -1,8 +1,8 @@
 import {createAction} from 'redux-actions'
-import {AccessToken} from 'react-native-fbsdk'
 import {Record} from 'immutable'
 
 // -------------------- ActionCreator の定義 --------------------
+// ルートシーンを初期化するアクション（SAGAでログイン有無判定を行うためのトリガー）
 export const INITIALIZE_ROOT_SCENE = 'INITIALIZE_ROOT_SCENE';
 export const initializeRootScene = createAction(INITIALIZE_ROOT_SCENE);
 
@@ -14,6 +14,10 @@ export const alreadyLoggedInFacebook = createAction(ALREADY_LOGGED_IN_FACEBOOK, 
 export const SUCCESS_INITIALIZE_ROOT_SCENE = 'SUCCESS_INITIALIZE_ROOT_SCENE';
 export const successInitializeRootScene = createAction(SUCCESS_INITIALIZE_ROOT_SCENE);
 
+// ローディング用シーンをオープンするアクション
+export const VIEW_LOADING_SCENE = 'VIEW_LOADING_SCENE';
+export const viewLoadingScene = createAction(VIEW_LOADING_SCENE);
+
 // ローディング用シーンをクローズするアクション
 export const DESTROY_LOADING_SCENE = 'DESTROY_LOADING_SCENE';
 export const destroyLoadingScene = createAction(DESTROY_LOADING_SCENE);
@@ -21,7 +25,7 @@ export const destroyLoadingScene = createAction(DESTROY_LOADING_SCENE);
 // -------------------- Immutable State Model の定義 --------------------
 
 export const RootRecord = new Record({
-  // ふぇいすブックログイン済みであることを示すフラグ
+  // フェイスブックログイン済みであることを示すフラグ
   isAlreadyLoggedInFacebook: false,
   facebookToken: null,
   // 処理中であることを示すフラグ
@@ -33,6 +37,7 @@ export const RootRecord = new Record({
 export function rootReducer(state = new RootRecord(), action) {
   switch (action.type) {
     case INITIALIZE_ROOT_SCENE:
+    case VIEW_LOADING_SCENE:
       return state.set('isLoading', true);
 
     case ALREADY_LOGGED_IN_FACEBOOK:
@@ -41,8 +46,6 @@ export function rootReducer(state = new RootRecord(), action) {
         .set('facebookToken', action.payload);
 
     case SUCCESS_INITIALIZE_ROOT_SCENE:
-      return state;
-
     case DESTROY_LOADING_SCENE:
       return state.set('isLoading', false);
 

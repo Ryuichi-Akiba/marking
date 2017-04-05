@@ -5,7 +5,7 @@ import {connect} from 'react-redux'
 import {Field, reduxForm} from 'redux-form'
 import { List, ListItem } from 'react-native-elements'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
-import * as myPetsActions from '../redux/reducers/sidemenu'
+import * as rootActions from '../redux/reducers/root'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
 import SelectableListViewField from '../components/forms/SelectableListViewField'
@@ -52,14 +52,15 @@ var styles = StyleSheet.create({
   }
 });
 
-class AddMyPetForm extends React.Component {
+class PetFormScene extends React.Component {
   static propTypes = {
-    drawer: React.PropTypes.object.isRequired,
     navigator: React.PropTypes.object.isRequired,
-    myPetFormState: PropTypes.object,
+    petFormState: PropTypes.object,
+    rootState: PropTypes.object,
     reduxFormState: PropTypes.object,
     initialValues: PropTypes.object,
     myPetFormActions: PropTypes.object,
+    rootActions: PropTypes.object,
   };
 
   constructor(props) {
@@ -105,7 +106,8 @@ class AddMyPetForm extends React.Component {
   }
 
   componentDidMount() {
-    this.props.myPetFormActions.initializeAddMyPetFormContainer();
+    // ペットフォームを初期化する
+    this.props.myPetFormActions.initializePetForm();
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -117,29 +119,24 @@ class AddMyPetForm extends React.Component {
   // }
 
   componentWillUpdate(nextProps, nextState) {
-    if (nextProps.state !== this.props.state) {
-      if (nextProps.state.created) {
-        console.log(this.props);
-        this.props.resetForm();
+    if (nextProps.petFormState !== this.props.petFormState) {
+      if (nextProps.petFormState.created) {
+        // console.log(this.props);
+        // this.props.resetForm();
+        this.props.rootActions.destroyLoadingScene(); // FIXME 本来ならば、Map側のページの初期化処理終了後にこれを行うべきだが、競合しそうなので今はここに書いておく
         this.props.navigator.replace({
           name: 'Map'
         });
       }
     }
   }
-  // componentDidUpdate() {
-  //   if (this.props.state.created) {
-  //     this.props.navigator.push({
-  //       name: 'MarkingMap'
-  //     });
-  //   }
-  // }
 
   render() {
     const handleSaveEvent = {
       title: 'Save',
       handler: () => {
         const {petForm} = this.props.form;
+        console.log(petForm);
         this.props.myPetFormActions.addMyPet(petForm.values);
       },
     };
@@ -203,6 +200,7 @@ class AddMyPetForm extends React.Component {
 }
 
 const validate = (values) => {
+  console.log(values);
   const errors = {};
   if (!values.name) {
     errors.name = 'required name field';
@@ -224,14 +222,15 @@ const validate = (values) => {
   return errors;
 };
 
-AddMyPetForm = reduxForm({
+PetFormScene = reduxForm({
   form: 'petForm',
   validate
-})(AddMyPetForm);
+})(PetFormScene);
 
 function mapStateToProps(state) {
   return {
-    myPetFormState: state.addMyPetForm,
+    petFormState: state.addMyPetForm,
+    rootState: state.root,
     reduxFormState: state.form,
     initialValues: state.addMyPetForm.form
   };
@@ -240,10 +239,11 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     myPetFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
+    rootActions:  bindActionCreators(Object.assign({}, rootActions), dispatch),
   };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(AddMyPetForm);
+)(PetFormScene);

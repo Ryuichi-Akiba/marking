@@ -1,6 +1,4 @@
 import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
-import Session from '../../common/auth/Session'
-import {PETS} from '../../common/auth/sessionKey'
 import {getMePets} from '../../common/api/me'
 import {
   failureCallApi
@@ -12,6 +10,7 @@ import {
 import {
   SUCCESS_POST_MY_PETS
 } from '../reducers/addMyPetForm'
+import {loadMyPets} from '../../logic/pet'
 
 /**
  * Menu#INITIALIZE_MENU_CONTAINERをハンドルしてペット情報を取得する.
@@ -19,38 +18,13 @@ import {
 export function* handleInitializeMenuContainer() {
   while (true) {
     yield take(INITIALIZE_MENU_CONTAINER);
-    const {payload, error} = yield call(loadMePetsIfUseExistsCache);
+    const {payload, error} = yield call(loadMyPets);
     if (payload && !error) {
       yield put(successGetMyPets(payload));
     } else {
       yield put(failureCallApi(error));
     }
   }
-}
-
-/**
- * ログインユーザーのペットの一覧を取得する. ログインしている場合はキャッシュにペット一覧があればキャッシュから取得する.
- * @returns {Promise.<TResult>|Promise<R2|R1>|*|Promise.<U>|Promise<R>}
- */
-function loadMePetsIfUseExistsCache() {
-  return Session.isLoggedIn().then(isLoggedIn => {
-    if (isLoggedIn) {
-      console.log(isLoggedIn);
-      // ログインしている場合はセッションかAPI経由でペット一覧を取得する
-      return Session.get(PETS).then(pets => {
-        if (!!pets && pets.length > 0) {
-          console.log('getting user pets information from cache.', pets);
-          return {payload: pets};
-        } else {
-          console.log('getting user pets information from api.');
-          return getMePets();
-        }
-      });
-    } else {
-      // ログインしていない場合はペット一覧は空にする
-      return Promise.resolve({payload: []});
-    }
-  });
 }
 
 /**

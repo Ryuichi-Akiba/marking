@@ -19,9 +19,8 @@ class Login extends React.PureComponent {
     // ログイン処理後、ログインステートの変更を検知し、ログインが成功していれば画面遷移する
     if (nextProps.loginState !== this.props.loginState) {
       if (nextProps.loginState.isLoggedIn) {
-        this.props.rootActions.destroyLoadingScene();
         this.props.navigator.replace({
-          name: 'AddMyPetForm',
+          name: 'PetFormScene',
         });
       }
     }
@@ -39,11 +38,13 @@ class Login extends React.PureComponent {
   handlePressFacebookButton() {
     // プロミスの中でpropsを参照することはできないので、一度変数化する（TODO 後でActionに持っていったほうが良いかも）
     const actions = this.props.loginActions;
+    const root = this.props.rootActions;
     LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_friends']).then(
       function(result) {
         if (result.isCancelled) {
           actions.cancelLogin(result);
         } else {
+          root.viewLoadingScene();
           actions.loginWithFacebook(result);
         }
       },
