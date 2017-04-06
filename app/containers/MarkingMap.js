@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {StyleSheet, Text, View, TouchableOpacity, Modal} from "react-native";
+import {StyleSheet, Text, View, TouchableOpacity, Modal, Animated} from "react-native";
 import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
 import MapView from 'react-native-maps'
@@ -8,7 +8,7 @@ import * as markingMapActions from '../redux/reducers/markingMap'
 
 class MarkingMap extends Component {
   static propTypes = {
-    drawer: React.PropTypes.object,
+    drawer: React.PropTypes.object.isRequired,
     navigator: React.PropTypes.object.isRequired
   };
 
@@ -17,7 +17,6 @@ class MarkingMap extends Component {
 
     actions.getCurrentLocation();
     actions.initWatchId();
-    actions.showPets(false);
   }
 
   componentWillUnmount() {
@@ -26,70 +25,85 @@ class MarkingMap extends Component {
     actions.clearLocationWatch({watchId: state.watchId})
   }
 
-  showPetsModal(modalVisible) {
-    const {actions} = this.props;
+  handleMarking(isStarted) {
+    const {actions, state} = this.props;
 
-    actions.showPets(modalVisible);
+    const value = isStarted ? 1 : 0;
+    Animated.spring(state.visibility, {toValue: value}).start();
+
+    if (isStarted) {
+      actions.startMarking();
+    } else {
+      actions.finishMarking();
+    }
+
   }
 
   render() {
     const {state, actions} = this.props;
-    console.log(state.region);
 
     var left = {
       title: 'Open',
       handler: () => {
-        console.log('click open');
         this.props.openMenu();
       }
     };
+
+    const txt = !state.isStarted ? 'Start' : 'Finish';
+
+    var bottom = state.visibility.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-100, 0],
+    });
+
     return (
-      <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="散歩マップ" left={left}/>
-        <View style={{flex:1}}>
-          {/* 散歩の地図 */}
-          <MapView
-            style={styles.map}
-            showsUserLocation={true}
-            region={state.region}
-            onRegionChange={actions.updateCurrentLocation}
-          />
+        <View style={{flex:1, flexDirection:'column'}}>
+          <MarkingNavbar title="散歩マップ" left={left}/>
+          <View style={styles.container}>
+            {/* 散歩の地図 */}
+            <MapView
+                style={styles.map}
+                showsUserLocation={true}
+                region={state.region}
+                onRegionChange={actions.updateCurrentLocation}
+            />
 
-          {/* 散歩開始ボタン */}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.bubble, styles.button]}
-              onPress={() => this.showPetsModal(true)}>
-              <Text>Start</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              {/* うんちボタン */}
+              <Animated.View style={{bottom}}>
+                <TouchableOpacity
+                    style={[styles.bubble, styles.button]}
+                    onPress={() => this.handleMarking(!state.isStarted)}>
+                  <Text>うんち</Text>
+                </TouchableOpacity>
+              </Animated.View>
+
+              {/* 散歩開始ボタン */}
+              <TouchableOpacity
+                  style={[styles.bubble, styles.button]}
+                  onPress={() => this.handleMarking(!state.isStarted)}>
+                <Text>{txt}</Text>
+              </TouchableOpacity>
+
+              {/* おしっこボタン */}
+              <Animated.View style={{bottom}}>
+                <TouchableOpacity
+                    style={[styles.bubble, styles.button]}
+                    onPress={() => this.handleMarking(!state.isStarted)}>
+                  <Text>おしっこ</Text>
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
           </View>
+
         </View>
-
-        {/* 散歩に連れていくペットの一覧(モーダル) */}
-        <Modal
-          animationType={"slide"}
-          transparent={false}
-          visible={state.modalVisible}
-          onRequestClose={() => {console.log('modal close!!!')}}>
-          <View>
-            <Text>My Pet List</Text>
-            <TouchableOpacity
-              onPress={() => this.showPetsModal(false)}>
-              <Text>Hide Modal</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-
-      </View>
     );
   }
 }
 
-// TODO Styles.jsに移動する
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //justifyContent: 'center',
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
@@ -98,11 +112,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   buttonContainer: {
-    flex:1,
-    flexDirection: 'column',
-    justifyContent:'flex-end',
-    alignItems: 'center',
-    marginVertical: 60,
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    marginBottom: 20,
     backgroundColor: 'transparent',
   },
   button: {
