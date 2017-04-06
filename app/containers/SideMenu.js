@@ -2,9 +2,10 @@ import React from 'react'
 import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import ListGroup from '../components/elements/ListGroup'
+import List from '../components/elements/List'
 import * as menuActions from '../redux/reducers/sidemenu'
 import * as loginActions from '../redux/reducers/login'
-import {List, ListItem} from 'react-native-elements'
 
 class SideMenu extends React.PureComponent {
   static propTypes = {
@@ -37,14 +38,21 @@ class SideMenu extends React.PureComponent {
     }
   }
 
+  settings() {
+    this.props.onChange();
+    this.props.navigator.replace({
+      name: 'Settings',
+    });
+  }
   logout() {
+    this.props.onChange();
     this.props.loginActions.logout();
   }
 
   render() {
     var goMap = () => {
       this.props.onChange();
-      this.props.navigator.push({
+      this.props.navigator.replace({
         name: 'Map',
       });
     };
@@ -55,14 +63,16 @@ class SideMenu extends React.PureComponent {
       var handlePress = () => {
         this.props.onChange();
       };
-      list.push(<ListItem key={i} title={pet.name} onPress={handlePress} avatar={require('./images/login.jpg')} avatarStyle={{width:24, height:24, marginLeft:4, marginRight:4}} hideChevron={true} containerStyle={{padding:0, margin:0}}/>);
+      list.push(
+        <List key={i} avatar={require('./images/login.jpg')} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
+      );
     });
     const profileImage = {uri: this.props.loginState.user.imageUrl};
 
     // Render View
     return (
-      <View style={{flex:1, flexDirection:'column', margin:0}}>
-        <View style={{paddingTop:16, paddingBottom:8, margin:0,}}>
+      <View style={{flex:1, flexDirection:'column', backgroundColor:'#FF9800'}}>
+        <View style={{paddingTop:16, paddingBottom:24,}}>
           <View style={{justifyContent:'center', alignItems:'center'}}>
             <View style={{paddingTop:32, paddingBottom:8}}>
               <Image style={styles.image} source={profileImage}/>
@@ -74,13 +84,13 @@ class SideMenu extends React.PureComponent {
             </Text>
           </View>
         </View>
-        <ScrollView style={{flex:1, margin:0, padding:0,}}>
-          <List style={{marginTop:-20, padding:0}}>
-            <ListItem onPress={goMap} leftIcon={{name:'map', style:[styles.icon, {color:'#FF9800'}]}} title="散歩マップ" hideChevron={true}/>
+        <ScrollView style={{flex:1, margin:0, padding:0, backgroundColor:'#ffffff'}}>
+          <ListGroup margin={false}>
+            <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
             {list}
-            <ListItem leftIcon={{name:'settings', style:[styles.icon, {color:'#607D8B'}]}} title="設定" hideChevron={true}/>
-            <ListItem onPress={this.logout.bind(this)} leftIcon={{name:'exit-to-app', style:[styles.icon, {color:'#8BC34A'}]}} title="ログアウト" hideChevron={true}/>
-          </List>
+            <List icon="settings" iconColor="#607D8B" title="設定" onPress={this.settings.bind(this)} chevron={true}/>
+            <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" border={false} onPress={this.logout.bind(this)}/>
+          </ListGroup>
         </ScrollView>
       </View>
     );

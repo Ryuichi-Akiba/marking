@@ -8,6 +8,7 @@ import LoadingScene from './LoadingScene'
 import Login from './Login'
 import MarkingMap from './MarkingMap'
 import PetFormScene from './PetFormScene'
+import SettingsScene from './SettingsScene'
 import SelectableListViewScene from './SelectableListViewScene'
 import SideMenuComponent from './SideMenu'
 
@@ -81,6 +82,9 @@ class RootScene extends React.PureComponent {
     var main;
     if (route.name === 'Map') {
       main = this.wrap(<MarkingMap openMenu={this.toggleSideMenu.bind(this)} navigator={navigator} {...route.passProps}/>);
+    }
+    if (route.name === 'Settings') {
+      main = this.wrap(<SettingsScene openMenu={this.toggleSideMenu.bind(this)} navigator={navigator} {...route.passProps}/>);
     }
     return (
       <SideMenu

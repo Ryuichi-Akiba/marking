@@ -4,16 +4,16 @@ import {
   failureCallApi,
 } from '../reducers/common'
 import {
-  INITIALIZE_PET_FORM_SCENE,
+  INITIALIZE_SKIP_PET_FORM_SCENE,
   ADD_MY_PET,
   successPostMyPet,
   successGetMyPets,
 } from '../reducers/addMyPetForm'
 import {loadMyPets} from '../../logic/pet'
 
-export function* handleInitializePetFormScene() {
+export function* handleInitializeSkipPetFormScene() {
   while (true) {
-    yield take(INITIALIZE_PET_FORM_SCENE);
+    yield take(INITIALIZE_SKIP_PET_FORM_SCENE);
     const {payload, error} = yield call(loadMyPets);
     if (payload && !error) {
       yield put(successGetMyPets(payload));

@@ -3,10 +3,23 @@ import {Record} from 'immutable'
 
 // -------------------- ActionCreator の定義 --------------------
 
-// マイペット登録ページのコンテナを初期化するアクション
+export function initialize(enableSkip : boolean) {
+  if (enableSkip) {
+    return initializeSkipPetForm();
+  } else {
+    return initializePetForm();
+  }
+}
+
+// ペット登録ページのコンテナを初期化するアクション（スキップできない）
 export const INITIALIZE_PET_FORM_SCENE = 'INITIALIZE_PET_FORM_SCENE';
 export const initializePetForm = createAction(INITIALIZE_PET_FORM_SCENE);
 
+// ペット登録ページのコンテナを初期化するアクション（自動的にスキップされるケースあり）
+export const INITIALIZE_SKIP_PET_FORM_SCENE = 'INITIALIZE_SKIP_PET_FORM_SCENE';
+export const initializeSkipPetForm = createAction(INITIALIZE_SKIP_PET_FORM_SCENE);
+
+// ログインユーザー
 export const SUCCESS_GET_MY_PETS = 'SUCCESS_GET_MY_PETS';
 export const successGetMyPets = createAction(SUCCESS_GET_MY_PETS, (payload) => payload);
 

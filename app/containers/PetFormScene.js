@@ -107,7 +107,7 @@ class PetFormScene extends React.Component {
 
   componentDidMount() {
     // ペットフォームを初期化する
-    this.props.myPetFormActions.initializePetForm();
+    this.props.myPetFormActions.initialize(true);
   }
 
   // componentWillReceiveProps(nextProps) {

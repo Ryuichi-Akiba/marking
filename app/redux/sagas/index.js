@@ -13,7 +13,7 @@ import {
   handleRequestSuccessPostMePets,
 } from './sidemenu'
 import {
-  handleInitializePetFormScene,
+  handleInitializeSkipPetFormScene,
   handleRequestPostMyPet,
 } from './addMyPetForm'
 import {
@@ -34,7 +34,7 @@ export default function* sagas() {
   yield fork(handleInitializeMenuContainer);
   yield fork(handleRequestSuccessPostMePets);
   yield fork(handleRequestPostMyPet);
-  yield fork(handleInitializePetFormScene);
+  yield fork(handleInitializeSkipPetFormScene);
   // MAP
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
