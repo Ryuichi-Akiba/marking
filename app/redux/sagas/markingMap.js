@@ -9,12 +9,18 @@ import {
     CLEAR_LOCATION_WATCH,
     successClearLocationWatch,
     failureClearLocationWatch,
+    SHOW_MY_PETS,
+    successShowMyPets,
+    failureShowMyPets,
 } from '../reducers/markingMap'
 import {
     getCurrentRegion,
     getWatchId,
     clearWatchId,
 } from '../../logic/geolocation'
+import {
+    loadMyPets,
+} from '../../logic/pet'
 
 export function* handleInitCurrentLocation() {
     while (true) {
@@ -51,6 +57,19 @@ export function* handleClearLocationWatch() {
             yield put(successClearLocationWatch(payload));
         } else {
             yield put(failureClearLocationWatch(error));
+        }
+    }
+}
+
+export function* handleShowMyPets() {
+    while (true) {
+        const action = yield take(SHOW_MY_PETS);
+        const {payload, error} = yield call(loadMyPets);
+
+        if (payload && !error) {
+            yield put(successShowMyPets(payload));
+        } else {
+            yield put(failureShowMyPets(error));
         }
     }
 }

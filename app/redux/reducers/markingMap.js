@@ -138,6 +138,36 @@ export function showPetsActions(visibility) {
   }
 }
 
+export const SHOW_MY_PETS = 'SHOW_MY_PETS';
+export function showMyPets() {
+  return {
+    type: SHOW_MY_PETS,
+    payload: {},
+    meta: {},
+    error: false
+  }
+}
+
+export const SUCCESS_SHOW_MY_PETS = 'SUCCESS_SHOW_MY_PETS';
+export function successShowMyPets(payload) {
+  return {
+    type: SUCCESS_SHOW_MY_PETS,
+    payload: payload,
+    meta: {},
+    error: false
+  }
+}
+
+export const FAILURE_SHOW_MY_PETS = 'FAILURE_SHOW_MY_PETS';
+export function failureShowMyPets(error) {
+  return {
+    type: FAILURE_SHOW_MY_PETS,
+    payload: {},
+    meta: {error},
+    error: true
+  }
+}
+
 
 // -------------------- Immutable State Model の定義 --------------------
 export const MarkingMapRecord = new Record({
@@ -145,6 +175,7 @@ export const MarkingMapRecord = new Record({
   watchId: null,
   isStarted: false,
   visibility: new Animated.Value(0),
+  pets: [],
 });
 
 // -------------------- Reducer の定義 --------------------
@@ -174,6 +205,10 @@ export function markingMap(state = new MarkingMapRecord(), action) {
       return state.set('isStarted', action.payload);
     case SHOW_PETS_ACTIONS:
       return state.set('visibility', action.payload);
+    case SHOW_MY_PETS:
+      return state;
+    case SUCCESS_SHOW_MY_PETS:
+      return state.set('pets', action.payload);
 
     default:
       return state;

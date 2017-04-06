@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from "react";
-import {StyleSheet, Text, View, TouchableOpacity, Modal, Animated} from "react-native";
+import {StyleSheet, Text, View, TouchableOpacity, Modal, Animated, Image} from "react-native";
 import {bindActionCreators} from 'redux';
 import {connect} from "react-redux";
 import MapView from 'react-native-maps'
+import { SocialIcon } from 'react-native-elements'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import * as markingMapActions from '../redux/reducers/markingMap'
 
@@ -17,6 +18,7 @@ class MarkingMap extends Component {
 
     actions.getCurrentLocation();
     actions.initWatchId();
+    actions.showMyPets();
   }
 
   componentWillUnmount() {
@@ -56,10 +58,18 @@ class MarkingMap extends Component {
       outputRange: [-100, 0],
     });
 
+    var pets = [];
+    state.pets.forEach((pet, i) => {
+      pets.push(
+          <Image style={styles.picture} source={require('./images/login.jpg')}/>
+      );
+    });
+
     return (
         <View style={{flex:1, flexDirection:'column'}}>
           <MarkingNavbar title="散歩マップ" left={left}/>
           <View style={styles.container}>
+
             {/* 散歩の地図 */}
             <MapView
                 style={styles.map}
@@ -68,14 +78,20 @@ class MarkingMap extends Component {
                 onRegionChange={actions.updateCurrentLocation}
             />
 
+            {/* ペットのアイコン */}
+            <View style={styles.iconContainer}>
+              {pets}
+            </View>
+
             <View style={styles.buttonContainer}>
               {/* うんちボタン */}
               <Animated.View style={{bottom}}>
-                <TouchableOpacity
-                    style={[styles.bubble, styles.button]}
-                    onPress={() => this.handleMarking(!state.isStarted)}>
-                  <Text>うんち</Text>
-                </TouchableOpacity>
+                {/*<TouchableOpacity*/}
+                    {/*style={[styles.bubble, styles.button]}*/}
+                    {/*onPress={() => this.handleMarking(!state.isStarted)}>*/}
+                  {/*<Text>うんち</Text>*/}
+                {/*</TouchableOpacity>*/}
+                <SocialIcon type='soundcloud'/>
               </Animated.View>
 
               {/* 散歩開始ボタン */}
@@ -87,11 +103,12 @@ class MarkingMap extends Component {
 
               {/* おしっこボタン */}
               <Animated.View style={{bottom}}>
-                <TouchableOpacity
-                    style={[styles.bubble, styles.button]}
-                    onPress={() => this.handleMarking(!state.isStarted)}>
-                  <Text>おしっこ</Text>
-                </TouchableOpacity>
+                {/*<TouchableOpacity*/}
+                    {/*style={[styles.bubble, styles.button]}*/}
+                    {/*onPress={() => this.handleMarking(!state.isStarted)}>*/}
+                  {/*<Text>おしっこ</Text>*/}
+                {/*</TouchableOpacity>*/}
+                <SocialIcon type='facebook'/>
               </Animated.View>
             </View>
           </View>
@@ -101,15 +118,25 @@ class MarkingMap extends Component {
   }
 }
 
+const SIZE = 50;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  iconContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    marginTop: 10,
+    marginLeft: '80%',
+    backgroundColor: 'transparent',
   },
   buttonContainer: {
     alignItems: 'flex-end',
@@ -128,6 +155,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderRadius: 20,
+  },
+  picture: {
+    width: SIZE,
+    height: SIZE,
+    borderRadius: SIZE / 2,
   },
 });
 

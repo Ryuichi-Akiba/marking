@@ -20,6 +20,7 @@ import {
   handleInitCurrentLocation,
   handleInitWatchId,
   handleClearLocationWatch,
+  handleShowMyPets,
 } from './markingMap'
 
 export default function* sagas() {
@@ -39,4 +40,5 @@ export default function* sagas() {
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
   yield fork(handleClearLocationWatch);
+  yield fork(handleShowMyPets);
 }
