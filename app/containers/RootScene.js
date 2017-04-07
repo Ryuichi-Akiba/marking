@@ -9,7 +9,7 @@ import Login from './Login'
 import MarkingMap from './MarkingMap'
 import PetFormScene from './PetFormScene'
 import SettingsScene from './SettingsScene'
-import SelectableListViewScene from './SelectableListViewScene'
+import SelectableListViewScene from '../components/forms/SelectableListViewScene'
 import SideMenuComponent from './SideMenu'
 
 class RootScene extends React.PureComponent {
@@ -45,7 +45,7 @@ class RootScene extends React.PureComponent {
     if (route.name === 'SelectableListViewScene') {
       return Navigator.SceneConfigs.FloatFromBottom;
     }
-    return Navigator.SceneConfigs.FadeAndroid;
+    return Navigator.SceneConfigs.FloatFromRight;
   }
 
   onSideMenuChange (isOpen: boolean) {
@@ -70,21 +70,21 @@ class RootScene extends React.PureComponent {
 
   renderScene(route, navigator) {
     if (route.name === 'Login') {
-      return this.wrap(<Login navigator={navigator} {...route.passProps}/>);
+      return this.wrap(<Login navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'PetFormScene') {
-      return this.wrap(<PetFormScene navigator={navigator} {...route.passProps}/>);
+      return this.wrap(<PetFormScene navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'SelectableListViewScene') {
-      return <SelectableListViewScene navigator={navigator} {...route.passProps}/>;
+      return <SelectableListViewScene navigator={navigator} {...route.props}/>;
     }
 
     var main;
     if (route.name === 'Map') {
-      main = this.wrap(<MarkingMap openMenu={this.toggleSideMenu.bind(this)} navigator={navigator} {...route.passProps}/>);
+      main = this.wrap(<MarkingMap openMenu={this.toggleSideMenu.bind(this)} navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'Settings') {
-      main = this.wrap(<SettingsScene openMenu={this.toggleSideMenu.bind(this)} navigator={navigator} {...route.passProps}/>);
+      main = this.wrap(<SettingsScene openMenu={this.toggleSideMenu.bind(this)} navigator={navigator} {...route.props}/>);
     }
     return (
       <SideMenu

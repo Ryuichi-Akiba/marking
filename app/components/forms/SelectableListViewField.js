@@ -1,62 +1,52 @@
 import React from 'react'
-import {Modal, View, Text, TouchableHighlight, StyleSheet, Navigator} from 'react-native'
-import MAIcon from 'react-native-vector-icons/MaterialIcons'
-import MarkingNavbar from '../common/MarkingNavbar'
-import ValueListView from '../common/ValueListView'
+import {View} from 'react-native'
+import List from '../elements/List'
+import Label from '../elements/Label'
 
 export default class SelectableListViewField extends React.PureComponent {
   static propTypes = {
-    onPress: React.PropTypes.func.isRequired,
-    label: React.PropTypes.string.isRequired,
+    navigator: React.PropTypes.object.isRequired,
+    data: React.PropTypes.array.isRequired,
+    converter: React.PropTypes.func, // SelectableListViewSceneに渡したオブジェクトを選択後に文字変換するためのコンバータ
+    // map from component
+    label: React.PropTypes.string,
     icon: React.PropTypes.string,
     placeholder: React.PropTypes.string,
-    selected: React.PropTypes.string,
+    // map from redux-form
+    input: React.PropTypes.object,
+    border: React.PropTypes.bool,
   };
 
-  componentWillUpdate(nextProps, nextState) {
-    console.log(nextProps);
-    console.log(this.props);
-    nextProps.input.onChange(nextProps.selected);
-  }
+  static defaultProps = {
+    converter: (value) => value,
+    border: true,
+  };
 
   constructor(props) {
     super(props);
-    // this.state = {visible: false, data: props.data};
   }
 
-  setModalVisible(visible) {
-    // this.setState({visible: visible});
-    // console.log(this.state.visible);
-  }
-  showModal() {
-    // console.log('SHOE MODAL');
-    // this.setModalVisible(true);
-  }
-  hideModal() {
-    // this.setModalVisible(false);
+  openModal() {
+    const handleSelect = (value) => {
+      const converted = this.props.converter(value);
+      this.props.input.onChange(converted);
+    };
+    this.props.navigator.push({
+      name: 'SelectableListViewScene',
+      props: {
+        data: this.props.data,
+        onSelect: handleSelect
+      }
+    });
   }
 
   render() {
-    const {input, meta, ...inputProps} = this.props;
-    // const handlePress = (value) => {
-    //   input.onChange(value);
-    //   this.hideModal();
-    // };
-    // const cancel = {
-    //   title: 'Cancel',
-    //   handler: this.hideModal.bind(this),
-    // };
-    const text = !!input.value ? (<Text style={{height: 32, fontSize: 16, paddingTop: 8,}}>{input.value}</Text>) : (<Text style={{height: 32, color: '#999999', fontSize: 16, paddingTop: 8,}}>{this.props.placeholder}</Text>);
+    const input = this.props.input;
+    const text = !!input.value ? <Label>{input.value}</Label> : <Label placeholder={true}>{this.props.placeholder}</Label>;
 
     return (
-      <View style={{flex: 1, flexDirection: 'row'}}>
-        <View style={{width: 45, height: 30, paddingLeft: 5}}>
-          <MAIcon name={this.props.icon} size={24} color={'#666666'} style={{paddingTop: 5, paddingBottom: 5}}/>
-        </View>
-
-        <TouchableHighlight underlayColor={'#ffffff'} style={{flex: 1, position: 'relative', justifyContent: 'center'}} onPress={this.props.onPress}>
-          {text}
-        </TouchableHighlight>
+      <View>
+        <List icon={this.props.icon} title={text} chevron={true} onPress={this.openModal.bind(this)} border={this.props.border}/>
       </View>
     );
   }

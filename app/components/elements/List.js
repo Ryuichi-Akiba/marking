@@ -16,9 +16,10 @@ export default class List extends React.PureComponent {
     avatar: React.PropTypes.any,
     icon: React.PropTypes.string,
     iconColor: React.PropTypes.string,
-    title: React.PropTypes.string,
+    title: React.PropTypes.object,
     border: React.PropTypes.bool,
     chevron: React.PropTypes.bool,
+    hideChevron: React.PropTypes.bool,
     rightTitle: React.PropTypes.string,
   };
 
@@ -48,6 +49,7 @@ export default class List extends React.PureComponent {
         rightTitle={this.props.rightTitle}
         rightTitleStyle={rightTitleStyle}
         onPress={this.props.onPress}
+        hideChevron={this.props.hideChevron}
       >
       </ListItem>
     );
