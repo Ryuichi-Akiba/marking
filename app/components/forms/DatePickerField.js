@@ -32,6 +32,14 @@ export default class DatePickerField extends React.PureComponent {
     this.props.input.onChange(value);
   }
 
+  isValid() {
+    const meta = this.props.meta;
+    if (!!meta.submitFailed) {
+      return !!meta.valid ? (!meta.dirty ? null : !!meta.valid) : !!meta.valid;
+    }
+    return !meta.dirty ? null : !!meta.valid;
+  }
+
   render() {
     const input = this.props.input;
     const text = !!input.value ? <Label>{moment(input.value).format('YYYY-MM-DD')}</Label> : <Label placeholder={true}>{this.props.placeholder}</Label>;
@@ -44,7 +52,7 @@ export default class DatePickerField extends React.PureComponent {
 
     return (
       <View>
-        <List icon={this.props.icon} title={text} chevron={true} onPress={this.toggle.bind(this)} border={this.props.border}/>
+        <List icon={this.props.icon} title={text} chevron={true} onPress={this.toggle.bind(this)} border={this.props.border} valid={this.isValid()}/>
         {pickerComponent}
       </View>
     );

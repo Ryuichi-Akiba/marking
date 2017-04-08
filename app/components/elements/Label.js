@@ -13,7 +13,6 @@ export default class Label extends React.PureComponent {
 
   render() {
     const color = !!this.props.placeholder ? '#9E9E9E' : '#212121';
-
     return (
       <Text style={{fontSize:normalize(14), color:color}} {...this.props}>{this.props.children}</Text>
     );

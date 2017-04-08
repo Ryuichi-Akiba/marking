@@ -26,6 +26,7 @@ export const successGetMyPets = createAction(SUCCESS_GET_MY_PETS, (payload) => p
 export const ADD_MY_PET = 'ADD_MY_PET';
 export function addMyPet(values) {
   // APIに合うようにフォームをトランスフォームする
+  values.sex = values.sex.value;
   values.user = {};
   return {
     type: ADD_MY_PET,

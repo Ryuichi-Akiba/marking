@@ -9,6 +9,11 @@ export default class SelectableListViewScene extends React.PureComponent {
     navigator: React.PropTypes.object.isRequired,
     data: React.PropTypes.array,
     onSelect: React.PropTypes.func,
+    converter: React.PropTypes.func,
+  };
+
+  static defaultProps = {
+    converter: (value) => value,
   };
 
   render() {
@@ -23,7 +28,7 @@ export default class SelectableListViewScene extends React.PureComponent {
     return (
       <View>
         <MarkingNavbar title="選択する" left={handleCancel}/>
-        <ValueListView data={this.props.data} onSelect={handleSelect}/>
+        <ValueListView data={this.props.data} onSelect={handleSelect} converter={this.props.converter}/>
       </View>
     );
   }

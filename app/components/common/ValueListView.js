@@ -1,20 +1,21 @@
 import React from 'react'
 import {View, ScrollView, TouchableOpacity, TouchableHighlight, ListView, Text, StyleSheet} from 'react-native'
-
-const styles = StyleSheet.create({
-  cell: {
-    padding: 15,
-    paddingLeft: 0,
-    marginLeft: 15,
-    borderColor: '#cccccc',
-    borderBottomWidth: 0.5,
-  },
-});
+import List from '../elements/List'
 
 export default class ValueListView extends React.PureComponent {
   static propTypes = {
     data: React.PropTypes.array,
     onSelect: React.PropTypes.func,
+    converter: React.PropTypes.func,
+  };
+
+  static defaultProps = {
+    converter: (rowData) => {
+      if (rowData) {
+        return rowData;
+      }
+      return '';
+    }
   };
 
   constructor(props) {
@@ -44,8 +45,8 @@ export default class ValueListView extends React.PureComponent {
 
     return (
       <TouchableHighlight underlayColor={'#f6f6f6'} onPress={handlePress}>
-        <View style={styles.cell}>
-          <Text>{rowData}</Text>
+        <View>
+          <List key={rowID} title={this.props.converter(rowData)}/>
         </View>
       </TouchableHighlight>
     );
