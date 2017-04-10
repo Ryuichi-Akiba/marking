@@ -20,8 +20,7 @@ class Login extends React.PureComponent {
     if (nextProps.loginState !== this.props.loginState) {
       if (nextProps.loginState.isLoggedIn) {
         this.props.navigator.replace({
-          name: 'PetFormScene',
-          props: {force:true} // FIXME フォームを作りたいので一時的にこうしておく
+          name: 'PetFormScene'
         });
       }
     }

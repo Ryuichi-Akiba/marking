@@ -1,13 +1,15 @@
 import {call, put, take} from 'redux-saga/effects'
-import {postMePets} from '../../common/api/me'
+import {postMePets, uploadMePetsImage} from '../../common/api/me'
 import {
   failureCallApi,
 } from '../reducers/common'
 import {
   INITIALIZE_SKIP_PET_FORM_SCENE,
   ADD_MY_PET,
-  successPostMyPet,
+  SUCCESS_UPLOAD_MY_PETS,
   successGetMyPets,
+  successUploadMyPets,
+  successPostMyPets,
 } from '../reducers/addMyPetForm'
 import {loadMyPets} from '../../logic/pet'
 
@@ -23,15 +25,29 @@ export function* handleInitializeSkipPetFormScene() {
   }
 }
 
-/**
- * ADD_MY_PETをハンドルして、ペットを追加するAPIをコールする.
- */
-export function* handleRequestPostMyPet() {
+export function* handleAddMyPet() {
   while (true) {
     const action = yield take(ADD_MY_PET);
+    if (action.payload.image) {
+      const {payload, error} = yield call(uploadMePetsImage, {value: action.payload.image.uri});
+      if (payload && !error) {
+        var added = Object.assign({}, action.payload);
+        added.image = payload.url;
+        yield put(successUploadMyPets(added));
+      } else {
+        yield put(failureCallApi(error));
+      }
+    }
+    yield put(successUploadMyPets(action.payload));
+  }
+}
+
+export function* handleSuccessUploadMyPet() {
+  while (true) {
+    const action = yield take(SUCCESS_UPLOAD_MY_PETS);
     const {payload, error} = yield call(postMePets, action.payload);
     if (payload && !error) {
-      yield put(successPostMyPet(payload));
+      yield put(successPostMyPets(payload));
     } else {
       yield put(failureCallApi(error));
     }

@@ -64,7 +64,7 @@ class SideMenu extends React.PureComponent {
         this.props.onChange();
       };
       list.push(
-        <List key={i} avatar={require('./images/login.jpg')} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
+        <List key={i} avatar={{uri: pet.image}} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
       );
     });
     const profileImage = {uri: this.props.loginState.user.imageUrl};

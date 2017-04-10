@@ -3,6 +3,8 @@ import {StyleSheet, View, Text, Image, ScrollView, Button, TouchableOpacity, Tou
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {Field, reduxForm} from 'redux-form'
+import MAIcon from 'react-native-vector-icons/MaterialIcons'
+import ImagePicker from 'react-native-image-crop-picker'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
 import * as rootActions from '../redux/reducers/root'
 import InputField from '../components/forms/InputField'
@@ -12,7 +14,6 @@ import MarkingNavbar from '../components/common/MarkingNavbar'
 import NavbarIcon from '../components/common/NavbarIcon'
 import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
-import List from '../components/elements/List'
 import MessageContainer from '../components/forms/MessageContainer'
 
 var styles = StyleSheet.create({
@@ -49,6 +50,12 @@ var styles = StyleSheet.create({
     justifyContent: 'center'
   },
 
+  avatar: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+  },
+
   icon: {
     fontSize:24,
     paddingLeft:6,
@@ -74,15 +81,12 @@ class PetFormScene extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {click:0};
+    this.state = {click:0, image:null};
   }
 
   componentDidMount() {
     // ペットフォームを初期化する
     this.props.petFormActions.initialize(!this.props.force);
-    if (!this.props.isNewWindow) {
-      this.props.rootActions.destroyLoadingScene();
-    }
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -110,12 +114,27 @@ class PetFormScene extends React.Component {
 
   save() {
     this.props.submit();
+
     if (this.props.valid) {
       const {petForm} = this.props.reduxFormState;
-      this.props.petFormActions.addMyPet(petForm.values);
+      var values = petForm.values;
+      values.image = this.state.image;
+      this.props.petFormActions.addMyPet(values);
     } else {
-      this.setState({click:++this.state.click});
+      this.setState({click: ++this.state.click});
     }
+  }
+
+  pick() {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true,
+      includeBase64: true
+    }).then(image => {
+      console.log(image);
+      this.setState({image:{uri:`data:${image.mime};base64,`+ image.data, width:image.width, height:image.height, mime:image.mime}});
+    });
   }
 
   render() {
@@ -130,10 +149,21 @@ class PetFormScene extends React.Component {
       errors = petForm.syncErrors;
     }
 
+    var image = <View style={[styles.avatar, {alignItems:'center', justifyContent:'center', backgroundColor:'#FFFFFF'}]}><MAIcon name="photo" size={48} style={{color:'#BDBDBD'}}/></View>;
+    if (this.state.image) {
+      image = <Image style={styles.avatar} source={this.state.image}/>;
+    }
+
     return (
       <View style={styles.container}>
         {this.createNavbar()}
         <ScrollViewContainer>
+          <View style={{alignItems:'center', justifyContent:'center', marginTop:32}}>
+            {image}
+          </View>
+          <TouchableOpacity onPress={() => this.pick()} style={{marginTop:10, alignItems:'center', justifyContent:'center'}}>
+            <Text>画像を選択する</Text>
+          </TouchableOpacity>
           <ListGroup>
             <Field icon="pets" name="name" placeholder="ペットの名前" component={InputField}/>
             <Field icon="message" name="profile" placeholder="ペットのプロフィール" component={InputField} border={false}/>
