@@ -28,7 +28,6 @@ class SideMenu extends React.PureComponent {
   // ログアウト処理後、ステートの変更を検知し、成功していれば画面遷移する
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.loginState !== this.props.loginState) {
-      console.log(nextProps.loginState);
       if (!nextProps.loginState.isLoggedIn) {
         this.props.onChange();
         this.props.navigator.replace({
@@ -44,6 +43,7 @@ class SideMenu extends React.PureComponent {
       name: 'Settings',
     });
   }
+
   logout() {
     this.props.onChange();
     this.props.loginActions.logout();

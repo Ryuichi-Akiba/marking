@@ -16,6 +16,7 @@ import {
   handleInitializeSkipPetFormScene,
   handleAddMyPet,
   handleSuccessUploadMyPet,
+  handleSuccessPostMyPet,
 } from './addMyPetForm'
 import {
   handleInitCurrentLocation,
@@ -38,6 +39,7 @@ export default function* sagas() {
   yield fork(handleInitializeSkipPetFormScene);
   yield fork(handleAddMyPet);
   yield fork(handleSuccessUploadMyPet);
+  yield fork(handleSuccessPostMyPet);
   // MAP
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);

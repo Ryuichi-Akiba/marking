@@ -91,11 +91,20 @@ class PetFormScene extends React.Component {
 
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.petFormState !== this.props.petFormState) {
-      if (nextProps.petFormState.created) {
+      // 初回ロード時
+      if (nextProps.petFormState.skip) {
         this.props.rootActions.destroyLoadingScene(); // FIXME 本来ならば、Map側のページの初期化処理終了後にこれを行うべきだが、競合しそうなので今はここに書いておく
         this.props.navigator.replace({
           name: 'Map'
         });
+      }
+
+      // 新しくペットを登録した場合の遷移先を定義する
+      if (nextProps.petFormState.created) {
+        if (this.props.isNewWindow) {
+          this.props.navigator.pop();
+        }
+        this.props.navigator.replace({name:'Map'});
       }
     }
   }

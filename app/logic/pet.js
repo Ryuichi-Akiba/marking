@@ -3,10 +3,10 @@ import {PETS} from '../common/auth/sessionKey'
 import {getMePets} from '../common/api/me'
 
 // ログインユーザーのペットの一覧を取得する
-export function loadMyPets() {
+export function loadMyPets(reload : Boolean) {
   return Session.isLoggedIn().then(isLoggedIn => {
     if (isLoggedIn) {
-      return loadMyPetsFromCacheIfExists();
+      return loadMyPetsFromCacheIfExists(reload);
     } else {
       return Promise.resolve({payload:[]});
     }
@@ -14,9 +14,12 @@ export function loadMyPets() {
 }
 
 // ログインしている場合はセッションかAPI経由でペット一覧を取得する
-function loadMyPetsFromCacheIfExists() {
+function loadMyPetsFromCacheIfExists(reload : Boolean) {
   return Session.get(PETS)
     .then(cache => {
+      if (!!reload) {
+        return getMePets();
+      }
       // キャッシュにペットがいなければAPI経由で取得する
       if (!cache || !cache.payload || cache.payload.length === 0) {
         return getMePets();

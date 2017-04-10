@@ -49,7 +49,7 @@ export default class List extends React.PureComponent {
 
     const iconColor = this.getIconColor();
     const leftIcon = !!this.props.icon ? {name:this.props.icon, style:[styles.icon, {color:iconColor}]} : {};
-    const avatarStyle = !!this.props.avatar ? {marginLeft:5, marginRight:13, width:24, height:24, borderRadius:12} : {};
+    const avatarStyle = !!this.props.avatar ? {marginLeft:5, marginRight:13, marginTop:2, width:24, height:24, borderRadius:12} : {};
     const containerStyle = {borderBottomColor:'#E0E0E0', borderBottomWidth:border, paddingTop:8, paddingBottom:8};
     const chevronColor = !!this.props.chevron ? '#BDBDBD' : '#ffffff';
     const rightTitleStyle = !!this.props.rightTitle ? {color:'#9E9E9E', fontSize: normalize(14)} : {};

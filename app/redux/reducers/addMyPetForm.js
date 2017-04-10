@@ -44,18 +44,24 @@ export const successUploadMyPets = createAction(SUCCESS_UPLOAD_MY_PETS, (payload
 export const SUCCESS_POST_MY_PETS = 'SUCCESS_POST_MY_PETS';
 export const successPostMyPets = createAction(SUCCESS_POST_MY_PETS, (payload) => payload);
 
+// ペットの登録に成功した時のアクション
+export const SUCCESS_RELOAD_MY_PETS = 'SUCCESS_RELOAD_MY_PETS';
+export const successReloadMyPets = createAction(SUCCESS_RELOAD_MY_PETS, (payload) => payload);
+
 // -------------------- Immutable State Model の定義 --------------------
 export const AddMyPetFormRecord = new Record({
-  created: false
+  skip: false,
+  created: false,
 });
 
 // -------------------- Reducer の定義 --------------------
 export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
   switch (action.type) {
     case SUCCESS_GET_MY_PETS:
-      return state.set('created', (action.payload && 0 < action.payload.length));
+      return state.set('skip', (action.payload && 0 < action.payload.length));
 
     case SUCCESS_POST_MY_PETS:
+    case SUCCESS_RELOAD_MY_PETS:
       return state.set('created', true);
 
     default:
