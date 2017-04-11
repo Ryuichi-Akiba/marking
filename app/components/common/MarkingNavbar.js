@@ -9,6 +9,7 @@ export default class MarkingNavbar extends React.PureComponent {
     drawer: React.PropTypes.object,
     left: React.PropTypes.object,
     right: React.PropTypes.object,
+    transparent: React.PropTypes.bool,
   };
 
   constructor(props) {
@@ -32,10 +33,11 @@ export default class MarkingNavbar extends React.PureComponent {
     }
 
     const rightButtonConfig = !!this.props.right ? this.props.right : null;
+    const containerStyle = !!this.props.transparent ? {backgroundColor:'rgba(0,0,0,0)'} : {};
 
     return (
       <View>
-        <NavigationBar title={titleConfig} leftButton={leftButtonConfig} rightButton={rightButtonConfig}/>
+        <NavigationBar containerStyle={containerStyle} title={titleConfig} leftButton={leftButtonConfig} rightButton={rightButtonConfig}/>
       </View>
     );
   }

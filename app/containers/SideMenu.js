@@ -60,12 +60,15 @@ class SideMenu extends React.PureComponent {
     // Create My Pet List
     var list = [];
     this.props.menuState.pets.forEach((pet, i) => {
-      var handlePress = () => {
-        this.props.onChange();
-      };
-      list.push(
-        <List key={i} avatar={{uri: pet.image}} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
-      );
+      if (!pet.dead) {
+        var handlePress = () => {
+          this.props.onChange();
+          this.props.navigator.replace({name:'PetDetail', props:{pet:pet}});
+        };
+        list.push(
+          <List key={i} avatar={{uri: pet.image}} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
+        );
+      }
     });
     const profileImage = {uri: this.props.loginState.user.imageUrl};
 

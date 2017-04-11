@@ -1,6 +1,4 @@
 import {call, put, take} from 'redux-saga/effects'
-import Session from '../../common/auth/Session'
-import {PETS} from '../../common/auth/sessionKey'
 import {postMePets, uploadMePetsImage} from '../../common/api/me'
 import {
   failureCallApi,
@@ -15,7 +13,7 @@ import {
   successPostMyPets,
   successReloadMyPets,
 } from '../reducers/addMyPetForm'
-import {loadMyPets, saveMyPets} from '../../logic/pet'
+import {loadMyPets} from '../../logic/pet'
 
 export function* handleInitializeSkipPetFormScene() {
   while (true) {

@@ -6,6 +6,7 @@ import {commonReducer} from './reducers/common'
 import {loginReducer} from './reducers/login'
 import {menuReducer} from './reducers/sidemenu'
 import {addMyPetForm} from './reducers/addMyPetForm'
+import {petDetailReducer} from './reducers/petDetail'
 import {markingMap} from './reducers/markingMap'
 // ... other reducers
 
@@ -17,6 +18,7 @@ export default combineReducers({
   login: loginReducer,
   menu: menuReducer,
   addMyPetForm,
+  petDetail: petDetailReducer,
   markingMap,
   // ... other reducers
 });

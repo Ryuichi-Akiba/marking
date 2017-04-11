@@ -103,8 +103,9 @@ class PetFormScene extends React.Component {
       if (nextProps.petFormState.created) {
         if (this.props.isNewWindow) {
           this.props.navigator.pop();
+        } else {
+          this.props.navigator.replace({name:'Map'});
         }
-        this.props.navigator.replace({name:'Map'});
       }
     }
   }

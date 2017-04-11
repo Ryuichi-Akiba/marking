@@ -1,4 +1,4 @@
-import {get, post, upload} from './api'
+import {get, post} from './api'
 
 // ログインしているユーザーの基本情報を取得する
 export function getMe() {

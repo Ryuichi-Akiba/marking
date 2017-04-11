@@ -68,26 +68,3 @@ export function post(uri, data, params) {
       });
   });
 }
-
-// HTTP REQUEST [POST]
-export function upload(uri, file, params) {
-  return getAuthorizationHeaders().then(headers => {
-    const data = new FormData();
-    data.append('file', file, "image.jpg");
-
-    params = !!params ? params : {};
-    headers['Content-Type'] = 'multipart/form-data';
-    console.log(`call api [POST] FileUpload ${SERVER}${uri}`);
-
-    return axios.post(`${SERVER}${uri}`, data, {headers: headers, params: params})
-      .then(response => {
-        if (!response.data || response.data === '') {
-          return {payload:{}};
-        }
-        return {payload:response.data};
-      })
-      .catch(error => {
-        return {error};
-      });
-  });
-}
