@@ -61,6 +61,13 @@ export function* handleClearLocationWatch() {
     }
 }
 
+export function* handleStartMarking() {
+    while (true) {
+        const action = yield take(START_MARKING);
+        const {payload, error} = yield call();
+    }
+}
+
 export function* handleShowMyPets() {
     while (true) {
         const action = yield take(SHOW_MY_PETS);

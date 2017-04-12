@@ -59,3 +59,19 @@ export function clearWatchId(watchId) {
 function clearWatchIdPromise(watchId) {
     return Promise.resolve(navigator.geolocation.clearWatch(watchId));
 }
+
+export function startMarking() {
+    return startMarkingPromise().then((result) => {
+        console.log('startMarking::success::result' + JSON.stringify(result));
+        return {payload: result};
+    }).catch((error) => {
+        console.log('startMarking::failure::result' + JSON.stringify(error));
+        return {error: error};
+    });
+}
+
+function startMarkingPromise() {
+    return new Promise((resolve, reject) => {
+        resolve();
+    });
+}

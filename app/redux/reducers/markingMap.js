@@ -117,6 +117,26 @@ export function startMarking() {
   }
 }
 
+export const SUCCESS_START_MARKING = 'SUCCESS_START_MARKING';
+export function successStartMarking(payload) {
+  return {
+    type: SUCCESS_START_MARKING,
+    payload: payload,
+    mete: {},
+    error: false
+  }
+}
+
+export const FAILURE_START_MARKING = 'FAILURE_START_MARKING';
+export function failureStartMarking(error) {
+  return {
+    type: FAILURE_START_MARKING,
+    payload: {},
+    mete: {error},
+    error: true
+  }
+}
+
 // 散歩の終了時に呼び出すアクション
 export const FINISH_MARKING = 'FINISH_MARKING';
 export function finishMarking() {
@@ -201,6 +221,8 @@ export function markingMap(state = new MarkingMapRecord(), action) {
       return state;
     case START_MARKING:
       return state.set('isStarted', action.payload);
+    case SUCCESS_START_MARKING:
+      return state; // TODO 位置情報のセットとか？
     case FINISH_MARKING:
       return state.set('isStarted', action.payload);
     case SHOW_PETS_ACTIONS:

@@ -60,9 +60,16 @@ class MarkingMap extends Component {
 
     var pets = [];
     state.pets.forEach((pet, i) => {
-      pets.push(
-          <Image style={styles.picture} source={require('./images/login.jpg')}/>
-      );
+      if (pet.image) {
+        pets.push(
+            <Image style={styles.picture} source={{uri: pet.image}}/>
+        );
+      } else {
+        // ペットの画像が登録されてない場合の代替アイコン。
+        pets.push(
+            <SocialIcon type='twitter'/>
+        );
+      }
     });
 
     return (
@@ -86,11 +93,6 @@ class MarkingMap extends Component {
             <View style={styles.buttonContainer}>
               {/* うんちボタン */}
               <Animated.View style={{bottom}}>
-                {/*<TouchableOpacity*/}
-                    {/*style={[styles.bubble, styles.button]}*/}
-                    {/*onPress={() => this.handleMarking(!state.isStarted)}>*/}
-                  {/*<Text>うんち</Text>*/}
-                {/*</TouchableOpacity>*/}
                 <SocialIcon type='soundcloud'/>
               </Animated.View>
 
@@ -103,11 +105,6 @@ class MarkingMap extends Component {
 
               {/* おしっこボタン */}
               <Animated.View style={{bottom}}>
-                {/*<TouchableOpacity*/}
-                    {/*style={[styles.bubble, styles.button]}*/}
-                    {/*onPress={() => this.handleMarking(!state.isStarted)}>*/}
-                  {/*<Text>おしっこ</Text>*/}
-                {/*</TouchableOpacity>*/}
                 <SocialIcon type='facebook'/>
               </Animated.View>
             </View>
