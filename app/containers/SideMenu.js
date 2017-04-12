@@ -28,7 +28,6 @@ class SideMenu extends React.PureComponent {
   // ログアウト処理後、ステートの変更を検知し、成功していれば画面遷移する
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.loginState !== this.props.loginState) {
-      console.log(nextProps.loginState);
       if (!nextProps.loginState.isLoggedIn) {
         this.props.onChange();
         this.props.navigator.replace({
@@ -44,6 +43,7 @@ class SideMenu extends React.PureComponent {
       name: 'Settings',
     });
   }
+
   logout() {
     this.props.onChange();
     this.props.loginActions.logout();
@@ -60,12 +60,15 @@ class SideMenu extends React.PureComponent {
     // Create My Pet List
     var list = [];
     this.props.menuState.pets.forEach((pet, i) => {
-      var handlePress = () => {
-        this.props.onChange();
-      };
-      list.push(
-        <List key={i} avatar={require('./images/login.jpg')} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
-      );
+      if (!pet.dead) {
+        var handlePress = () => {
+          this.props.onChange();
+          this.props.navigator.replace({name:'PetDetail', props:{pet:pet}});
+        };
+        list.push(
+          <List key={i} avatar={{uri: pet.image}} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
+        );
+      }
     });
     const profileImage = {uri: this.props.loginState.user.imageUrl};
 

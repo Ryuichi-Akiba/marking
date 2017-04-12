@@ -1,24 +1,35 @@
 import React from 'react'
-import {TextInput, View, Text, StyleSheet} from 'react-native'
-import MAIcon from 'react-native-vector-icons/MaterialIcons'
+import {TextInput, View} from 'react-native'
+import {normalize} from 'react-native-elements'
+import List from '../elements/List'
 
-/**
- * to be wrapped with redux-form Field component
- */
 export default class InputField extends React.PureComponent {
   static propTypes = {
     icon: React.PropTypes.string,
     placeholder: React.PropTypes.string,
     onClick: React.PropTypes.func,
+    border: React.PropTypes.bool,
+  };
+
+  static defaultProps = {
+    border: true,
   };
 
   constructor(props) {
     super(props);
-    this.state = {value: props.input.value};
+    this.state = {value:props.input.value, valid:false};
   }
 
   onChangeText(value) {
     this.setState({value});
+  }
+
+  isValid() {
+    const meta = this.props.meta;
+    if (!!meta.submitFailed) {
+      return !!meta.valid ? (!meta.dirty ? null : !!meta.valid) : !!meta.valid;
+    }
+    return !meta.dirty ? null : !!meta.valid;
   }
 
   render() {
@@ -29,22 +40,21 @@ export default class InputField extends React.PureComponent {
       input.onChange(value);
     };
 
+    const textInput = (
+      <TextInput style={{height: 30, fontSize:normalize(14)}}
+        {...inputProps}
+                 onChangeText={onChangeText}
+                 onBlur={input.onChange}
+                 value={this.state.value}
+                 placeholder={this.props.placeholder}
+                 placeholderTextColor={'#999999'}
+                 clearButtonMode="while-editing"
+      />
+    );
+
     return (
-      <View style={{flex: 1, flexDirection: 'row'}}>
-        <View style={{width: 45, height: 30, paddingLeft: 5}}>
-          <MAIcon name={this.props.icon} size={24} color={'#666666'} style={{paddingTop: 5, paddingBottom: 5}}/>
-        </View>
-        <View style={{flex: 1, position: 'relative', justifyContent: 'center'}}>
-          <TextInput style={{height: 32, fontSize: 16, }}
-            {...inputProps}
-                     onChangeText={onChangeText}
-                     onBlur={input.onChange}
-                     value={this.state.value}
-                     placeholder={this.props.placeholder}
-                     placeholderTextColor={'#999999'}
-                     clearButtonMode="while-editing"
-          />
-        </View>
+      <View>
+        <List icon={this.props.icon} title={textInput} hideChevron={true} border={this.props.border} valid={this.isValid()}/>
       </View>
     );
   }

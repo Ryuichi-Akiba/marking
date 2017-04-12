@@ -1,19 +1,21 @@
 import React from 'react'
-import {View, Text, StyleSheet, TouchableHighlight, DatePickerIOS} from 'react-native'
+import {View, DatePickerIOS} from 'react-native'
 import moment from 'moment'
-import MAIcon from 'react-native-vector-icons/MaterialIcons'
+import List from '../elements/List'
+import Label from '../elements/Label'
 
-/**
- * to be wrapped with redux-form Field component
- */
 export default class DatePickerField extends React.PureComponent {
   static propTypes = {
-    // TODO required?
-    onPress: React.PropTypes.func,
-    label: React.PropTypes.string.isRequired,
+    // map from component
     icon: React.PropTypes.string,
     placeholder: React.PropTypes.string,
-    selected: React.PropTypes.string,
+    // map from redux-form
+    input: React.PropTypes.object,
+    border: React.PropTypes.bool,
+  };
+
+  static defaultProps = {
+    border: true,
   };
 
   constructor(props) {
@@ -30,34 +32,28 @@ export default class DatePickerField extends React.PureComponent {
     this.props.input.onChange(value);
   }
 
-  render() {
-    const {input, meta, ...inputProps} = this.props;
-    const text = !!input.value ? (
-      <Text style={{height: 32, fontSize: 16, paddingTop: 8,}}>{moment(input.value).format('YYYY-MM-DD')}</Text>) : (<Text style={{height: 32, color: '#999999', fontSize: 16, paddingTop: 8,}}>{this.props.placeholder}</Text>);
+  isValid() {
+    const meta = this.props.meta;
+    if (!!meta.submitFailed) {
+      return !!meta.valid ? (!meta.dirty ? null : !!meta.valid) : !!meta.valid;
+    }
+    return !meta.dirty ? null : !!meta.valid;
+  }
 
-    var picker = null;
+  render() {
+    const input = this.props.input;
+    const text = !!input.value ? <Label>{moment(input.value).format('YYYY-MM-DD')}</Label> : <Label placeholder={true}>{this.props.placeholder}</Label>;
+
+    var pickerComponent = null;
     if (this.state.show) {
-      picker = <DatePickerIOS
-        date={this.state.date}
-        mode='date'
-        timeZoneOffsetInMinutes={9 * 60}
-        onDateChange={this.onDateChange.bind(this)}
-      />;
+      const picker = <DatePickerIOS date={this.state.date} mode="date" timeZoneOffsetInMinutes={9 * 60} onDateChange={this.onDateChange.bind(this)}/>;
+      pickerComponent = <List title={picker}/>;
     }
 
     return (
       <View>
-        <View style={{flex: 1, flexDirection: 'row'}}>
-          <View style={{width: 45, height: 30, paddingLeft: 5}}>
-            <MAIcon name={this.props.icon} size={24} color={'#666666'} style={{paddingTop: 5, paddingBottom: 5}}/>
-          </View>
-          <TouchableHighlight underlayColor={'#ffffff'} style={{flex: 1, position: 'relative', justifyContent: 'center'}} onPress={this.toggle.bind(this)}>
-            {text}
-          </TouchableHighlight>
-        </View>
-        <View style={{flex:1}}>
-          {picker}
-        </View>
+        <List icon={this.props.icon} title={text} chevron={true} onPress={this.toggle.bind(this)} border={this.props.border} valid={this.isValid()}/>
+        {pickerComponent}
       </View>
     );
   }

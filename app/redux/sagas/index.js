@@ -14,7 +14,9 @@ import {
 } from './sidemenu'
 import {
   handleInitializeSkipPetFormScene,
-  handleRequestPostMyPet,
+  handleAddMyPet,
+  handleSuccessUploadMyPet,
+  handleSuccessPostMyPet,
 } from './addMyPetForm'
 import {
   handleInitCurrentLocation,
@@ -31,11 +33,14 @@ export default function* sagas() {
   yield fork(handleGetAccessToken);
   yield fork(handleGetMe);
   yield fork(handleLogout);
-  // MY PETS
+  // SIDE MENU SCENE
   yield fork(handleInitializeMenuContainer);
   yield fork(handleRequestSuccessPostMePets);
-  yield fork(handleRequestPostMyPet);
+  // MY PETS SCENE
   yield fork(handleInitializeSkipPetFormScene);
+  yield fork(handleAddMyPet);
+  yield fork(handleSuccessUploadMyPet);
+  yield fork(handleSuccessPostMyPet);
   // MAP
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);

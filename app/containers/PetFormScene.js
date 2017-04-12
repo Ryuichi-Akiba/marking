@@ -1,15 +1,20 @@
 import React, {PropTypes} from 'react'
-import {StyleSheet, View, Text, Image, ScrollView, Button, TouchableOpacity, TouchableHighlight, Linking} from 'react-native'
+import {StyleSheet, View, Text, Image, ScrollView, Button, TouchableOpacity, TouchableHighlight, Linking, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {Field, reduxForm} from 'redux-form'
-import { List, ListItem } from 'react-native-elements'
+import MAIcon from 'react-native-vector-icons/MaterialIcons'
+import ImagePicker from 'react-native-image-crop-picker'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
 import * as rootActions from '../redux/reducers/root'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
 import SelectableListViewField from '../components/forms/SelectableListViewField'
 import MarkingNavbar from '../components/common/MarkingNavbar'
+import NavbarIcon from '../components/common/NavbarIcon'
+import ScrollViewContainer from '../components/common/ScrollViewContainer'
+import ListGroup from '../components/elements/ListGroup'
+import MessageContainer from '../components/forms/MessageContainer'
 
 var styles = StyleSheet.create({
   container: {
@@ -45,6 +50,12 @@ var styles = StyleSheet.create({
     justifyContent: 'center'
   },
 
+  avatar: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+  },
+
   icon: {
     fontSize:24,
     paddingLeft:6,
@@ -54,177 +65,156 @@ var styles = StyleSheet.create({
 
 class PetFormScene extends React.Component {
   static propTypes = {
+    // map from route navigation
     navigator: React.PropTypes.object.isRequired,
+    force: React.PropTypes.bool, // 登録フォームを表示可能か否かのBOOL値（falseの場合は、1匹もペットが登録されていない時のみ表示可能）FIXME よく考えると不要になる可能性あり
+    isNewWindow: React.PropTypes.bool, // 別画面で開いている場合はTRUE（設定画面から来た場合はこれがTRUEになっている）
+    // map from react-redux
     petFormState: PropTypes.object,
+    myPetFormActions: PropTypes.object,
     rootState: PropTypes.object,
+    rootActions: PropTypes.object,
+    // map from redux-form
     reduxFormState: PropTypes.object,
     initialValues: PropTypes.object,
-    myPetFormActions: PropTypes.object,
-    rootActions: PropTypes.object,
   };
 
   constructor(props) {
     super(props);
-    this.state = {selectedKind:null,  selectedGender:null, selectedColor:null};
-  }
-
-  handlePressSelectText(data, handler) {
-    this.props.navigator.push({
-      name: 'SelectableListViewScene',
-      passProps: {
-        data: data,
-        onSelect: handler
-      }
-    });
-  }
-  handlePressKindText() {
-    // FIXME とりあえず仮で
-    const kind = ["犬", "猫", "ハムスター", "フェレット", "とかげ", "へび"];
-    const handler = (value) => {
-      this.setState({selectedKind: value});
-      this.props.navigator.pop();
-    };
-    this.handlePressSelectText(kind, handler);
-  }
-  handlePressGenderText() {
-    // FIXME とりあえず仮で
-    const gender = ["MALE", "FEMALE", "NONE"];
-    const handler = (value) => {
-      this.setState({selectedGender: value});
-      this.props.navigator.pop();
-    };
-    this.handlePressSelectText(gender, handler);
-  }
-  handlePressColorText() {
-    // FIXME とりあえず仮で
-    const color = ["茶・ブラウン", "黒・ブラック", "白・ホワイト", "鼠・グレー"];
-    const handler = (value) => {
-      this.setState({selectedColor: value});
-      this.props.navigator.pop();
-    };
-    this.handlePressSelectText(color, handler);
+    this.state = {click:0, image:null};
   }
 
   componentDidMount() {
     // ペットフォームを初期化する
-    this.props.myPetFormActions.initialize(true);
+    this.props.petFormActions.initialize(!this.props.force);
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.state.created !== this.props.state.created) {
-  //     nextProps.navigator.push({
-  //       name: 'MarkingMap'
-  //     });
-  //   }
-  // }
 
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.petFormState !== this.props.petFormState) {
-      if (nextProps.petFormState.created) {
-        // console.log(this.props);
-        // this.props.resetForm();
+      // 初回ロード時
+      if (nextProps.petFormState.skip) {
         this.props.rootActions.destroyLoadingScene(); // FIXME 本来ならば、Map側のページの初期化処理終了後にこれを行うべきだが、競合しそうなので今はここに書いておく
         this.props.navigator.replace({
           name: 'Map'
         });
       }
+
+      // 新しくペットを登録した場合の遷移先を定義する
+      if (nextProps.petFormState.created) {
+        if (this.props.isNewWindow) {
+          this.props.navigator.pop();
+        } else {
+          this.props.navigator.replace({name:'Map'});
+        }
+      }
     }
   }
 
+  createNavbar() {
+    var leftConfig;
+    if (this.props.isNewWindow) {
+      leftConfig = <NavbarIcon icon="chevron-left" onPress={this.props.navigator.pop}/>;
+    } else {
+      leftConfig = <NavbarIcon icon="clear" onPress={() => this.props.navigator.replace({name:'Map'})}/>;
+    }
+
+    const rightConfig = <NavbarIcon label="保存" onPress={this.save.bind(this)}/>;
+    return <MarkingNavbar title="ペットを登録" left={leftConfig} right={rightConfig}/>;
+  }
+
+  save() {
+    this.props.submit();
+
+    if (this.props.valid) {
+      const {petForm} = this.props.reduxFormState;
+      var values = petForm.values;
+      values.image = this.state.image;
+      this.props.petFormActions.addMyPet(values);
+    } else {
+      this.setState({click: ++this.state.click});
+    }
+  }
+
+  pick() {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true,
+      includeBase64: true
+    }).then(image => {
+      console.log(image);
+      this.setState({image:{uri:`data:${image.mime};base64,`+ image.data, width:image.width, height:image.height, mime:image.mime}});
+    });
+  }
+
   render() {
-    const handleSaveEvent = {
-      title: 'Save',
-      handler: () => {
-        const {petForm} = this.props.form;
-        console.log(petForm);
-        this.props.myPetFormActions.addMyPet(petForm.values);
-      },
-    };
+    // TODO とりあえず（本当はRESTから取得する）
+    const kinds = ["犬", "猫", "ハムスター", "フェレット", "とかげ", "へび"];
+    const colors = ["茶・ブラウン", "黒・ブラック", "白・ホワイト", "鼠・グレー"];
+    const genders = [{label:'オス', value:"MALE"}, {label:'メス', value:"FEMALE"}, {label:'不明', value:"NONE"}];
 
-    const handleSkipEvent = {
-      title: 'Skip',
-      handler: () => {
-        this.props.navigator.replace({
-          name: 'Map'
-        });
-      }
-    };
+    const {petForm} = this.props.reduxFormState;
+    var errors = null;
+    if (petForm) {
+      errors = petForm.syncErrors;
+    }
 
-    // temporary
-    const temp = <List>
-      <ListItem leftIcon={{name:'pets', style:styles.icon}} title={
-              <Field name="name" label="名前" placeholder="ペットの名前" component={InputField}/>
-            } hideChevron={true}/>
-      <ListItem leftIcon={{name:'pets', style:styles.icon}} title={
-              <Field name="name" label="名前" placeholder="ペットの名前" component={InputField}/>
-            } hideChevron={true}/>
-
-      <ListItem
-        roundAvatar
-        title='Limited supply! Its like digital gold!'
-        subtitle={
-                <View style={styles.subtitleView}>
-                  {/*<Image source={require('./images/login.jpg')}/>*/}
-                  <Text style={styles.ratingText}>5 months ago</Text>
-                </View>
-              }
-        avatar={require('./images/login.jpg')}
-      />
-    </List>;
+    var image = <View style={[styles.avatar, {alignItems:'center', justifyContent:'center', backgroundColor:'#FFFFFF'}]}><MAIcon name="photo" size={48} style={{color:'#BDBDBD'}}/></View>;
+    if (this.state.image) {
+      image = <Image style={styles.avatar} source={this.state.image}/>;
+    }
 
     return (
       <View style={styles.container}>
-        <MarkingNavbar title="ペットを追加" left={handleSkipEvent} right={handleSaveEvent}/>
-        <ScrollView>
-          <View style={styles.form}>
-            <View style={styles.field}>
-              <Field name="name" label="名前" placeholder="ペットの名前" icon="pets" component={InputField}/>
-            </View>
-            <View style={styles.field}>
-              <Field name="birthDate" label="生年月日" component={DatePickerField} icon="date-range" placeholder="生年月日"/>
-            </View>
-            <View style={styles.field}>
-              <Field name="type" label="品種" component={SelectableListViewField} onPress={this.handlePressKindText.bind(this)} selected={this.state.selectedKind} icon="assignment" placeholder="ペットの品種"/>
-            </View>
-            <View style={styles.field}>
-              <Field name="color" label="毛色" component={SelectableListViewField} onPress={this.handlePressColorText.bind(this)} selected={this.state.selectedColor} icon="invert-colors" placeholder="毛の色"/>
-            </View>
-            <View style={styles.field}>
-              <Field name="sex" label="性別" component={SelectableListViewField} onPress={this.handlePressGenderText.bind(this)} selected={this.state.selectedGender} icon="wc" placeholder="性別"/>
-            </View>
+        {this.createNavbar()}
+        <ScrollViewContainer>
+          <View style={{alignItems:'center', justifyContent:'center', marginTop:32}}>
+            {image}
           </View>
-        </ScrollView>
+          <TouchableOpacity onPress={() => this.pick()} style={{marginTop:10, alignItems:'center', justifyContent:'center'}}>
+            <Text>画像を選択する</Text>
+          </TouchableOpacity>
+          <ListGroup>
+            <Field icon="pets" name="name" placeholder="ペットの名前" component={InputField}/>
+            <Field icon="message" name="profile" placeholder="ペットのプロフィール" component={InputField} border={false}/>
+          </ListGroup>
+          <ListGroup>
+            <Field icon="date-range" name="birthDate" placeholder="ペットの生年月日" component={DatePickerField}/>
+            <Field icon="folder-open" name="type" placeholder="ペットの品種" component={SelectableListViewField} navigator={this.props.navigator} data={kinds}/>
+            <Field icon="invert-colors" name="color" placeholder="ペットの色" component={SelectableListViewField} navigator={this.props.navigator} data={colors}/>
+            <Field icon="wc" name="sex" placeholder="ペットの性別" component={SelectableListViewField} navigator={this.props.navigator} data={genders} converter={(value) => value.label} border={false}/>
+          </ListGroup>
+          <MessageContainer errors={errors} notify={this.state.click}/>
+        </ScrollViewContainer>
       </View>
     );
   }
 }
 
 const validate = (values) => {
-  console.log(values);
   const errors = {};
   if (!values.name) {
-    errors.name = 'required name field';
+    errors.name = 'ペットの名前を入力してください。';
   }
   if (!values.birthDate) {
-    errors.birthDate = 'required birthDate field';
+    errors.birthDate = 'ペットの生年月日を入力してください。';
   }
   if (!values.type) {
-    errors.type = 'required type field';
+    errors.type = 'ペットの品種を入力してください。';
   }
   if (!values.color) {
-    errors.color = 'required color field';
+    errors.color = 'ペットの色を入力してください。';
   }
   if (!values.sex) {
-    errors.sex = 'required sex field';
+    errors.sex = 'ペットの性別を入力してください。';
   }
-  console.log(values);
-  console.log(errors);
   return errors;
 };
 
 PetFormScene = reduxForm({
   form: 'petForm',
-  validate
+  validate,
+  onSubmit: () => {}
 })(PetFormScene);
 
 function mapStateToProps(state) {
@@ -238,7 +228,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    myPetFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
+    petFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
     rootActions:  bindActionCreators(Object.assign({}, rootActions), dispatch),
   };
 }

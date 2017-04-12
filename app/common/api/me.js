@@ -14,3 +14,8 @@ export function getMePets() {
 export function postMePets(form) {
   return post('/api/v1/me/pets', form);
 }
+
+// ペット用の画像をアップロードする
+export function uploadMePetsImage(file) {
+  return post('/api/v1/me/pets/upload', file);
+}
