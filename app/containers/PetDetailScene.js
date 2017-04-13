@@ -8,8 +8,8 @@ import * as petDetailActions from '../redux/reducers/petDetail'
 import ListGroup from '../components/elements/ListGroup'
 import List from '../components/elements/List'
 import MarkingNavbar from '../components/common/MarkingNavbar'
-import NavbarIcon from '../components/common/NavbarIcon'
 import PetImage from '../components/pets/PetImage'
+import Colors from '../themes/Colors'
 
 class PetDetailScene extends React.PureComponent {
   static propTypes = {
@@ -30,8 +30,8 @@ class PetDetailScene extends React.PureComponent {
   renderHeader() {
     return (
       <View>
-        <MarkingNavbar title={this.props.pet.name} left={<NavbarIcon icon="menu" onPress={this.props.openMenu}/>} transparent={true}/>
-        <PetImage source={{uri:this.props.pet.image}}/>
+        <MarkingNavbar title={this.props.pet.name} left={{icon:'menu', handler:this.props.openMenu}} transparent={true}/>
+        <PetImage source={{uri:this.props.pet.image}} size="large"/>
       </View>
     );
   }
@@ -41,7 +41,7 @@ class PetDetailScene extends React.PureComponent {
       <ParallaxView backgroundSource={require('../components/pets/images/green-field.jpg')} windowHeight={300} header={this.renderHeader()}>
         <View>
           <ListGroup>
-            <List icon="account-balance" iconColor="#F44336" title="アーカイブ（思い出）する" border={false}/>
+            <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）する" border={false}/>
           </ListGroup>
         </View>
       </ParallaxView>

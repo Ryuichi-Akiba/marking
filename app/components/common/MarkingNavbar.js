@@ -2,13 +2,22 @@ import React from 'react'
 import {Modal, View, Text, TouchableHighlight, StyleSheet, Navigator} from 'react-native'
 import NavigationBar from 'react-native-navbar'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
+import Colors from '../../themes/Colors'
+
+const IconConfig = {
+  icon: React.PropTypes.string.isRequired,
+  handler: React.PropTypes.func,
+};
+const LinkConfig = {
+  title: React.PropTypes.string.isRequired,
+  handler: React.PropTypes.func,
+};
 
 export default class MarkingNavbar extends React.PureComponent {
   static propTypes = {
     title: React.PropTypes.string.isRequired,
-    drawer: React.PropTypes.object,
-    left: React.PropTypes.object,
-    right: React.PropTypes.object,
+    left: React.PropTypes.oneOfType([React.PropTypes.shape(IconConfig), React.PropTypes.shape(LinkConfig)]),
+    right: React.PropTypes.oneOfType([React.PropTypes.shape(IconConfig), React.PropTypes.shape(LinkConfig)]),
     transparent: React.PropTypes.bool,
   };
 
@@ -16,29 +25,45 @@ export default class MarkingNavbar extends React.PureComponent {
     super(props);
   }
 
-  render() {
-    const titleConfig = {
+  title() {
+    const color = !!this.props.transparent ? Colors.white : Colors.orange;
+    return {
       title: this.props.title,
+      tintColor: color,
     };
+  }
 
-    var leftButtonConfig = null;
-    if (this.props.drawer) {
-      leftButtonConfig = (
-        <View style={{flexDirection: 'row', marginLeft:8, marginTop:10}}>
-          <MAIcon name="menu" size={24} color={'#333333'} onPress={this.props.drawer.open}/>
+  left() {
+    if (!this.props.left) {
+      return null;
+    }
+    return this.renderSideButton(this.props.left.title, this.props.left.icon, this.props.left.handler);
+  }
+
+  right() {
+    if (!this.props.right) {
+      return null;
+    }
+    return this.renderSideButton(this.props.right.title, this.props.right.icon, this.props.right.handler);
+  }
+
+  renderSideButton(title : string, icon : string, handler) {
+    const color = !!this.props.transparent ? Colors.white : Colors.orange;
+    if (icon) {
+      return (
+        <View style={{flexDirection: 'row', marginLeft:8, marginRight:8, marginTop:10}}>
+          <MAIcon name={icon} size={24} color={color} onPress={handler}/>
         </View>
       );
-    } else if (this.props.left) {
-      leftButtonConfig = this.props.left;
+    } else {
+      return {title:title, tintColor:color, handler:handler};
     }
+  }
 
-    const rightButtonConfig = !!this.props.right ? this.props.right : null;
+  render() {
     const containerStyle = !!this.props.transparent ? {backgroundColor:'rgba(0,0,0,0)'} : {};
-
     return (
-      <View>
-        <NavigationBar containerStyle={containerStyle} title={titleConfig} leftButton={leftButtonConfig} rightButton={rightButtonConfig}/>
-      </View>
+      <NavigationBar containerStyle={containerStyle} title={this.title()} leftButton={this.left()} rightButton={this.right()}/>
     );
   }
 }

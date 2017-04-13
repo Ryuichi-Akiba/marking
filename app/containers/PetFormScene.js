@@ -11,7 +11,6 @@ import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
 import SelectableListViewField from '../components/forms/SelectableListViewField'
 import MarkingNavbar from '../components/common/MarkingNavbar'
-import NavbarIcon from '../components/common/NavbarIcon'
 import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
 import MessageContainer from '../components/forms/MessageContainer'
@@ -113,12 +112,12 @@ class PetFormScene extends React.Component {
   createNavbar() {
     var leftConfig;
     if (this.props.isNewWindow) {
-      leftConfig = <NavbarIcon icon="chevron-left" onPress={this.props.navigator.pop}/>;
+      leftConfig = {icon:'chevron-left', handler:this.props.navigator.pop};
     } else {
-      leftConfig = <NavbarIcon icon="clear" onPress={() => this.props.navigator.replace({name:'Map'})}/>;
+      leftConfig = {icon:'clear', handler:() => this.props.navigator.replace({name:'Map'})};
     }
 
-    const rightConfig = <NavbarIcon label="保存" onPress={this.save.bind(this)}/>;
+    const rightConfig = {title:'保存', handler:this.save.bind(this)};
     return <MarkingNavbar title="ペットを登録" left={leftConfig} right={rightConfig}/>;
   }
 

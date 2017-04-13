@@ -8,15 +8,6 @@ import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
 import List from '../components/elements/List'
 import MarkingNavbar from '../components/common/MarkingNavbar'
-import NavbarIcon from '../components/common/NavbarIcon'
-
-var styles = StyleSheet.create({
-  icon: {
-    fontSize:24,
-    paddingLeft:4,
-    paddingRight:6
-  }
-});
 
 class SettingsScene extends React.PureComponent {
   static propTypes = {
@@ -59,7 +50,7 @@ class SettingsScene extends React.PureComponent {
   render() {
     return (
       <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="設定" left={<NavbarIcon icon="menu" onPress={this.props.openMenu}/>}/>
+        <MarkingNavbar title="設定" left={{icon:'menu', handler:this.props.openMenu}}/>
         <ScrollViewContainer>
           <ListGroup>
             <List icon="pets" iconColor="#795548" title="ペットを登録" chevron={true} border={false} onPress={this.viewPetForm.bind(this)}/>
