@@ -23,6 +23,10 @@ import {
   handleInitWatchId,
   handleClearLocationWatch,
   handleShowMyPets,
+  handleStartMarking,
+  handleFinishMarking,
+  handlePee,
+  handlePoo,
 } from './markingMap'
 
 export default function* sagas() {
@@ -46,4 +50,8 @@ export default function* sagas() {
   yield fork(handleInitWatchId);
   yield fork(handleClearLocationWatch);
   yield fork(handleShowMyPets);
+  yield fork(handleStartMarking);
+  yield fork(handleFinishMarking);
+  yield fork(handlePee);
+  yield fork(handlePoo);
 }

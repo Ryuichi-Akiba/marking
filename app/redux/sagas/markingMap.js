@@ -12,11 +12,24 @@ import {
     SHOW_MY_PETS,
     successShowMyPets,
     failureShowMyPets,
+    START_MARKING,
+    successStartMarking,
+    failureStartMarking,
+    FINISH_MARKING,
+    successFinishMarking,
+    failureFinishMarking,
+    PEE,
+    successPee,
+    failurePee,
+    POO,
+    successPoo,
+    failurePoo,
 } from '../reducers/markingMap'
 import {
     getCurrentRegion,
     getWatchId,
     clearWatchId,
+    startMarking,
 } from '../../logic/geolocation'
 import {
     loadMyPets,
@@ -64,8 +77,54 @@ export function* handleClearLocationWatch() {
 export function* handleStartMarking() {
     while (true) {
         const action = yield take(START_MARKING);
-        const {payload, error} = yield call();
+        const markings = {distance: 0, events: []};
+        const {payload, error} = yield call(startMarking, markings, null, 'START');
+
+        if (payload && !error) {
+            yield put(successStartMarking(payload));
+        } else {
+            yield put(failureStartMarking(error));
+        }
     }
+}
+
+export function* handleFinishMarking() {
+  while (true) {
+    const action = yield take(FINISH_MARKING);
+    const {payload, error} = yield call(startMarking, action.payload, null, 'END');
+
+    if (payload && !error) {
+      yield put(successFinishMarking(payload));
+    } else {
+      yield put(failureFinishMarking(error));
+    }
+  }
+}
+
+export function* handlePee() {
+    while (true) {
+        const action = yield take(PEE);
+        const {payload, error} = yield call(startMarking, action.payload, action.meta, 'PEE');
+
+        if (payload && !error) {
+            yield put(successPee(payload));
+        } else {
+            yield put(failurePee(error));
+        }
+    }
+}
+
+export function* handlePoo() {
+  while (true) {
+    const action = yield take(POO);
+    const {payload, error} = yield call(startMarking, action.payload, action.meta, 'POO');
+
+    if (payload && !error) {
+      yield put(successPoo(payload));
+    } else {
+      yield put(failurePoo(error));
+    }
+  }
 }
 
 export function* handleShowMyPets() {
