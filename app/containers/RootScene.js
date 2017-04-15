@@ -3,7 +3,6 @@ import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableO
 import {bindActionCreators} from 'redux'
 import {connect} from "react-redux"
 import Drawer from 'react-native-drawer'
-import {SideMenu} from 'react-native-elements'
 import * as rootActions from '../redux/reducers/root'
 import LoadingScene from './LoadingScene'
 import Login from './Login'
@@ -87,7 +86,8 @@ class RootScene extends React.PureComponent {
         type="overlay"
         tapToClose={true}
         panCloseMask={0.2}
-        openDrawerOffset={0.2}>
+        openDrawerOffset={0.2}
+      >
         <View style={{flex:1}}>
           {main}
         </View>

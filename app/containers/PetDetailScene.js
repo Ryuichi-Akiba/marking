@@ -2,7 +2,7 @@ import React from 'react'
 import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import ParallaxView from 'react-native-parallax-view'
+import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import * as rootActions from '../redux/reducers/root'
 import * as petDetailActions from '../redux/reducers/petDetail'
 import ListGroup from '../components/elements/ListGroup'
@@ -27,7 +27,13 @@ class PetDetailScene extends React.PureComponent {
     super(props);
   };
 
-  renderHeader() {
+  renderBackground() {
+    const deviceWidth = Dimensions.get('window').width;
+    return (
+      <Image source={require('../components/common/images/bg/sea.jpg')} style={{width:deviceWidth, height:300, resizeMode:'cover'}}/>
+    );
+  }
+  renderForeground() {
     return (
       <View>
         <MarkingNavbar title={this.props.pet.name} left={{icon:'menu', handler:this.props.openMenu}} transparent={true}/>
@@ -38,13 +44,14 @@ class PetDetailScene extends React.PureComponent {
 
   render() {
     return (
-      <ParallaxView backgroundSource={require('../components/pets/images/green-field.jpg')} windowHeight={300} header={this.renderHeader()}>
-        <View>
+      <ParallaxScrollView parallaxHeaderHeight={300} stickyHeaderHeight={64} backgroundSpeed={3}
+                          renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)}>
+        <View style={{flex:1, margin:0, padding:0, backgroundColor:'#ffffff'}}>
           <ListGroup>
             <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）する" border={false}/>
           </ListGroup>
         </View>
-      </ParallaxView>
+      </ParallaxScrollView>
     );
   }
 }

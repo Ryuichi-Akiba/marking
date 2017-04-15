@@ -1,4 +1,3 @@
-import {REHYDRATE} from "redux-persist/constants";
 import {Record} from "immutable";
 import {Animated} from 'react-native';
 
@@ -202,9 +201,6 @@ export const MarkingMapRecord = new Record({
 export function markingMap(state = new MarkingMapRecord(), action) {
 
   switch (action.type) {
-    case REHYDRATE:
-      return new MarkingMapRecord(action.payload.markingMap);
-
     case GET_CURRENT_LOCATION:
       return state;
     case SUCCESS_GET_CURRENT_LOCATION:

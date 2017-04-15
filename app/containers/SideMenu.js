@@ -1,7 +1,9 @@
 import React from 'react'
-import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image} from 'react-native'
+import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image, Dimensions} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import ParallaxScrollView from 'react-native-parallax-scroll-view'
+import Styles from '../themes/Styles'
 import ListGroup from '../components/elements/ListGroup'
 import List from '../components/elements/List'
 import * as menuActions from '../redux/reducers/sidemenu'
@@ -49,6 +51,35 @@ class SideMenu extends React.PureComponent {
     this.props.loginActions.logout();
   }
 
+  renderBackground() {
+    const deviceWidth = Dimensions.get('window').width;
+    return (
+      <Image source={require('../components/common/images/bg/mountain.jpg')} style={{width:deviceWidth, height:200, resizeMode:'cover'}}/>
+    );
+  }
+
+  renderForeground() {
+    return (
+      <View style={{justifyContent:'center', alignItems:'center'}}>
+        <View style={{paddingTop:48, paddingBottom:8}}>
+          <Image style={Styles.avatarMiddle} source={{uri: this.props.loginState.user.imageUrl}}/>
+        </View>
+        <Text style={{fontSize:16, color:'#FFFFFF', fontWeight:'bold', paddingTop:2, paddingBottom:2, padding:0, margin:0}}>
+          {this.props.loginState.user.username}
+        </Text>
+      </View>
+    );
+  }
+
+  renderStickyHeader() {
+    const user = this.props.loginState.user;
+    return (
+      <View style={{backgroundColor:'#FFFFFF', paddingTop:20, paddingBottom:16}}>
+        <List avatar={{uri: user.imageUrl}} title={user.username} border={false} hideChevron={true}/>
+      </View>
+    );
+  }
+
   render() {
     var goMap = () => {
       this.props.onChange();
@@ -70,43 +101,31 @@ class SideMenu extends React.PureComponent {
         );
       }
     });
-    const profileImage = {uri: this.props.loginState.user.imageUrl};
 
     // Render View
     return (
-      <View style={{flex:1, flexDirection:'column', backgroundColor:'#FF9800'}}>
-        <View style={{paddingTop:16, paddingBottom:24,}}>
-          <View style={{justifyContent:'center', alignItems:'center'}}>
-            <View style={{paddingTop:32, paddingBottom:8}}>
-              <Image style={styles.image} source={profileImage}/>
-            </View>
+      <View style={{flex:1, backgroundColor:'#FFFFFF'}}>
+        <ParallaxScrollView style={styles.parallax} parallaxHeaderHeight={200} stickyHeaderHeight={64} backgroundSpeed={3}
+                            renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderStickyHeader={this.renderStickyHeader.bind(this)}>
+          <View style={{flex:1, margin:0, padding:0, backgroundColor:'#ffffff'}}>
+            <ListGroup margin={false}>
+              <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
+              {list}
+              <List icon="settings" iconColor="#607D8B" title="設定" onPress={this.settings.bind(this)} chevron={true}/>
+              <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" border={false} onPress={this.logout.bind(this)}/>
+            </ListGroup>
           </View>
-          <View style={{justifyContent:'center', alignItems:'center', padding:0, margin:0}}>
-            <Text style={{fontSize:16, color:'#333333', fontWeight:'bold', paddingTop:2, paddingBottom:2, padding:0, margin:0}}>
-              {this.props.loginState.user.username}
-            </Text>
-          </View>
-        </View>
-        <ScrollView style={{flex:1, margin:0, padding:0, backgroundColor:'#ffffff'}}>
-          <ListGroup margin={false}>
-            <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
-            {list}
-            <List icon="settings" iconColor="#607D8B" title="設定" onPress={this.settings.bind(this)} chevron={true}/>
-            <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" border={false} onPress={this.logout.bind(this)}/>
-          </ListGroup>
-        </ScrollView>
+        </ParallaxScrollView>
       </View>
     );
   }
 }
 
 var styles = StyleSheet.create({
-  image: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  parallax: {
+    flex:1,
+    overflow:'hidden',
   },
-
   icon: {
     fontSize:24,
     paddingLeft:4,
