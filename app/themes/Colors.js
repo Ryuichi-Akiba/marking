@@ -2,6 +2,8 @@
 
 const colors = {
   text: '#212121',
+  backgroundColor: '#F5F5F5',
+  underlayColor: '#F5F5F5',
   white: '#FFFFFF',
   black: '#000000',
   red: '#F44336',

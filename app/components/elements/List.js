@@ -1,6 +1,7 @@
 import React from 'react'
 import {StyleSheet} from 'react-native'
 import {ListItem, normalize} from 'react-native-elements'
+import Colors from '../../themes/Colors'
 
 var styles = StyleSheet.create({
   icon: {
@@ -21,11 +22,13 @@ export default class List extends React.PureComponent {
     chevron: React.PropTypes.bool,
     hideChevron: React.PropTypes.bool,
     rightTitle: React.PropTypes.string,
+    padding: React.PropTypes.bool,
     valid: React.PropTypes.bool, // 正常値であれば緑、異常値であれば赤のアイコンにするためのフラグ
   };
 
   static defaultProps = {
     valid: undefined,
+    padding: true,
   };
 
   constructor(props) {
@@ -53,6 +56,7 @@ export default class List extends React.PureComponent {
     const containerStyle = {borderBottomColor:'#E0E0E0', borderBottomWidth:border, paddingTop:8, paddingBottom:8};
     const chevronColor = !!this.props.chevron ? '#BDBDBD' : '#ffffff';
     const rightTitleStyle = !!this.props.rightTitle ? {color:'#9E9E9E', fontSize: normalize(14)} : {};
+    const padding = !this.props.padding ? {paddingTop:0, paddingBottom:0, paddingLeft:0, paddingRight:0, marginTop:0, marginBottom:0, marginLeft:0, marginRight:0} : {};
 
     return (
       <ListItem
@@ -61,12 +65,13 @@ export default class List extends React.PureComponent {
         roundAvatar={true}
         leftIcon={leftIcon}
         title={this.props.title}
-        containerStyle={containerStyle}
+        containerStyle={[containerStyle, padding]}
         chevronColor={chevronColor}
         rightTitle={this.props.rightTitle}
         rightTitleStyle={rightTitleStyle}
         onPress={this.props.onPress}
         hideChevron={this.props.hideChevron}
+        underlayColor={Colors.underlayColor}
       >
       </ListItem>
     );

@@ -1,14 +1,22 @@
 import React from 'react'
-import {List} from 'react-native-elements'
+import {View} from 'react-native'
+import {List, ListItem} from 'react-native-elements'
+import Colors from '../../themes/Colors'
 
 export default class ListGroup extends React.PureComponent {
   static propTypes = {
     margin: React.PropTypes.bool,
     border: React.PropTypes.bool,
+    borderTop: React.PropTypes.bool,
+    borderBottom: React.PropTypes.bool,
+    title: React.PropTypes.string,
   };
+
   static defaultProps = {
     margin: true,
     border: true,
+    borderTop: true,
+    borderBottom: true,
   };
 
   constructor(props) {
@@ -16,17 +24,22 @@ export default class ListGroup extends React.PureComponent {
   }
 
   render() {
-    const border = !!this.props.border ? {borderTopWidth:0.5, borderBottomWidth:0.5} : {borderTopWidth:0, borderBottomWidth:0};
+    const border = !this.props.border ? {borderTopWidth:0, borderBottomWidth:0} : !!this.props.title ? {borderTopWidth:0, borderBottomWidth:0.5} :  {borderTopWidth:0.5, borderBottomWidth:0.5};
+    const borderTop = !this.props.borderTop ? {borderTopWidth:0} : {};
+    const borderBottom = !this.props.borderBottom ? {borderBottomWidth:0} : {};
+    const title = <ListItem title={this.props.title} hideChevron={true} titleStyle={{color:Colors.gray, marginLeft:5}} containerStyle={{backgroundColor:Colors.backgroundColor, borderBottomWidth:0.5, borderBottomColor:Colors.borderColor}}/>;
+    const marginTop = !this.props.margin ? 0 : !!this.props.title ? 12 : 32;
 
-    if (this.props.margin) {
+    if (this.props.title) {
       return (
-        <List containerStyle={[{borderColor:'#E0E0E0', marginTop:32}, border]}>
+        <List containerStyle={[{borderColor:Colors.borderColor, marginTop:marginTop}, border, borderTop, borderBottom]}>
+          {title}
           {this.props.children}
         </List>
       );
     } else {
       return (
-        <List containerStyle={[{borderColor:'#E0E0E0', marginTop:0}, border]}>
+        <List containerStyle={[{borderColor:Colors.borderColor, marginTop:marginTop}, border, borderTop, borderBottom]}>
           {this.props.children}
         </List>
       );

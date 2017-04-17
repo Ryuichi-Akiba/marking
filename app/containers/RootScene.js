@@ -87,6 +87,15 @@ class RootScene extends React.PureComponent {
         tapToClose={true}
         panCloseMask={0.2}
         openDrawerOffset={0.2}
+        styles={{
+          mainOverlay:{
+            backgroundColor:'#000',
+            opacity: 0
+          }
+        }}
+        tweenHandler={(ratio) => ({
+          mainOverlay:{opacity:ratio/2},
+        })}
       >
         <View style={{flex:1}}>
           {main}

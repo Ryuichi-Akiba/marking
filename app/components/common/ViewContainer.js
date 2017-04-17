@@ -1,5 +1,5 @@
 import React from 'react'
-import {ScrollView} from 'react-native'
+import {View} from 'react-native'
 import Colors from '../../themes/Colors'
 
 export default class ScrollViewContainer extends React.PureComponent {
@@ -12,9 +12,9 @@ export default class ScrollViewContainer extends React.PureComponent {
 
   render() {
     return (
-      <ScrollView style={{flex:1, backgroundColor:Colors.backgroundColor}}>
+      <View style={{flex:1, backgroundColor:Colors.backgroundColor}}>
         {this.props.children}
-      </ScrollView>
+      </View>
     );
   }
 }
