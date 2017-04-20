@@ -1,16 +1,21 @@
-import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
-import {getAccessToken} from '../../common/api/api'
-import {getMe} from '../../common/api/me'
-import {getFacebookAccessToken} from '../../common/api/facebook';
+import {call, put, take} from 'redux-saga/effects'
+import {getPetsMarkings} from '../../common/api/pets'
+import {failureCallApi} from '../../redux/reducers/common'
+import {
+  INITIALIZE_PET_DETAIL_SCENE,
+  successGetMarkings,
+} from '../../redux/reducers/petDetail'
 
-// export function* handleGetMe() {
-//   while (true) {
-//     const action = yield take(SUCCESS_GET_ACCESS_TOKEN);
-//     const {payload, error} = yield call(getMe);
-//     if (payload && !error) {
-//       yield put(successGetMe(payload));
-//     } else {
-//       yield put(failureGetMe(error));
-//     }
-//   }
-// }
+export function* handleInitializePetDetailScene() {
+  while (true) {
+    const action = yield take(INITIALIZE_PET_DETAIL_SCENE);
+    const petId = action.payload.pet.id;
+    const date = action.payload.date;
+    const {payload, error} = yield call(getPetsMarkings, petId, date.getFullYear(), date.getMonth() + 1);
+    if (payload && !error) {
+      yield put(successGetMarkings(payload));
+    } else {
+      yield put(failureCallApi(error));
+    }
+  }
+}

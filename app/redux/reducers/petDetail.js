@@ -1,25 +1,133 @@
 import {createAction} from 'redux-actions'
-import {Record} from 'immutable'
+import {Record, Map, Set} from 'immutable'
+import moment from 'moment'
 
 // -------------------- ActionCreator の定義 --------------------
 
-export function initialize(enableSkip : boolean) {
+// ペット詳細ページを初期化するアクション
+export const INITIALIZE_PET_DETAIL_SCENE = 'INITIALIZE_PET_DETAIL_SCENE';
+export const initialize = createAction(INITIALIZE_PET_DETAIL_SCENE, (params) => params);
+
+export const SUCCESS_GET_MARKINGS = 'SUCCESS_GET_MARKINGS';
+export const successGetMarkings = createAction(SUCCESS_GET_MARKINGS);
+
+export function findNewMarkings(params, dates) {
+  if (params.refresh || !dates)
+    return initialize(params);
+
+  const target = moment(params.date).startOf('month');
+  console.log(target);
+  console.log(dates);
+  const exists = dates.filter((date) => target.isSame(date));
+  console.log(exists);
+  if (exists && exists.size !== 0)
+    return innerFindNewMarkings();
+
+  return initialize(params);
 }
 
-// ペット登録ページのコンテナを初期化するアクション（スキップできない）
-export const INITIALIZE_PET_FORM_SCENE = 'INITIALIZE_PET_FORM_SCENE';
-export const initializePetForm = createAction(INITIALIZE_PET_FORM_SCENE);
+export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
+export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
 
 // -------------------- Immutable State Model の定義 --------------------
 export const PetDetailRecord = new Record({
-  skip: false,
-  created: false,
+  // 日付をキーに取得できるようにマップ形式にする
+  dates: Set(),
+  markings: Map(),
+  markers: [],
 });
+
+// マーキングマップに取得したデータを積み上げる
+function mergeMarkersMap(map, array) {
+  var list = [];
+  map.forEach((value, key) => {
+    list.push([key, value]);
+  });
+  console.log(list);
+
+  array.forEach(element => {
+    const date = moment(element.startDateTime).startOf('date');
+    console.log(date);
+    var markings = map.get(element);
+    if (!markings || markings.length === 0) {
+      markings = [];
+    }
+    markings.push(element);
+    list.push([date, markings]);
+  });
+
+  console.log(list);
+  return Map(list);
+}
 
 // -------------------- Reducer の定義 --------------------
 export function petDetailReducer(state = new PetDetailRecord(), action) {
   switch (action.type) {
+    // 初期ロード時・年月変更時の年月を積み上げる
+    case INITIALIZE_PET_DETAIL_SCENE:
+      var date = moment(action.payload.date).startOf('month');
+      console.log(date);
+      return state.set('dates', state.dates.add(date));
+
+    case SUCCESS_GET_MARKINGS:
+      // return state.set('markings', mergeMarkersMap(state.markings, action.payload));
+      if (state.dates.size === 1) {
+        return state.set('markings', mergeMarkersMap(state.markings, testdata));
+      } else {
+        return state.set('markings', mergeMarkersMap(state.markings, testdata2));
+      }
+
     default:
       return state;
   }
 }
+
+// FIXME テストデータなので後で消すこと
+const testdata = [{
+  distance: 1230,
+  startDateTime: "2017-04-01T12:10:00.000+09:00",
+  events: [
+    {
+      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
+      "eventType": "PEE",
+      "eventDateTime": "2017-04-01T12:15:00.000+09:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.766247, 35.681298]
+      }
+    },
+    {
+      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
+      "eventType": "POO",
+      "eventDateTime": "2017-04-01T12:20:00.000+09:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.766247, 35.682298]
+      }
+    }
+  ]
+}];
+const testdata2 = [{
+  distance: 1230,
+  startDateTime: "2017-03-31T12:10:00.000+09:00",
+  events: [
+    {
+      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
+      "eventType": "PEE",
+      "eventDateTime": "2017-04-01T12:15:00.000+09:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.766247, 35.681298]
+      }
+    },
+    {
+      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
+      "eventType": "POO",
+      "eventDateTime": "2017-04-01T12:20:00.000+09:00",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.766247, 35.682298]
+      }
+    }
+  ]
+}];

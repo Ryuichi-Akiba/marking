@@ -8,6 +8,7 @@ import ListGroup from '../components/elements/ListGroup'
 import List from '../components/elements/List'
 import * as menuActions from '../redux/reducers/sidemenu'
 import * as loginActions from '../redux/reducers/login'
+import Colors from '../themes/Colors'
 
 class SideMenu extends React.PureComponent {
   static propTypes = {
@@ -107,7 +108,7 @@ class SideMenu extends React.PureComponent {
       <View style={{flex:1, backgroundColor:'#FFFFFF'}}>
         <ParallaxScrollView style={styles.parallax} parallaxHeaderHeight={200} stickyHeaderHeight={64} backgroundSpeed={3}
                             renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderStickyHeader={this.renderStickyHeader.bind(this)}>
-          <View style={{flex:1, margin:0, padding:0, backgroundColor:'#ffffff'}}>
+          <View style={{flex:1, margin:0, padding:0, backgroundColor:Colors.white}}>
             <ListGroup margin={false}>
               <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
               {list}

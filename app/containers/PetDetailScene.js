@@ -1,5 +1,6 @@
+import moment from 'moment'
 import React from 'react'
-import {Navigator, StyleSheet, View, Button, Image, Dimensions, TouchableOpacity, Alert} from 'react-native'
+import {Navigator, StyleSheet, View, Button, Image, TouchableHighlight, Dimensions, Alert, Text} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
@@ -26,11 +27,91 @@ class PetDetailScene extends React.PureComponent {
     // map from react-redux
     rootState: React.PropTypes.object,
     rootActions: React.PropTypes.object,
+    detailState: React.PropTypes.object,
+    detailActions: React.PropTypes.object,
   };
 
   constructor(props) {
     super(props);
+    this.state = {date:moment().startOf('date'), markers:[], distance:0, poo:0, pee:0};
   };
+
+  // 初回ロード時に呼び出され、ペットのマーキング情報を取得する
+  componentDidMount() {
+    const date = this.state.date.toDate();
+    const pet = this.props.pet;
+    this.props.detailActions.initialize({pet, date, refresh:true});
+  }
+
+  // Propsが変更になった時（データが更新された時）に呼び出され、地図にマーカーを描画する
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.detailState.markings !== this.props.detailState.markings) {
+      const state = this.mapToState(this.state.date, nextProps.detailState.markings);
+      this.refreshMarkers(state);
+    }
+  }
+
+  // Stateが変更になった時（日付が変わった時）に呼び出され、地図にマーカーを描画する
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.date !== this.state.date) {
+      // 地図にマーカーを描画する
+      const state = this.mapToState(nextState.date, nextProps.detailState.markings);
+      this.refreshMarkers(state);
+
+      // キャッシュに載せるためにAPIにアクセスしてマーキング情報を取得する
+      const start = nextState.date.clone().startOf('week');
+      const end = nextState.date.clone().endOf('week');
+      const startMonth = start.month();
+      const endMonth = end.month();
+      if (startMonth !== endMonth) {
+        const pet = this.props.pet;
+        const thisMonth = this.state.date.month();
+        if (thisMonth === startMonth) {
+          this.props.detailActions.findNewMarkings({pet, date:end.toDate(), refresh:false}, this.props.detailState.dates);
+        } else {
+          this.props.detailActions.findNewMarkings({pet, date:start.toDate(), refresh:false}, this.props.detailState.dates);
+        }
+      }
+    }
+  }
+
+  // マーキング情報をフィルタリングして必要情報をステートにマップする
+  mapToState(date, markings) {
+    var distance = 0;
+    var poo = 0;
+    var pee = 0;
+    var markers = [];
+    var events = markings.get(date);
+    if (events) {
+      events
+        .forEach((data) => {
+          data.events.forEach((event) => {
+            // マーカー表示位置を取得して変換する
+            const point = {
+              title: event.eventType,
+              description: event.eventDateTime,
+              longitude: event.geometry.coordinates[0],
+              latitude: event.geometry.coordinates[1],
+            };
+            markers.push(point);
+            // うんち、おしっこの合計値を算出する
+            if (event.eventType === 'POO') poo++;
+            if (event.eventType === 'PEE') pee++;
+          });
+          // 距離の合計値を算出する
+          distance = distance + data.distance;
+        });
+    }
+    return {distance, poo, pee, markers, empty:!(distance !== 0 || poo !== 0 || pee !== 0 || markers.length !== 0)};
+  }
+
+  refreshMarkers(state) {
+    this.map.fitToCoordinates(state.markers, {
+      edgePadding: {top:60, right:60, bottom:60, left:60},
+      animated: true,
+    });
+    this.setState(state);
+  }
 
   renderBackground() {
     const deviceWidth = Dimensions.get('window').width;
@@ -41,7 +122,7 @@ class PetDetailScene extends React.PureComponent {
 
   renderForeground() {
     return (
-      <View style={{paddingTop:64}}>
+      <View style={{paddingTop:56}}>
         <PetImage source={{uri:this.props.pet.image}} size="large"/>
       </View>
     );
@@ -53,41 +134,55 @@ class PetDetailScene extends React.PureComponent {
     );
   }
 
+  handlePressNextWeek(num) {
+    var next = this.state.date.clone().add(num, 'days');
+    this.setState({date:next});
+  }
+
   renderCalendar() {
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    var dateOfFirst = this.state.date.clone().startOf('week');
+
+    var list = [];
+    for (var i = 0; i < 7; i++) {
+      const d = dateOfFirst.clone().add(i, 'days').startOf('date');
+      const markings = this.props.detailState.markings.get(d);
+      const color = !markings || markings.length === 0 ? Colors.white : null;
+      const active = d.isSame(this.state.date);
+      const disabled = d.isAfter(moment());
+      const changeStateDate = () => {
+        this.setState({date:d});
+      };
+      var element = (
+        <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+          <Label small={true} style={{marginBottom:8}}>{days[d.day()]}</Label>
+          <Badge color={color} disabled={disabled} active={active} onPress={changeStateDate}>{d.date()}</Badge>
+        </View>
+      );
+      list.push(element);
+    }
+
+    const handleNext = () => this.handlePressNextWeek(7);
+    const handleBefore = () => this.handlePressNextWeek(-7);
     const title = (
       <View style={{marginTop:8, marginBottom:8}}>
-        <View style={{flex:1, flexDirection:'row', marginLeft:8, marginRight:8}}>
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Label small={true}>日</Label>
-            <Badge>9</Badge>
-          </View>
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Label small={true}>月</Label>
-            <Badge disabled={true}>10</Badge>
-          </View>
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Label small={true}>火</Label>
-            <Badge>11</Badge>
-          </View>
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Label small={true}>水</Label>
-            <Badge disabled={true}>12</Badge>
-          </View>
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Label small={true}>木</Label>
-            <Badge disabled={true}>13</Badge>
-          </View>
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Label small={true}>金</Label>
-            <Badge>14</Badge>
-          </View>
-          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <Label small={true}>土</Label>
-            <Badge active={true}>15</Badge>
-          </View>
+        <View style={{flex:1, flexDirection:'row'}}>
+          <TouchableHighlight onPress={handleBefore} underlayColor={Colors.white}>
+            <View style={{flex:1, justifyContent:'center', alignItems:'center', marginLeft:-5, marginRight:-5}}>
+              <Label small={true} style={{marginBottom:8}}> </Label>
+              <MAIcon name="keyboard-arrow-left" size={24} color={Colors.gray}/>
+            </View>
+          </TouchableHighlight>
+          {list}
+          <TouchableHighlight onPress={handleNext} underlayColor={Colors.white}>
+            <View style={{flex:1, justifyContent:'center', alignItems:'center', marginLeft:-5, marginRight:-5}}>
+              <Label small={true} style={{marginBottom:8}}> </Label>
+              <MAIcon name="keyboard-arrow-right" size={24} color={Colors.gray}/>
+            </View>
+          </TouchableHighlight>
         </View>
-        <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-          <Label>2017年04月15日土曜日</Label>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center', marginTop:8}}>
+          <Label>{this.state.date.format('YYYY年MM月DD日') + days[this.state.date.day()] + '曜日'}</Label>
         </View>
       </View>
     );
@@ -100,16 +195,19 @@ class PetDetailScene extends React.PureComponent {
     const title = (
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
         <View style={{backgroundColor:Colors.lightBlue, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
-          <MAIcon name="explore" size={32} color={Colors.white} style={{marginBottom:8}}/>
-          <Label color={Colors.white}>1,420 m</Label>
+          <MAIcon name="explore" size={32} color={Colors.white} style={{marginBottom:5}}/>
+          <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.distance}</Label>
+          <Label small={true} color={Colors.white} bold={true}>m</Label>
         </View>
         <View style={{backgroundColor:Colors.pink, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
-          <MAIcon name="cloud" size={32} color={Colors.white} style={{marginBottom:8}}/>
-          <Label color={Colors.white}>3 Poo</Label>
+          <MAIcon name="cloud" size={32} color={Colors.white} style={{marginBottom:5}}/>
+          <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.poo}</Label>
+          <Label small={true} color={Colors.white} bold={true}>Poo</Label>
         </View>
         <View style={{backgroundColor:Colors.amber, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
-          <MAIcon name="opacity" size={32} color={Colors.white} style={{marginBottom:8}}/>
-          <Label color={Colors.white}>5 Pee</Label>
+          <MAIcon name="opacity" size={32} color={Colors.white} style={{marginBottom:5}}/>
+          <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.pee}</Label>
+          <Label small={true} color={Colors.white} bold={true}>Pee</Label>
         </View>
       </View>
     );
@@ -118,32 +216,42 @@ class PetDetailScene extends React.PureComponent {
     );
   }
 
+  createMarkers() {
+    var list = [];
+    this.state.markers.forEach((marker, index) => {
+      list.push(<MapView.Marker key={index} coordinate={marker} title={marker.title} description={marker.description}/>);
+    });
+    return list;
+  }
+
   renderMap() {
+    const window = Dimensions.get('window');
+    const mapStyle = {flex:1, height:window.height / 3};
+    const region = {latitude:0, longitude:0, latitudeDelta:0, longitudeDelta:0};
     return (
-      <MapView style={{flex:1, height:300}} initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      />
+      <MapView style={mapStyle} ref={(ref) => {this.map = ref;}} initialRegion={region}>
+        {this.createMarkers()}
+      </MapView>
     );
   }
 
   render() {
+    console.log(this.props.detailState);
+    var title = 'マーキングスポット';
+    if (this.state.empty) {
+      title = 'お散歩情報がありません';
+    }
     return (
-      <ParallaxScrollView backgroundColor="rgba(0,0,0,0)" parallaxHeaderHeight={300} stickyHeaderHeight={64} backgroundSpeed={3}
+      <ParallaxScrollView backgroundColor={Colors.backgroundColor} parallaxHeaderHeight={270} stickyHeaderHeight={64} backgroundSpeed={3}
                           renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderFixedHeader={this.renderFixedHeader.bind(this)}>
         <ViewContainer>
           <ListGroup margin={false} borderTop={false}>
             {this.renderCalendar()}
           </ListGroup>
-          <ListGroup title="サマリ">
-            {this.renderSummary()}
-          </ListGroup>
-          <ListGroup title="マーキング">
+          <ListGroup title={title}>
             {this.renderMap()}
           </ListGroup>
+          {this.renderSummary()}
           <ListGroup title="その他">
             <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）する" border={false}/>
           </ListGroup>
@@ -156,14 +264,14 @@ class PetDetailScene extends React.PureComponent {
 function mapStateToProps(state) {
   return {
     rootState: state.root,
-    petDetailState: state.login,
+    detailState: state.petDetail,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
-    petDetailActions: bindActionCreators(Object.assign({}, petDetailActions), dispatch),
+    detailActions: bindActionCreators(Object.assign({}, petDetailActions), dispatch),
   };
 }
 

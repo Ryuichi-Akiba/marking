@@ -1,6 +1,6 @@
 import React from 'react'
 import {View} from 'react-native'
-import {List, ListItem} from 'react-native-elements'
+import {List, ListItem, normalize} from 'react-native-elements'
 import Colors from '../../themes/Colors'
 
 export default class ListGroup extends React.PureComponent {
@@ -27,7 +27,7 @@ export default class ListGroup extends React.PureComponent {
     const border = !this.props.border ? {borderTopWidth:0, borderBottomWidth:0} : !!this.props.title ? {borderTopWidth:0, borderBottomWidth:0.5} :  {borderTopWidth:0.5, borderBottomWidth:0.5};
     const borderTop = !this.props.borderTop ? {borderTopWidth:0} : {};
     const borderBottom = !this.props.borderBottom ? {borderBottomWidth:0} : {};
-    const title = <ListItem title={this.props.title} hideChevron={true} titleStyle={{color:Colors.gray, marginLeft:5}} containerStyle={{backgroundColor:Colors.backgroundColor, borderBottomWidth:0.5, borderBottomColor:Colors.borderColor}}/>;
+    const title = <ListItem title={this.props.title} hideChevron={true} titleStyle={{fontSize:normalize(12), color:Colors.gray, marginLeft:5}} containerStyle={{backgroundColor:Colors.backgroundColor, borderBottomWidth:0.5, borderBottomColor:Colors.borderColor}}/>;
     const marginTop = !this.props.margin ? 0 : !!this.props.title ? 12 : 32;
 
     if (this.props.title) {
