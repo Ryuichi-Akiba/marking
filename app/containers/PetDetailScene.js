@@ -1,9 +1,10 @@
 import moment from 'moment'
 import React from 'react'
-import {Navigator, StyleSheet, View, Button, Image, TouchableHighlight, Dimensions, Alert, Text} from 'react-native'
+import {Navigator, StyleSheet, View, Image, TouchableHighlight, Dimensions, Alert, Text} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
+import {Button} from 'react-native-elements'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import * as rootActions from '../redux/reducers/root'
@@ -48,6 +49,17 @@ class PetDetailScene extends React.PureComponent {
     if (nextProps.detailState.markings !== this.props.detailState.markings) {
       const state = this.mapToState(this.state.date, nextProps.detailState.markings);
       this.refreshMarkers(state);
+    }
+
+    // アーカイブされた場合に呼び出される
+    if (nextProps.detailState.archived !== this.props.detailState.archived) {
+      if (nextProps.detailState.archived) {
+        // TODO 共通処理してアーカイブした旨の表示したい
+        console.log('SUCCESS ARCHIVE!!');
+        var pet = this.props.pet;
+        pet.dead = true;
+        this.props.navigator.replace({name:'PetDetail', props:{pet, reload:true}});
+      }
     }
   }
 
@@ -235,12 +247,34 @@ class PetDetailScene extends React.PureComponent {
     );
   }
 
+  renderOther() {
+    if (!!this.props.pet.dead || this.props.pet.dead === '1') {
+      return (
+        <Button icon={{name:'account-balance'}} backgroundColor={Colors.red} title="アーカイブされています" />
+      );
+    } else {
+      return (
+        <ListGroup title="その他">
+          <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）する" border={false} onPress={this.handleArchiveLink.bind(this)}/>
+        </ListGroup>
+      );
+    }
+  }
+
+  handleArchiveLink() {
+    Alert.alert('アーカイブしますか？', '思い出になったペットをアーカイブします。アーカイブすると新しくマーキング記録できなくなります。', [
+      {text: 'Cancel', style: 'cancel'},
+      {text: 'OK', onPress: () => this.props.detailActions.archivePet(this.props.pet)},
+    ]);
+  }
+
   render() {
-    console.log(this.props.detailState);
+    console.log(this.props.pet);
     var title = 'マーキングスポット';
     if (this.state.empty) {
       title = 'お散歩情報がありません';
     }
+
     return (
       <ParallaxScrollView backgroundColor={Colors.backgroundColor} parallaxHeaderHeight={270} stickyHeaderHeight={64} backgroundSpeed={3}
                           renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderFixedHeader={this.renderFixedHeader.bind(this)}>
@@ -252,9 +286,7 @@ class PetDetailScene extends React.PureComponent {
             {this.renderMap()}
           </ListGroup>
           {this.renderSummary()}
-          <ListGroup title="その他">
-            <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）する" border={false}/>
-          </ListGroup>
+          {this.renderOther()}
         </ViewContainer>
       </ParallaxScrollView>
     );

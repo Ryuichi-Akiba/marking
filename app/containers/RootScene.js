@@ -82,7 +82,7 @@ class RootScene extends React.PureComponent {
     return (
       <Drawer
         ref={(ref) => this._drawer = ref}
-        content={<SideMenuComponent onChange={this.open.bind(this)} navigator={navigator}/>}
+        content={<SideMenuComponent onChange={this.open.bind(this)} navigator={navigator} {...route.props}/>}
         type="overlay"
         tapToClose={true}
         panCloseMask={0.2}

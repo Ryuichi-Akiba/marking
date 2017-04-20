@@ -17,8 +17,9 @@ import {loadMyPets} from '../../logic/pet'
  */
 export function* handleInitializeMenuContainer() {
   while (true) {
-    yield take(INITIALIZE_MENU_CONTAINER);
-    const {payload, error} = yield call(loadMyPets);
+    const action = yield take(INITIALIZE_MENU_CONTAINER);
+    const reload = action.payload.reload;
+    const {payload, error} = yield call(loadMyPets, reload);
     if (payload && !error) {
       yield put(successGetMyPets(payload));
     } else {

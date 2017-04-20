@@ -8,26 +8,34 @@ import moment from 'moment'
 export const INITIALIZE_PET_DETAIL_SCENE = 'INITIALIZE_PET_DETAIL_SCENE';
 export const initialize = createAction(INITIALIZE_PET_DETAIL_SCENE, (params) => params);
 
+// マーキング情報の取得に成功した時のアクション
 export const SUCCESS_GET_MARKINGS = 'SUCCESS_GET_MARKINGS';
 export const successGetMarkings = createAction(SUCCESS_GET_MARKINGS);
 
+// マーキング情報を取得するアクション（既に読み込み済みの場合は読み込まない）
 export function findNewMarkings(params, dates) {
   if (params.refresh || !dates)
     return initialize(params);
 
   const target = moment(params.date).startOf('month');
-  console.log(target);
-  console.log(dates);
   const exists = dates.filter((date) => target.isSame(date));
-  console.log(exists);
   if (exists && exists.size !== 0)
     return innerFindNewMarkings();
 
   return initialize(params);
 }
 
+// 既に該当するマーキング情報がある場合のアクション
 export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
 export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
+
+// ペットをアーカイブするアクション
+export const ARCHIVE_PET = 'ARCHIVE_PET';
+export const archivePet = createAction(ARCHIVE_PET, (payload) => payload);
+
+// ペットのアーカイブに成功した場合のアクション
+export const SUCCESS_ARCHIVE_PET = 'SUCCESS_ARCHIVE_PET';
+export const successArchivePet = createAction(SUCCESS_ARCHIVE_PET);
 
 // -------------------- Immutable State Model の定義 --------------------
 export const PetDetailRecord = new Record({
@@ -35,29 +43,23 @@ export const PetDetailRecord = new Record({
   dates: Set(),
   markings: Map(),
   markers: [],
+
+  // ペットのアーカイブ処理に成功したかを示すフラグ
+  archived: false,
 });
 
 // マーキングマップに取得したデータを積み上げる
 function mergeMarkersMap(map, array) {
-  var list = [];
-  map.forEach((value, key) => {
-    list.push([key, value]);
-  });
-  console.log(list);
-
   array.forEach(element => {
     const date = moment(element.startDateTime).startOf('date');
-    console.log(date);
     var markings = map.get(element);
     if (!markings || markings.length === 0) {
       markings = [];
     }
     markings.push(element);
-    list.push([date, markings]);
+    map = map.set(date, markings);
   });
-
-  console.log(list);
-  return Map(list);
+  return map;
 }
 
 // -------------------- Reducer の定義 --------------------
@@ -66,7 +68,6 @@ export function petDetailReducer(state = new PetDetailRecord(), action) {
     // 初期ロード時・年月変更時の年月を積み上げる
     case INITIALIZE_PET_DETAIL_SCENE:
       var date = moment(action.payload.date).startOf('month');
-      console.log(date);
       return state.set('dates', state.dates.add(date));
 
     case SUCCESS_GET_MARKINGS:
@@ -76,6 +77,10 @@ export function petDetailReducer(state = new PetDetailRecord(), action) {
       } else {
         return state.set('markings', mergeMarkersMap(state.markings, testdata2));
       }
+
+    // ペットのアーカイブに成功した場合にフラグを変更する
+    case SUCCESS_ARCHIVE_PET:
+      return state.set('archived', true);
 
     default:
       return state;

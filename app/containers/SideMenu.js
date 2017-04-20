@@ -1,5 +1,5 @@
 import React from 'react'
-import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image, Dimensions} from 'react-native'
+import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image, Dimensions, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
@@ -18,6 +18,8 @@ class SideMenu extends React.PureComponent {
     menuActions: React.PropTypes.object,
     loginState: React.PropTypes.object,
     loginActions: React.PropTypes.object,
+    // map from other scene
+    reload: React.PropTypes.bool,
   };
 
   constructor(props) {
@@ -25,7 +27,9 @@ class SideMenu extends React.PureComponent {
   }
 
   componentWillMount() {
-    this.props.menuActions.initialize();
+    var reload = this.props.reload;
+    console.log('reload menu: ', reload);
+    this.props.menuActions.initialize({reload});
   }
 
   // ログアウト処理後、ステートの変更を検知し、成功していれば画面遷移する
@@ -48,8 +52,13 @@ class SideMenu extends React.PureComponent {
   }
 
   logout() {
-    this.props.onChange();
-    this.props.loginActions.logout();
+    Alert.alert('ログアウトしますか？', '', [
+      {text: 'Cancel', style: 'cancel'},
+      {text: 'OK', onPress: () => {
+        this.props.onChange();
+        this.props.loginActions.logout();
+      }},
+    ]);
   }
 
   renderBackground() {
@@ -109,11 +118,11 @@ class SideMenu extends React.PureComponent {
         <ParallaxScrollView style={styles.parallax} parallaxHeaderHeight={200} stickyHeaderHeight={64} backgroundSpeed={3}
                             renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderStickyHeader={this.renderStickyHeader.bind(this)}>
           <View style={{flex:1, margin:0, padding:0, backgroundColor:Colors.white}}>
-            <ListGroup margin={false}>
+            <ListGroup margin={false} border={false}>
               <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
               {list}
               <List icon="settings" iconColor="#607D8B" title="設定" onPress={this.settings.bind(this)} chevron={true}/>
-              <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" border={false} onPress={this.logout.bind(this)}/>
+              <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" onPress={this.logout.bind(this)}/>
             </ListGroup>
           </View>
         </ParallaxScrollView>
