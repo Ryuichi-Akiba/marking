@@ -1,4 +1,6 @@
-import {Dimensions} from "react-native";
+import {Dimensions} from 'react-native';
+import {loadMyPets} from './pet';
+import {postMarkings} from '../common/api/markings';
 
 let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -58,4 +60,71 @@ export function clearWatchId(watchId) {
 
 function clearWatchIdPromise(watchId) {
     return Promise.resolve(navigator.geolocation.clearWatch(watchId));
+}
+
+export function startMarking(markings, petId,  eventType) {
+
+    return loadMyPets(false)
+        .then((result) => {
+            const petIds = [];
+            result.payload.forEach((pet) => {
+                petIds.push(pet.id);
+            });
+            return petIds;
+        })
+        .then((result) => {
+            return getCurrentRegionPromise()
+                .then((result2) => {
+                    const now = new Date().toISOString();
+
+                    // ペットごとにイベントを作成する
+                    if (petId) {
+                        const event = {
+                            petId: petId,
+                            eventType: eventType,
+                            eventDateTime: now,
+                            geometry: {
+                              type: 'Point',
+                              coordinates: [result2.region.longitude, result2.region.latitude]
+                            }
+                        };
+
+                        markings.events.push(event);
+                    } else {
+                        // ペットの指定が無ければ全てのペットのイベントとして記録する
+                        result.forEach((id) => {
+                            const event = {
+                                petId: id,
+                                eventType: eventType,
+                                eventDateTime: now,
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [result2.region.longitude, result2.region.latitude]
+                                }
+                            };
+
+                            markings.events.push(event);
+                        });
+                    }
+
+                    return {payload: markings};
+                }).catch((error) => {
+                    return {error: error};
+                });
+        })
+        .then((result) => {
+            if (eventType === 'END') {
+                console.log('開発中に毎回API投げるのはしんどいのでコメントアウト: ' + JSON.stringify(result.payload));
+                return result;
+                // return postMarkings(result.payload)
+                //     .then((result2) => {
+                //         return {payload: result2};
+                //     })
+                //     .catch((error) => {
+                //         return {error: error};
+                //     });
+            } else {
+                return result;
+            }
+        });
 }

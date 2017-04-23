@@ -1,8 +1,20 @@
 // @flow
-
-import { StyleSheet } from 'react-native'
+import {StyleSheet} from 'react-native'
 
 export default StyleSheet.create({
+  avatarMiddle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderColor: 'rgba(255,255,255,0.75)',
+    borderWidth: 3,
+  },
+  avatarSmall: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+
   container: {
     flex: 1,
     //justifyContent: 'center',

@@ -1,7 +1,8 @@
 import React from 'react'
 import {View} from 'react-native'
+import Colors from '../../themes/Colors'
 
-export default class Container extends React.PureComponent {
+export default class ScrollViewContainer extends React.PureComponent {
   static propTypes = {
   };
 
@@ -11,7 +12,7 @@ export default class Container extends React.PureComponent {
 
   render() {
     return (
-      <View style={{flex:1}}>
+      <View style={{flex:1, backgroundColor:Colors.backgroundColor}}>
         {this.props.children}
       </View>
     );

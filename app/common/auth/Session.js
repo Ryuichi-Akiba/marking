@@ -30,6 +30,10 @@ export default class Session {
     });
   }
 
+  static remove(key : string) {
+    return AsyncStorage.removeItem(key);
+  }
+
   static setToken(object : Object) {
     return AsyncStorage.setItem(TOKEN_STORE_KEY, JSON.stringify(object));
   }

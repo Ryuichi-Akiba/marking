@@ -1,22 +1,32 @@
-import {REHYDRATE} from 'redux-persist/constants';
-import {Record} from 'immutable';
+import {createAction} from 'redux-actions'
+import {Record} from 'immutable'
 
 // -------------------- ActionCreator の定義 --------------------
 
-// マイペット登録ページのコンテナを初期化するアクション
-export const INITIALIZE_ADD_MY_PET_FORM = 'INITIALIZE_ADD_MY_PET_FORM';
-export function initializeAddMyPetFormContainer() {
-  return {
-    type: INITIALIZE_ADD_MY_PET_FORM,
-    payload: {},
-    meta: {},
-    error: false
+export function initialize(enableSkip : boolean) {
+  if (enableSkip) {
+    return initializeSkipPetForm();
+  } else {
+    return initializePetForm();
   }
 }
+
+// ペット登録ページのコンテナを初期化するアクション（スキップできない）
+export const INITIALIZE_PET_FORM_SCENE = 'INITIALIZE_PET_FORM_SCENE';
+export const initializePetForm = createAction(INITIALIZE_PET_FORM_SCENE);
+
+// ペット登録ページのコンテナを初期化するアクション（自動的にスキップされるケースあり）
+export const INITIALIZE_SKIP_PET_FORM_SCENE = 'INITIALIZE_SKIP_PET_FORM_SCENE';
+export const initializeSkipPetForm = createAction(INITIALIZE_SKIP_PET_FORM_SCENE);
+
+// ペット取得に成功した時のアクション
+export const SUCCESS_GET_MY_PETS = 'SUCCESS_GET_MY_PETS';
+export const successGetMyPets = createAction(SUCCESS_GET_MY_PETS, (payload) => payload);
 
 export const ADD_MY_PET = 'ADD_MY_PET';
 export function addMyPet(values) {
   // APIに合うようにフォームをトランスフォームする
+  values.sex = values.sex.value;
   values.user = {};
   return {
     type: ADD_MY_PET,
@@ -26,53 +36,33 @@ export function addMyPet(values) {
   }
 }
 
-// マイペットの登録成功時のアクション
-export const SUCCESS_POST_MY_PETS = 'SUCCESS_POST_MY_PETS';
-export function successPostMyPet(payload) {
-  return {
-    type: SUCCESS_POST_MY_PETS,
-    payload: payload,
-    meta: {response: payload},
-    error: false
-  }
-}
+// ペットを追加処理するためにイメージのアプロードに成功した時のアクション
+export const SUCCESS_UPLOAD_MY_PETS = 'SUCCESS_UPLOAD_MY_PETS';
+export const successUploadMyPets = createAction(SUCCESS_UPLOAD_MY_PETS, (payload) => payload);
 
-// API呼び出し失敗時のアクション
-export const FAILURE_CALL_API = 'FAILURE_CALL_API';
-export function failureCallApi(error) {
-  return {
-    type: FAILURE_CALL_API,
-    payload: {},
-    meta: {error},
-    error: true
-  }
-}
+// ペットの登録に成功した時のアクション
+export const SUCCESS_POST_MY_PETS = 'SUCCESS_POST_MY_PETS';
+export const successPostMyPets = createAction(SUCCESS_POST_MY_PETS, (payload) => payload);
+
+// ペットの登録に成功した時のアクション
+export const SUCCESS_RELOAD_MY_PETS = 'SUCCESS_RELOAD_MY_PETS';
+export const successReloadMyPets = createAction(SUCCESS_RELOAD_MY_PETS, (payload) => payload);
 
 // -------------------- Immutable State Model の定義 --------------------
 export const AddMyPetFormRecord = new Record({
+  skip: false,
   created: false,
-  loading: false,
-  form: {}
 });
 
 // -------------------- Reducer の定義 --------------------
 export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
   switch (action.type) {
-    // 登録フォームを初期化時のステート変更
-    case INITIALIZE_ADD_MY_PET_FORM:
-      return new AddMyPetFormRecord();
+    case SUCCESS_GET_MY_PETS:
+      return state.set('skip', (action.payload && 0 < action.payload.length));
 
-    // ペットの登録処理を開始時のステート変更
-    case ADD_MY_PET:
-      return state.set('loading', true);
-    // ペットの登録処理完了後のステート変更
     case SUCCESS_POST_MY_PETS:
-      return state.set('loading', false).set('created', true).set('form', {});
-
-    case FAILURE_CALL_API:
-      // TODO ここにエラー処理を書く（共通処理にしたいのでユーティリティ化する／ひとまずは自動ログアウトして再ログインを促すのが無難かな）
-      console.error(action);
-      return state.set('loading', false);
+    case SUCCESS_RELOAD_MY_PETS:
+      return state.set('created', true);
 
     default:
       return state;

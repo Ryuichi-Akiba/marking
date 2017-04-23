@@ -1,5 +1,8 @@
 import {fork} from 'redux-saga/effects'
 import {
+  handleInitializeRootScene
+} from './root'
+import {
   handleRequestFacebookLogin,
   handleGetAccessToken,
   handleGetMe,
@@ -10,26 +13,52 @@ import {
   handleRequestSuccessPostMePets,
 } from './sidemenu'
 import {
-  handleRequestPostMyPet,
+  handleInitializeSkipPetFormScene,
+  handleAddMyPet,
+  handleSuccessUploadMyPet,
+  handleSuccessPostMyPet,
 } from './addMyPetForm'
+import {
+  handleInitializePetDetailScene,
+  handleArchivePet,
+} from './petDetail'
 import {
   handleInitCurrentLocation,
   handleInitWatchId,
   handleClearLocationWatch,
+  handleShowMyPets,
+  handleStartMarking,
+  handleFinishMarking,
+  handlePee,
+  handlePoo,
 } from './markingMap'
 
 export default function* sagas() {
+  // ROOT SCENE
+  yield fork(handleInitializeRootScene);
   // LOGIN
   yield fork(handleRequestFacebookLogin);
   yield fork(handleGetAccessToken);
   yield fork(handleGetMe);
   yield fork(handleLogout);
-  // MY PETS
+  // SIDE MENU SCENE
   yield fork(handleInitializeMenuContainer);
   yield fork(handleRequestSuccessPostMePets);
-  yield fork(handleRequestPostMyPet);
+  // MY PETS SCENE
+  yield fork(handleInitializeSkipPetFormScene);
+  yield fork(handleAddMyPet);
+  yield fork(handleSuccessUploadMyPet);
+  yield fork(handleSuccessPostMyPet);
+  // PET DETAIL SCENE
+  yield fork(handleInitializePetDetailScene);
+  yield fork(handleArchivePet);
   // MAP
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
   yield fork(handleClearLocationWatch);
+  yield fork(handleShowMyPets);
+  yield fork(handleStartMarking);
+  yield fork(handleFinishMarking);
+  yield fork(handlePee);
+  yield fork(handlePoo);
 }

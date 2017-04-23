@@ -1,12 +1,14 @@
 import React from 'react'
-import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image} from 'react-native'
+import {Modal, View, ScrollView, Text, TouchableHighlight, StyleSheet, Image, Dimensions, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {LoginManager, AccessToken} from 'react-native-fbsdk'
+import ParallaxScrollView from 'react-native-parallax-scroll-view'
+import Styles from '../themes/Styles'
+import ListGroup from '../components/elements/ListGroup'
+import List from '../components/elements/List'
 import * as menuActions from '../redux/reducers/sidemenu'
 import * as loginActions from '../redux/reducers/login'
-import {List, ListItem} from 'react-native-elements'
-import Session from '../common/auth/Session'
+import Colors from '../themes/Colors'
 
 class SideMenu extends React.PureComponent {
   static propTypes = {
@@ -14,7 +16,10 @@ class SideMenu extends React.PureComponent {
     // mapping from redux
     menuState: React.PropTypes.object,
     menuActions: React.PropTypes.object,
+    loginState: React.PropTypes.object,
     loginActions: React.PropTypes.object,
+    // map from other scene
+    reload: React.PropTypes.bool,
   };
 
   constructor(props) {
@@ -22,13 +27,14 @@ class SideMenu extends React.PureComponent {
   }
 
   componentWillMount() {
-    this.props.menuActions.initialize();
+    var reload = this.props.reload;
+    console.log('reload menu: ', reload);
+    this.props.menuActions.initialize({reload});
   }
 
   // ログアウト処理後、ステートの変更を検知し、成功していれば画面遷移する
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.loginState !== this.props.loginState) {
-      console.log(nextProps.loginState);
       if (!nextProps.loginState.isLoggedIn) {
         this.props.onChange();
         this.props.navigator.replace({
@@ -38,14 +44,56 @@ class SideMenu extends React.PureComponent {
     }
   }
 
+  settings() {
+    this.props.onChange();
+    this.props.navigator.replace({
+      name: 'Settings',
+    });
+  }
+
   logout() {
-    this.props.loginActions.logout();
+    Alert.alert('ログアウトしますか？', '', [
+      {text: 'Cancel', style: 'cancel'},
+      {text: 'OK', onPress: () => {
+        this.props.onChange();
+        this.props.loginActions.logout();
+      }},
+    ]);
+  }
+
+  renderBackground() {
+    const deviceWidth = Dimensions.get('window').width;
+    return (
+      <Image source={require('../components/common/images/bg/mountain.jpg')} style={{width:deviceWidth, height:200, resizeMode:'cover'}}/>
+    );
+  }
+
+  renderForeground() {
+    return (
+      <View style={{justifyContent:'center', alignItems:'center'}}>
+        <View style={{paddingTop:48, paddingBottom:8}}>
+          <Image style={Styles.avatarMiddle} source={{uri: this.props.loginState.user.imageUrl}}/>
+        </View>
+        <Text style={{fontSize:16, color:'#FFFFFF', fontWeight:'bold', paddingTop:2, paddingBottom:2, padding:0, margin:0}}>
+          {this.props.loginState.user.username}
+        </Text>
+      </View>
+    );
+  }
+
+  renderStickyHeader() {
+    const user = this.props.loginState.user;
+    return (
+      <View style={{backgroundColor:'#FFFFFF', paddingTop:20, paddingBottom:16}}>
+        <List avatar={{uri: user.imageUrl}} title={user.username} border={false} hideChevron={true}/>
+      </View>
+    );
   }
 
   render() {
     var goMap = () => {
       this.props.onChange();
-      this.props.navigator.push({
+      this.props.navigator.replace({
         name: 'Map',
       });
     };
@@ -53,45 +101,41 @@ class SideMenu extends React.PureComponent {
     // Create My Pet List
     var list = [];
     this.props.menuState.pets.forEach((pet, i) => {
-      var handlePress = () => {
-        this.props.onChange();
-      };
-      list.push(<ListItem key={i} title={pet.name} onPress={handlePress} avatar={require('./images/login.jpg')} avatarStyle={{width:24, height:24, marginLeft:4, marginRight:4}} hideChevron={true} containerStyle={{padding:0, margin:0}}/>);
+      if (!pet.dead) {
+        var handlePress = () => {
+          this.props.onChange();
+          this.props.navigator.replace({name:'PetDetail', props:{pet:pet}});
+        };
+        list.push(
+          <List key={i} avatar={{uri: pet.image}} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
+        );
+      }
     });
 
     // Render View
     return (
-      <View style={{flex:1, flexDirection:'column', margin:0}}>
-        <View style={{paddingTop:16, paddingBottom:8, margin:0,}}>
-          <View style={{justifyContent:'center', alignItems:'center'}}>
-            <View style={{paddingTop:32, paddingBottom:8}}>
-              <Image style={styles.image} source={{uri:'https://scontent.xx.fbcdn.net/v/t1.0-1/p320x320/1965038_642971409111875_735658247_n.jpg?oh=9af256c695dd2a96d07d11ca2f05dd40&oe=5971F2B3'}}/>
-            </View>
+      <View style={{flex:1, backgroundColor:'#FFFFFF'}}>
+        <ParallaxScrollView style={styles.parallax} parallaxHeaderHeight={200} stickyHeaderHeight={64} backgroundSpeed={3}
+                            renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderStickyHeader={this.renderStickyHeader.bind(this)}>
+          <View style={{flex:1, margin:0, padding:0, backgroundColor:Colors.white}}>
+            <ListGroup margin={false} border={false}>
+              <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
+              {list}
+              <List icon="settings" iconColor="#607D8B" title="設定" onPress={this.settings.bind(this)} chevron={true}/>
+              <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" onPress={this.logout.bind(this)}/>
+            </ListGroup>
           </View>
-          <View style={{justifyContent:'center', alignItems:'center', padding:0, margin:0}}>
-            <Text style={{fontSize:16, color:'#333333', fontWeight:'bold', paddingTop:2, paddingBottom:2, padding:0, margin:0}}>Ken Todoroki</Text>
-          </View>
-        </View>
-        <ScrollView style={{flex:1, margin:0, padding:0,}}>
-          <List style={{marginTop:-20, padding:0}}>
-            <ListItem onPress={goMap} leftIcon={{name:'map', style:[styles.icon, {color:'#FF9800'}]}} title="散歩マップ" hideChevron={true}/>
-            {list}
-            <ListItem leftIcon={{name:'settings', style:[styles.icon, {color:'#607D8B'}]}} title="設定" hideChevron={true}/>
-            <ListItem onPress={this.logout.bind(this)} leftIcon={{name:'exit-to-app', style:[styles.icon, {color:'#8BC34A'}]}} title="ログアウト" hideChevron={true}/>
-          </List>
-        </ScrollView>
+        </ParallaxScrollView>
       </View>
     );
   }
 }
 
 var styles = StyleSheet.create({
-  image: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  parallax: {
+    flex:1,
+    overflow:'hidden',
   },
-
   icon: {
     fontSize:24,
     paddingLeft:4,
