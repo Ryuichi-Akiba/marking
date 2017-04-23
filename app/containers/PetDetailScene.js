@@ -141,8 +141,10 @@ class PetDetailScene extends React.PureComponent {
   }
 
   renderFixedHeader() {
+    const left = {icon:'menu', handler:this.props.openMenu};
+    const right = {icon:'mode-edit', handler:() => this.props.navigator.push({name:'PetFormScene', props:{isNewWindow:true, pet:this.props.pet}})};
     return (
-      <MarkingNavbar title={this.props.pet.name} left={{icon:'menu', handler:this.props.openMenu}} transparent={true}/>
+      <MarkingNavbar title={this.props.pet.name} left={left} right={right} transparent={true}/>
     );
   }
 
@@ -269,7 +271,6 @@ class PetDetailScene extends React.PureComponent {
   }
 
   render() {
-    console.log(this.props.pet);
     var title = 'マーキングスポット';
     if (this.state.empty) {
       title = 'お散歩情報がありません';

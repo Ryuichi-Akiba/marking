@@ -30,7 +30,7 @@ export function* handleInitializeSkipPetFormScene() {
 export function* handleAddMyPet() {
   while (true) {
     const action = yield take(ADD_MY_PET);
-    if (action.payload.image) {
+    if (action.payload.image && action.payload.image.mime) {
       const {payload, error} = yield call(uploadMePetsImage, {value: action.payload.image.uri});
       if (payload && !error) {
         var added = Object.assign({}, action.payload);
@@ -40,7 +40,13 @@ export function* handleAddMyPet() {
         yield put(failureCallApi(error));
       }
     } else {
-      yield put(successUploadMyPets(action.payload));
+      var pet = action.payload;
+      if (pet.image) {
+        pet.image = pet.image.uri;
+      } else {
+        pet.image = null;
+      }
+      yield put(successUploadMyPets(pet));
     }
   }
 }

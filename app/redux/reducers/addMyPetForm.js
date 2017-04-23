@@ -3,17 +3,9 @@ import {Record} from 'immutable'
 
 // -------------------- ActionCreator の定義 --------------------
 
-export function initialize(enableSkip : boolean) {
-  if (enableSkip) {
-    return initializeSkipPetForm();
-  } else {
-    return initializePetForm();
-  }
-}
-
 // ペット登録ページのコンテナを初期化するアクション（スキップできない）
 export const INITIALIZE_PET_FORM_SCENE = 'INITIALIZE_PET_FORM_SCENE';
-export const initializePetForm = createAction(INITIALIZE_PET_FORM_SCENE);
+export const initializePetForm = createAction(INITIALIZE_PET_FORM_SCENE, (payload) => payload);
 
 // ペット登録ページのコンテナを初期化するアクション（自動的にスキップされるケースあり）
 export const INITIALIZE_SKIP_PET_FORM_SCENE = 'INITIALIZE_SKIP_PET_FORM_SCENE';
@@ -57,9 +49,15 @@ export const AddMyPetFormRecord = new Record({
 // -------------------- Reducer の定義 --------------------
 export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
   switch (action.type) {
+    // 単純に初期化した場合はページをスキップしないので、FALSEにする
+    case INITIALIZE_PET_FORM_SCENE:
+      return state.set('skip', false).set('created', false);
+
+    // 初期化した時に、ペットがいるか調べた時は、場合によってはSKIPをTRUEにする
     case SUCCESS_GET_MY_PETS:
       return state.set('skip', (action.payload && 0 < action.payload.length));
 
+    // ペットの登録が出来た時はCREATEDをTRUEにする
     case SUCCESS_POST_MY_PETS:
     case SUCCESS_RELOAD_MY_PETS:
       return state.set('created', true);
