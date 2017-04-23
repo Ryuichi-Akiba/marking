@@ -286,7 +286,6 @@ export function failureShowMyPets(error) {
   }
 }
 
-
 // -------------------- Immutable State Model の定義 --------------------
 export const MarkingMapRecord = new Record({
   region: {},
@@ -348,8 +347,8 @@ export function markingMap(state = new MarkingMapRecord(), action) {
     case SHOW_MY_PETS:
       return state;
     case SUCCESS_SHOW_MY_PETS:
-      return state.set('pets', action.payload);
-
+      const pets = action.payload.filter((pet) => !pet.dead || pet.dead !== '1');
+      return state.set('pets', pets);
     default:
       return state;
   }

@@ -1,16 +1,26 @@
-import React, {Component, PropTypes} from "react";
-import {StyleSheet, Text, View, TouchableOpacity, Modal, Animated, Image, Platform} from "react-native";
-import {bindActionCreators} from 'redux';
-import {connect} from "react-redux";
+import React from 'react'
+import {StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Animated, Image, Platform} from 'react-native'
+import {bindActionCreators} from 'redux'
+import {connect} from "react-redux"
 import MapView from 'react-native-maps'
-import { SocialIcon } from 'react-native-elements'
+import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import MarkingNavbar from '../components/common/MarkingNavbar'
+import Icon from '../components/elements/Icon'
+import Label from '../components/elements/Label'
+import Colors from '../themes/Colors'
 import * as markingMapActions from '../redux/reducers/markingMap'
+import * as rootActions from '../redux/reducers/root'
 
-class MarkingMap extends Component {
+class MarkingMap extends React.PureComponent {
   static propTypes = {
-    drawer: React.PropTypes.object.isRequired,
-    navigator: React.PropTypes.object.isRequired
+    // map from root
+    navigator: React.PropTypes.object.isRequired,
+    openMenu: React.PropTypes.func.isRequired,
+    // map from react-redux
+    state: React.PropTypes.object,
+    actions: React.PropTypes.object,
+    rootState: React.PropTypes.object,
+    rootActions: React.PropTypes.object,
   };
 
   constructor(props) {
@@ -18,6 +28,17 @@ class MarkingMap extends Component {
 
     this.peeAnimatedValue = [];
     this.pooAnimatedValue = [];
+    this.state = {
+      recording: false, // 散歩記録中はTRUEになる
+      visiblePoo: false, // うんちしたペットを選択する時はTRUEになる
+      visiblePee: false, // おしっこしたペットを選択する時はTRUEになる
+      selected: [], // 選択したペット
+    };
+  }
+
+  componentDidMount() {
+    // どのページからも呼ばれるため、ルートにあるローディングを常時OFFにして始める
+    this.props.rootActions.destroyLoadingScene();
   }
 
   componentWillMount() {
@@ -42,10 +63,17 @@ class MarkingMap extends Component {
     actions.clearLocationWatch({watchId: state.watchId})
   }
 
+  componentWillReceiveProps(nextProps) {
+    // 基本的には初回のみ呼び出されるはずだが、飼育しているペットを全て選択済みの状態にする
+    if (this.props.state.pets !== nextProps.state.pets) {
+      this.setState({selected:nextProps.state.pets});
+    }
+  }
+
   // 散歩の開始/終了のコントロール
   handleMarking(isStarted) {
     const {actions, state} = this.props;
-
+    this.setState({recording:true}); // このシーンのステートを記録中にする
 
     const value = isStarted ? 1 : 0;
     Animated.spring(state.visibility, {toValue: value}).start();
@@ -53,9 +81,8 @@ class MarkingMap extends Component {
     if (isStarted) {
       actions.startMarking(state.markings);
     } else {
+      this.setState({visiblePee:false, visiblePoo:false, recording:false});
       actions.finishMarking(state.markings);
-      actions.handleShowPee(true);
-      actions.handleShowPoo(true);
     }
   }
 
@@ -75,18 +102,6 @@ class MarkingMap extends Component {
     console.log('pooしたペットは:' + petId);
 
     actions.poo(state.markings, petId);
-
-    actions.handleShowPoo(state.pooActive);
-  }
-
-  handlePee() {
-    const {state, actions} = this.props;
-
-    actions.handleShowPee(state.peeActive);
-  }
-
-  handlePoo() {
-    const {state, actions} = this.props;
 
     actions.handleShowPoo(state.pooActive);
   }
@@ -117,66 +132,148 @@ class MarkingMap extends Component {
     Animated.sequence(animations).start();
   }
 
-  render() {
+  cancelRecording() {
+    this.setState({recording:false});
+    // TODO キャンセルするActionを用意しないといけないが、どうすれば良いかわからない
+  }
+
+  // 散歩の開始終了ボタンを描画する
+  renderStartButton() {
+    // TODO 画面描画に必要なPropsはStateに移動すること
     const {state, actions} = this.props;
+    // if (!this.state.recording) {
+    if (!state.isStarted) {
+      const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.blue}];
+      return (
+        <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
+          <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
+            <MAIcon name="play-arrow" size={32} color={Colors.white} style={{marginBottom:2}}/>
+            <Label small={true} bold={true} color={Colors.white}>START</Label>
+          </TouchableOpacity>
+        </View>
+      );
+    } else {
+      const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.underlayColor}];
+      return (
+        <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
+          <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
+            <MAIcon name="stop" size={32} color={Colors.orange} style={{marginBottom:2}}/>
+            <Label small={true} bold={true} color={Colors.orange}>FINISH</Label>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+  }
 
-    const left = {
-      title: 'Open',
-      handler: () => {
-        this.props.openMenu();
-      }
-    };
-
-    const txt = !state.isStarted ? 'Start' : 'Finish';
-
+  // うんちボタンを描画する
+  renderPooButton() {
+    const {state} = this.props;
     const bottom = state.visibility.interpolate({
       inputRange: [0, 1],
       outputRange: [-100, 0],
     });
 
-    const peeAnimations = state.peeActive ?
-        state.pets.map((pet, i) => {
-      return (
-          <Animated.View key={i} style={{opacity: this.peeAnimatedValue[pet.id], marginVertical: 5}}>
-            <TouchableOpacity style={styles.raised} onPress={() => this.pee(pet.id)}>
-              <Image style={styles.picture} source={{uri: pet.image}}/>
-            </TouchableOpacity>
+    const pooAnimations = this.state.visiblePoo ?
+      this.state.selected.map((pet, i) => {
+        return (
+          <Animated.View key={i} style={{opacity: this.pooAnimatedValue[pet.id], marginVertical: 5}}>
+            <Icon source={{uri:pet.image}} raised={true} circle={true} fullSize={true} onPress={() => this.poo(pet.id)}/>
           </Animated.View>
         )
-    }) : () => {return (<View/>)};
+      }) : () => {return (<View/>)};
 
-    const pooAnimations = state.pooActive ?
-        state.pets.map((pet, i) => {
-      return (
-          <Animated.View key={i} style={{opacity: this.pooAnimatedValue[pet.id], marginVertical: 5}}>
-            <TouchableOpacity style={styles.raised} onPress={() => this.poo(pet.id)}>
-              <Image style={styles.picture} source={{uri: pet.image}}/>
-            </TouchableOpacity>
+    const handlePressPoo = () => this.setState({visiblePoo:!this.state.visiblePoo});
+    return (
+      <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
+        {/* うんちするペットボタン */}
+        {pooAnimations}
+        {/* うんちボタン */}
+        <Animated.View style={{bottom}}>
+          <Icon source={require('./images/icon/poo.png')} raised={true} circle={true} backgroundColor={Colors.orange} onPress={handlePressPoo}/>
+        </Animated.View>
+      </View>
+    );
+  }
+
+  // おしっこボタンを描画する
+  renderPeeButton() {
+    const {state} = this.props;
+    const bottom = state.visibility.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-100, 0],
+    });
+
+    const peeAnimations = this.state.visiblePee ?
+      this.state.selected.map((pet, i) => {
+        return (
+          <Animated.View key={i} style={{opacity: this.peeAnimatedValue[pet.id], marginVertical: 5}}>
+            <Icon source={{uri:pet.image}} raised={true} circle={true} fullSize={true} onPress={() => this.pee(pet.id)}/>
           </Animated.View>
-      )
-    }) : () => {return (<View/>)};
+        )
+      }) : () => {return (<View/>)};
+
+    const handlePressPee = () => this.setState({visiblePee:!this.state.visiblePee});
+    return (
+      <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
+        {/* おしっこするペットボタン */}
+        {peeAnimations}
+        {/* おしっこボタン */}
+        <Animated.View style={{bottom}}>
+          <Icon name="opacity" raised={true} circle={true} backgroundColor={Colors.lightBlue} onPress={handlePressPee}/>
+        </Animated.View>
+      </View>
+    );
+  }
+
+  // 飼育しているペットが散歩対象としてチェックされているか確認する
+  isChecked(pet) {
+    const exists = this.state.selected.filter((select) => select.id === pet.id);
+    return !!exists && exists.length !== 0;
+  }
+
+  // 飼育しているペットを散歩に連れていく（もしくは、連れて行かない）か選択する
+  selectPet(pet) {
+    var selected = [].concat(this.state.selected);
+    if (this.isChecked(pet)) {
+      var index = 0;
+      selected.forEach((select, i) => {
+        if (pet.id === select.id) {
+          index = i;
+        }
+      });
+      selected.splice(index, 1);
+    } else {
+      selected.push(pet);
+    }
+    this.setState({selected});
+  }
+
+  render() {
+    const {state, actions} = this.props;
+
+    const left = {icon:'menu', handler:this.props.openMenu};
+    // 記録中は右上にキャンセルボタンを表示して、記録を中断できるようにする
+    var right = null;
+    if (this.state.recording) {
+      right = {icon:'clear', handler:this.cancelRecording.bind(this)};
+    }
 
     const pets = [];
     state.pets.forEach((pet, i) => {
+      const handleSelect = () => this.selectPet(pet);
+      const checked = this.isChecked(pet);
+      var icon = null;
       if (pet.image) {
-        pets.push(
-            <View key={i} style={styles.raised}>
-              <Image style={styles.picture} source={{uri: pet.image}}/>
-            </View>
-        );
+        icon = <Icon source={{uri:pet.image}} raised={true} circle={true} fullSize={true} checked={checked} onPress={handleSelect}/>;
       } else {
-        // ペットの画像が登録されてない場合の代替アイコン。
-        pets.push(
-            <View key={i} style={styles.raised}>
-              <Image style={styles.picture} source={require('./images/ic_pets_white_18pt_3x.png')}/>
-            </View>
-        );
+        icon = <Icon name="pets" raised={true} circle={true} backgroundColor={Colors.white} color={Colors.gray} checked={checked} onPress={handleSelect}/>;
       }
+      pets.push(<View key={i} style={{margin:2}}>{icon}</View>);
     });
 
     return (
         <View style={{flex:1, flexDirection:'column'}}>
-          <MarkingNavbar title="散歩マップ" left={left}/>
+          <MarkingNavbar title="散歩マップ" left={left} right={right}/>
           <View style={styles.container}>
 
             {/* 散歩の地図 */}
@@ -188,46 +285,16 @@ class MarkingMap extends Component {
             />
 
             {/* ペットのアイコン */}
-            <View style={styles.iconContainer}>
+            <ScrollView horizontal={true} style={styles.iconContainer}>
               {pets}
-            </View>
+            </ScrollView>
 
             <View style={styles.buttonContainer}>
-
-              <View style={{flex: 1, flexDirection: 'column'}}>
-                {/* うんちするペットボタン */}
-                {pooAnimations}
-
-                {/* うんちボタン */}
-                <Animated.View style={{bottom}}>
-                  <TouchableOpacity style={styles.raised} onPress={() => this.handlePoo()}>
-                    <Image style={styles.picture} source={require('./images/ic_delete_white_18pt_3x.png')}/>
-                  </TouchableOpacity>
-                </Animated.View>
-              </View>
-
-              {/* 散歩開始ボタン */}
-              <TouchableOpacity
-                  style={[styles.bubble, styles.button, styles.raised]}
-                  onPress={() => this.handleMarking(!state.isStarted)}>
-                <Text>{txt}</Text>
-              </TouchableOpacity>
-
-              <View style={{flex: 1, flexDirection: 'column'}}>
-                {/* おしっこするペットボタン */}
-                {peeAnimations}
-
-                {/* おしっこボタン */}
-                <Animated.View style={{bottom}}>
-                  <TouchableOpacity style={styles.raised} onPress={() => this.handlePee()}>
-                    <Image style={styles.picture} source={require('./images/ic_location_on_white_18pt_3x.png')}/>
-                  </TouchableOpacity>
-                </Animated.View>
-              </View>
-
+              {this.renderPooButton()}
+              {this.renderStartButton()}
+              {this.renderPeeButton()}
             </View>
           </View>
-
         </View>
     );
   }
@@ -245,31 +312,32 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
+  // メインのボタン定義（スタート、終了ボタン）
+  mainCircleButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent:'center',
+  },
   iconContainer: {
-    alignItems: 'flex-start',
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    marginTop: 10,
-    marginLeft: '80%',
+    position: 'absolute',
+    top:8,
+    right:8,
+    left:8,
     backgroundColor: 'transparent',
   },
   buttonContainer: {
-    alignItems: 'flex-end',
+    position: 'absolute',
+    bottom:16,
     flexDirection: 'row',
-    marginBottom: 20,
     backgroundColor: 'transparent',
   },
   button: {
-    width: 100,
+    // width: 100,
     paddingHorizontal: 15,
     alignItems: 'center',
     marginHorizontal: 25,
-  },
-  bubble: {
-    backgroundColor: 'skyblue',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 20,
   },
   picture: {
     width: SIZE,
@@ -293,20 +361,17 @@ const styles = StyleSheet.create({
   },
 });
 
-MarkingMap.propTypes = {
-  state: PropTypes.object,
-  actions: PropTypes.object
-};
-
 function mapStateToProps(state) {
   return {
-    state: state.markingMap
+    state: state.markingMap,
+    rootState: state.root,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, markingMapActions), dispatch)
+    actions: bindActionCreators(Object.assign({}, markingMapActions), dispatch),
+    rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
   };
 }
 

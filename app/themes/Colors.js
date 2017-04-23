@@ -29,6 +29,7 @@ const colors = {
   borderColor: '#BDBDBD',
   onPressColor: '#E0E0E0',
   inactiveIconColor: '#E0E0E0',
+  transparent: 'transparent',
 };
 
 export default colors;
