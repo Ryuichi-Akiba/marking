@@ -201,8 +201,8 @@ class PetFormScene extends React.Component {
           </ListGroup>
           <ListGroup>
             <Field icon="date-range" name="birthDate" placeholder="ペットの生年月日" component={DatePickerField}/>
-            <Field icon="folder-open" name="type" placeholder="ペットの品種" component={SelectableListViewField} navigator={this.props.navigator} data={kinds}/>
-            <Field icon="invert-colors" name="color" placeholder="ペットの色" component={SelectableListViewField} navigator={this.props.navigator} data={colors}/>
+            <Field icon="folder-open" name="type" placeholder="ペットの品種" component={SelectableListViewField} navigator={this.props.navigator} data={kinds} search={true}/>
+            <Field icon="invert-colors" name="color" placeholder="ペットの色" component={SelectableListViewField} navigator={this.props.navigator} data={colors} search={true}/>
             <Field icon="wc" name="sex" placeholder="ペットの性別" component={SelectableListViewField} navigator={this.props.navigator} data={genders} converter={(value) => value.label} border={false}/>
           </ListGroup>
           <MessageContainer errors={errors} notify={this.state.click}/>

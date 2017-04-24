@@ -7,6 +7,7 @@ export default class SelectableListViewField extends React.PureComponent {
   static propTypes = {
     navigator: React.PropTypes.object.isRequired,
     data: React.PropTypes.array.isRequired,
+    search: React.PropTypes.bool,
     converter: React.PropTypes.func,
     // map from component
     label: React.PropTypes.string,
@@ -36,7 +37,8 @@ export default class SelectableListViewField extends React.PureComponent {
       props: {
         data: this.props.data,
         onSelect: handleSelect,
-        converter: this.props.converter
+        converter: this.props.converter,
+        search: this.props.search
       }
     });
   }
