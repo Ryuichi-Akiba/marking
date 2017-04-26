@@ -10,6 +10,7 @@ import Colors from '../../themes/Colors'
 export default class SelectableListViewScene extends React.PureComponent {
   static propTypes = {
     navigator: React.PropTypes.object.isRequired,
+    title: React.PropTypes.string,
     data: React.PropTypes.array,
     onSelect: React.PropTypes.func,
     converter: React.PropTypes.func,
@@ -17,6 +18,7 @@ export default class SelectableListViewScene extends React.PureComponent {
   };
 
   static defaultProps = {
+    title: '選択する',
     converter: (value) => value,
   };
 
@@ -59,7 +61,7 @@ export default class SelectableListViewScene extends React.PureComponent {
       this.setState({list});
     };
     return (
-      <SearchBar round lightTheme onChangeText={handleSearch} placeholder='検索'/>
+      <SearchBar round lightTheme onChangeText={handleSearch} placeholder='検索' containerStyle={{backgroundColor:Colors.transparent}}/>
     );
   }
 
@@ -70,7 +72,7 @@ export default class SelectableListViewScene extends React.PureComponent {
     // 画面をレンダリングする
     return (
       <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="選択する" left={handleCancel}/>
+        <MarkingNavbar title={this.props.title} left={handleCancel}/>
         {this.renderSearchBar()}
         <ScrollView>
           {this.state.list}

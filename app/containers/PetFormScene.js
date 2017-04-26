@@ -6,6 +6,7 @@ import {Field, reduxForm} from 'redux-form'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
+import * as petDetailActions from '../redux/reducers/petDetail'
 import * as rootActions from '../redux/reducers/root'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
@@ -13,7 +14,9 @@ import SelectableListViewField from '../components/forms/SelectableListViewField
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
+import List from '../components/elements/List'
 import MessageContainer from '../components/forms/MessageContainer'
+import Colors from '../themes/Colors'
 
 var styles = StyleSheet.create({
   container: {
@@ -84,7 +87,7 @@ class PetFormScene extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {click:0, image:null};
+    this.state = {click:0, image:null, pet:null};
   }
 
   componentWillMount() {
@@ -97,7 +100,7 @@ class PetFormScene extends React.Component {
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     // 初回ロード時
     if (nextProps.petFormState.skip !== this.props.petFormState.skip) {
       if (nextProps.petFormState.skip) {
@@ -107,12 +110,23 @@ class PetFormScene extends React.Component {
       }
     }
 
-    // 新しくペットを登録した場合の遷移先を定義する
+    // ペット情報を保存した場合の遷移先を定義する
     if (nextProps.petFormState.created !== this.props.petFormState.created) {
       if (this.props.isNewWindow) {
-        this.props.navigator.pop();
+        // TODO 本来ならコールバックにして入れ替えたほうが軽くて良い
+        const pet = nextProps.petFormState.updated;
+        nextProps.navigator.replace({name:'PetDetailScene', props:{pet}});
       } else {
-        this.props.navigator.replace({name:'Map'});
+        nextProps.navigator.replace({name:'Map'});
+      }
+    }
+
+    // アーカイブされた場合に呼び出される
+    if (nextProps.petFormState.archived !== this.props.petFormState.archived) {
+      if (nextProps.petFormState.archived) {
+        // TODO 共通処理してアーカイブした旨の表示したい
+        const pet = nextProps.petFormState.updated;
+        nextProps.navigator.replace({name:'PetDetailScene', props:{pet}});
       }
     }
   }
@@ -144,6 +158,13 @@ class PetFormScene extends React.Component {
     return <MarkingNavbar title={title} left={leftConfig} right={rightConfig}/>;
   }
 
+  trunsform(values) {
+    // APIに合うようにフォームをトランスフォームする
+    values.sex = values.sex.value;
+    values.user = {};
+    return values;
+  }
+
   save() {
     this.props.submit();
 
@@ -151,7 +172,9 @@ class PetFormScene extends React.Component {
       const {petForm} = this.props.reduxFormState;
       var values = petForm.values;
       values.image = this.state.image;
-      this.props.petFormActions.addMyPet(values);
+      const pet = this.trunsform(values);
+      this.props.petFormActions.addMyPet(pet);
+      this.setState({pet});
     } else {
       this.setState({click: ++this.state.click});
     }
@@ -167,6 +190,26 @@ class PetFormScene extends React.Component {
       console.log(image);
       this.setState({image:{uri:`data:${image.mime};base64,`+ image.data, width:image.width, height:image.height, mime:image.mime}});
     });
+  }
+
+  handleArchiveLink() {
+    Alert.alert('アーカイブしますか？', '思い出になったペットをアーカイブします。アーカイブすると新しくマーキング記録できなくなります。', [
+      {text: 'キャンセル', style: 'cancel'},
+      {text: 'アーカイブ', onPress: () => this.props.petFormActions.archivePet(this.props.pet)},
+    ]);
+  }
+
+  renderOther() {
+    // 登録画面の時は表示しない
+    if (!this.props.pet || !this.props.pet.id) {
+      return null;
+    }
+
+    return (
+      <ListGroup title="アーカイブ">
+        <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）にする" border={false} onPress={this.handleArchiveLink.bind(this)}/>
+      </ListGroup>
+    );
   }
 
   render() {
@@ -205,6 +248,7 @@ class PetFormScene extends React.Component {
             <Field icon="invert-colors" name="color" placeholder="ペットの色" component={SelectableListViewField} navigator={this.props.navigator} data={colors} search={true}/>
             <Field icon="wc" name="sex" placeholder="ペットの性別" component={SelectableListViewField} navigator={this.props.navigator} data={genders} converter={(value) => value.label} border={false}/>
           </ListGroup>
+          {this.renderOther()}
           <MessageContainer errors={errors} notify={this.state.click}/>
         </ScrollViewContainer>
       </View>
@@ -249,6 +293,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     petFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
+    detailActions: bindActionCreators(Object.assign({}, petDetailActions), dispatch),
     rootActions:  bindActionCreators(Object.assign({}, rootActions), dispatch),
   };
 }

@@ -1,5 +1,5 @@
 import {call, put, take} from 'redux-saga/effects'
-import {postMePets, uploadMePetsImage} from '../../common/api/me'
+import {postMePets, uploadMePetsImage, deleleMePets} from '../../common/api/me'
 import {
   failureCallApi,
 } from '../reducers/common'
@@ -12,6 +12,9 @@ import {
   successUploadMyPets,
   successPostMyPets,
   successReloadMyPets,
+  ARCHIVE_PET,
+  SUCCESS_ARCHIVE_PET,
+  successArchivePet,
 } from '../reducers/addMyPetForm'
 import {loadMyPets} from '../../logic/pet'
 
@@ -63,9 +66,37 @@ export function* handleSuccessUploadMyPet() {
   }
 }
 
+// ペットの登録後（PetForm#SUCCESS_POST_MY_PETSをフック）、キャッシュにあるペット一覧をリフレッシュする
 export function* handleSuccessPostMyPet() {
   while (true) {
     yield take(SUCCESS_POST_MY_PETS);
+    const {payload, error} = yield call(loadMyPets, true);
+    if (payload && !error) {
+      yield put(successReloadMyPets(payload));
+    } else {
+      yield put(failureCallApi(error));
+    }
+  }
+}
+
+// ペットをアーカイブする指示後（PetForm#ARCHIVE_PETをフック）、ペットをアーカイブする処理を呼び出す
+export function* handleArchivePet() {
+  while (true) {
+    const action = yield take(ARCHIVE_PET);
+    const petId = action.payload.id;
+    const {payload, error} = yield call(deleleMePets, petId);
+    if (payload && !error) {
+      yield put(successArchivePet(payload));
+    } else {
+      yield put(failureCallApi(error));
+    }
+  }
+}
+
+// ペットのアーカイブ後（PetForm#SUCCESS_ARCHIVE_PETをフック）、キャッシュにあるペット一覧をリフレッシュする
+export function* handleSuccessArchivePet() {
+  while (true) {
+    yield take(SUCCESS_ARCHIVE_PET);
     const {payload, error} = yield call(loadMyPets, true);
     if (payload && !error) {
       yield put(successReloadMyPets(payload));

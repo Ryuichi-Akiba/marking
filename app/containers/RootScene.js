@@ -76,7 +76,7 @@ class RootScene extends React.PureComponent {
     if (route.name === 'Settings') {
       main = this.wrap(<SettingsScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
-    if (route.name === 'PetDetail') {
+    if (route.name === 'PetDetailScene') {
       main = this.wrap(<PetDetailScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
     return (

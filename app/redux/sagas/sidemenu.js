@@ -1,5 +1,4 @@
-import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
-import {getMePets} from '../../common/api/me'
+import {call, put, take} from 'redux-saga/effects'
 import {
   failureCallApi
 } from '../reducers/common'
@@ -8,7 +7,7 @@ import {
   successGetMyPets,
 } from '../reducers/sidemenu'
 import {
-  SUCCESS_POST_MY_PETS
+  SUCCESS_RELOAD_MY_PETS,
 } from '../reducers/addMyPetForm'
 import {loadMyPets} from '../../logic/pet'
 
@@ -29,12 +28,12 @@ export function* handleInitializeMenuContainer() {
 }
 
 /**
- * AddMyPetForm#SUCCESS_POST_MY_PETSをハンドルして、ペット情報を再取得する.
+ * ペット情報が更新された後（PetForm#SUCCESS_RELOAD_MY_PETSをフック）、メニューのペット一覧を書き換えるために、ペット情報を取得する.
  */
-export function* handleRequestSuccessPostMePets() {
+export function* handleSuccessReloadMyPets() {
   while (true) {
-    yield take(SUCCESS_POST_MY_PETS);
-    const {payload, error} = yield call(getMePets);
+    yield take(SUCCESS_RELOAD_MY_PETS);
+    const {payload, error} = yield call(loadMyPets);
     if (payload && !error) {
       yield put(successGetMyPets(payload));
     } else {

@@ -29,23 +29,12 @@ export function findNewMarkings(params, dates) {
 export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
 export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
 
-// ペットをアーカイブするアクション
-export const ARCHIVE_PET = 'ARCHIVE_PET';
-export const archivePet = createAction(ARCHIVE_PET, (payload) => payload);
-
-// ペットのアーカイブに成功した場合のアクション
-export const SUCCESS_ARCHIVE_PET = 'SUCCESS_ARCHIVE_PET';
-export const successArchivePet = createAction(SUCCESS_ARCHIVE_PET);
-
 // -------------------- Immutable State Model の定義 --------------------
 export const PetDetailRecord = new Record({
   // 日付をキーに取得できるようにマップ形式にする
   dates: Set(),
   markings: Map(),
   markers: [],
-
-  // ペットのアーカイブ処理に成功したかを示すフラグ
-  archived: false,
 });
 
 // マーキングマップに取得したデータを積み上げる
@@ -77,10 +66,6 @@ export function petDetailReducer(state = new PetDetailRecord(), action) {
       } else {
         return state.set('markings', mergeMarkersMap(state.markings, testdata2));
       }
-
-    // ペットのアーカイブに成功した場合にフラグを変更する
-    case SUCCESS_ARCHIVE_PET:
-      return state.set('archived', true);
 
     default:
       return state;

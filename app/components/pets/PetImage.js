@@ -8,8 +8,6 @@ var styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    borderColor: 'rgba(255,255,255,0.75)',
-    borderWidth: 3,
   },
 });
 
