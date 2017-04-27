@@ -15,7 +15,7 @@ const LinkConfig = {
 
 export default class MarkingNavbar extends React.PureComponent {
   static propTypes = {
-    title: React.PropTypes.string.isRequired,
+    title: React.PropTypes.string,
     left: React.PropTypes.oneOfType([React.PropTypes.shape(IconConfig), React.PropTypes.shape(LinkConfig)]),
     right: React.PropTypes.oneOfType([React.PropTypes.shape(IconConfig), React.PropTypes.shape(LinkConfig)]),
     transparent: React.PropTypes.bool,
@@ -28,7 +28,7 @@ export default class MarkingNavbar extends React.PureComponent {
   title() {
     const color = !!this.props.transparent ? Colors.white : Colors.text;
     return {
-      title: this.props.title,
+      title: this.props.title ? this.props.title : '',
       tintColor: color,
     };
   }

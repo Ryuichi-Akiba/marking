@@ -6,7 +6,6 @@ import {Field, reduxForm} from 'redux-form'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
-import * as petDetailActions from '../redux/reducers/petDetail'
 import * as rootActions from '../redux/reducers/root'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
@@ -75,6 +74,7 @@ class PetFormScene extends React.Component {
     force: React.PropTypes.bool, // 登録フォームを表示可能か否かのBOOL値（falseの場合は、1匹もペットが登録されていない時のみ表示可能）FIXME よく考えると不要になる可能性あり
     isNewWindow: React.PropTypes.bool, // 別画面で開いている場合はTRUE（設定画面から来た場合はこれがTRUEになっている）
     pet: React.PropTypes.object, // 登録済みのペットを編集する場合は値が入っている
+    callback: React.PropTypes.func, // 登録処理が終わった後にコールバックして欲しい場合に呼び出すファンクション
     // map from react-redux
     petFormState: PropTypes.object,
     petFormActions: PropTypes.object,
@@ -85,13 +85,19 @@ class PetFormScene extends React.Component {
     reduxFormState: PropTypes.object,
   };
 
+  static defaultProps = {
+    callback: (value) => value,
+  };
+
   constructor(props) {
     super(props);
-    this.state = {click:0, image:null, pet:null};
+    this.state = {click:0, image:null};
   }
 
   componentWillMount() {
     // ペットフォームを初期化する
+    this.props.petFormActions.initialize();
+
     if (this.props.isNewWindow) {
       this.props.petFormActions.initializePetForm(this.props.pet);
       this.initializeForm(this.props.pet ? this.props.pet : {});
@@ -115,7 +121,8 @@ class PetFormScene extends React.Component {
       if (this.props.isNewWindow) {
         // TODO 本来ならコールバックにして入れ替えたほうが軽くて良い
         const pet = nextProps.petFormState.updated;
-        nextProps.navigator.replace({name:'PetDetailScene', props:{pet}});
+        this.props.callback(pet);
+        nextProps.navigator.pop();
       } else {
         nextProps.navigator.replace({name:'Map'});
       }
@@ -126,7 +133,8 @@ class PetFormScene extends React.Component {
       if (nextProps.petFormState.archived) {
         // TODO 共通処理してアーカイブした旨の表示したい
         const pet = nextProps.petFormState.updated;
-        nextProps.navigator.replace({name:'PetDetailScene', props:{pet}});
+        this.props.callback(pet);
+        nextProps.navigator.pop();
       }
     }
   }
@@ -162,6 +170,8 @@ class PetFormScene extends React.Component {
     // APIに合うようにフォームをトランスフォームする
     values.sex = values.sex.value;
     values.user = {};
+    values.kind = values.breed.kind;
+    values.type = values.breed.type;
     return values;
   }
 
@@ -213,10 +223,8 @@ class PetFormScene extends React.Component {
   }
 
   render() {
-    // TODO とりあえず（本当はRESTから取得する）
-    const kinds = ["犬", "猫", "ハムスター", "フェレット", "とかげ", "へび"];
-    const colors = ["茶・ブラウン", "黒・ブラック", "白・ホワイト", "鼠・グレー"];
-
+    const colors = this.props.petFormState.colors;
+    const breeds = this.props.petFormState.breeds;
     const {petForm} = this.props.reduxFormState;
     var errors = null;
     if (petForm) {
@@ -244,7 +252,7 @@ class PetFormScene extends React.Component {
           </ListGroup>
           <ListGroup>
             <Field icon="date-range" name="birthDate" placeholder="ペットの生年月日" component={DatePickerField}/>
-            <Field icon="folder-open" name="type" placeholder="ペットの品種" component={SelectableListViewField} navigator={this.props.navigator} data={kinds} search={true}/>
+            <Field icon="folder-open" name="breed" placeholder="ペットの品種" component={SelectableListViewField} navigator={this.props.navigator} data={breeds} converter={(value) => value.kind + ':' + value.type} search={true}/>
             <Field icon="invert-colors" name="color" placeholder="ペットの色" component={SelectableListViewField} navigator={this.props.navigator} data={colors} search={true}/>
             <Field icon="wc" name="sex" placeholder="ペットの性別" component={SelectableListViewField} navigator={this.props.navigator} data={genders} converter={(value) => value.label} border={false}/>
           </ListGroup>
@@ -264,7 +272,7 @@ const validate = (values) => {
   if (!values.birthDate) {
     errors.birthDate = 'ペットの生年月日を入力してください。';
   }
-  if (!values.type) {
+  if (!values.breed) {
     errors.type = 'ペットの品種を入力してください。';
   }
   if (!values.color) {
@@ -293,7 +301,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     petFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
-    detailActions: bindActionCreators(Object.assign({}, petDetailActions), dispatch),
     rootActions:  bindActionCreators(Object.assign({}, rootActions), dispatch),
   };
 }

@@ -66,7 +66,7 @@ class PetDetailScene extends React.PureComponent {
       const startMonth = start.month();
       const endMonth = end.month();
       if (startMonth !== endMonth) {
-        const pet = this.props.pet;
+        const pet = nextProps.detailState.pet;
         const thisMonth = this.state.date.month();
         if (thisMonth === startMonth) {
           this.props.detailActions.findNewMarkings({pet, date:end.toDate(), refresh:false}, this.props.detailState.dates);
@@ -130,16 +130,27 @@ class PetDetailScene extends React.PureComponent {
   renderForeground() {
     return (
       <View style={{paddingTop:48}}>
-        <PetImage source={{uri:this.props.pet.image}} size="middle"/>
+        <PetImage source={{uri:this.props.detailState.pet.image}} size="middle"/>
       </View>
     );
   }
 
+  handlePressEditButton() {
+    this.props.navigator.push({
+      name:'PetFormScene',
+      props:{
+        isNewWindow:true,
+        pet:this.props.detailState.pet,
+        callback:(value) => this.props.detailActions.replacePet(value),
+      }
+    });
+  }
+
   renderFixedHeader() {
     const left = {icon:'menu', handler:this.props.openMenu};
-    const right = {icon:'mode-edit', handler:() => this.props.navigator.push({name:'PetFormScene', props:{isNewWindow:true, pet:this.props.pet}})};
+    const right = {icon:'mode-edit', handler:this.handlePressEditButton.bind(this)};
     return (
-      <MarkingNavbar title={this.props.pet.name} left={left} right={right} transparent={true}/>
+      <MarkingNavbar title={this.props.detailState.pet.name} left={left} right={right} transparent={true}/>
     );
   }
 
@@ -163,7 +174,7 @@ class PetDetailScene extends React.PureComponent {
         this.setState({date:d});
       };
       var element = (
-        <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+        <View key={i} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
           <Label small={true} style={{marginBottom:8}}>{days[d.day()]}</Label>
           <Badge color={color} disabled={disabled} active={active} onPress={changeStateDate}>{d.date()}</Badge>
         </View>

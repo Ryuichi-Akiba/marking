@@ -3,6 +3,18 @@ import {Record} from 'immutable'
 
 // -------------------- ActionCreator の定義 --------------------
 
+// ペットフォームシーンを初期化するアクション
+export const INITIALIZE_PET_FORM = 'App/PetFormScene/INITIALIZE_PET_FORM_SCENE';
+export const initialize = createAction(INITIALIZE_PET_FORM, (payload) => payload);
+
+// 入力フォームに表示する毛色一覧の取得に成功した時に呼び出されるアクション
+export const SUCCESS_GET_COLORS = 'App/PetFormScene/SUCCESS_GET_COLORS';
+export const successGetColors = createAction(SUCCESS_GET_COLORS, (payload) => payload);
+
+// 入力フォームに表示する品種一覧の取得に成功した時に呼び出されるアクション
+export const SUCCESS_GET_BREEDS = 'App/PetFormScene/SUCCESS_GET_BREEDS';
+export const successGetBreeds = createAction(SUCCESS_GET_BREEDS, (payload) => payload);
+
 // ペット登録ページのコンテナを初期化するアクション（スキップできない）
 export const INITIALIZE_PET_FORM_SCENE = 'INITIALIZE_PET_FORM_SCENE';
 export const initializePetForm = createAction(INITIALIZE_PET_FORM_SCENE, (payload) => payload);
@@ -47,6 +59,11 @@ export const successReloadMyPets = createAction(SUCCESS_RELOAD_MY_PETS, (payload
 
 // -------------------- Immutable State Model の定義 --------------------
 export const AddMyPetFormRecord = new Record({
+  // フォームに表示する毛色一覧
+  colors: [],
+  // フォームに表示する品種一覧
+  breeds: [],
+
   skip: false,
   created: false,
 
@@ -59,6 +76,13 @@ export const AddMyPetFormRecord = new Record({
 // -------------------- Reducer の定義 --------------------
 export function addMyPetForm(state = new AddMyPetFormRecord(), action) {
   switch (action.type) {
+    // フォームを初期化した時に毛色一覧をセットする
+    case SUCCESS_GET_COLORS:
+      return state.set('colors', action.payload);
+    // フォームを初期化した時に品種一覧をセットする
+    case SUCCESS_GET_BREEDS:
+      return state.set('breeds', action.payload);
+
     // 単純に初期化した場合はページをスキップしないので、FALSEにする
     case INITIALIZE_PET_FORM_SCENE:
       return state.set('skip', false).set('created', false);

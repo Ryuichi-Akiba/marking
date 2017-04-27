@@ -13,6 +13,8 @@ import {
   handleSuccessReloadMyPets,
 } from './sidemenu'
 import {
+  handleInitializePetFormForColors,
+  handleInitializePetFormForBreeds,
   handleInitializeSkipPetFormScene,
   handleAddMyPet,
   handleSuccessUploadMyPet,
@@ -46,6 +48,8 @@ export default function* sagas() {
   yield fork(handleInitializeMenuContainer);
   yield fork(handleSuccessReloadMyPets);
   // PET FORM SCENE
+  yield fork(handleInitializePetFormForColors);
+  yield fork(handleInitializePetFormForBreeds);
   yield fork(handleInitializeSkipPetFormScene);
   yield fork(handleAddMyPet);
   yield fork(handleSuccessUploadMyPet);
