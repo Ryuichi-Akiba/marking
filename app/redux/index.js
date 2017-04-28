@@ -7,6 +7,7 @@ import {menuReducer} from './reducers/sidemenu'
 import {addMyPetForm} from './reducers/addMyPetForm'
 import {petDetailReducer} from './reducers/petDetail'
 import {markingMap} from './reducers/markingMap'
+import {archivesReducer} from './reducers/archives'
 // ... other reducers
 
 export default combineReducers({
@@ -18,5 +19,6 @@ export default combineReducers({
   addMyPetForm,
   petDetail: petDetailReducer,
   markingMap,
+  archives: archivesReducer,
   // ... other reducers
 });

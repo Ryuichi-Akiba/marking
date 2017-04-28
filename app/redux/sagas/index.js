@@ -35,6 +35,7 @@ import {
   handlePee,
   handlePoo,
 } from './markingMap'
+import * as archives from './archives'
 
 export default function* sagas() {
   // ROOT SCENE
@@ -67,4 +68,6 @@ export default function* sagas() {
   yield fork(handleFinishMarking);
   yield fork(handlePee);
   yield fork(handlePoo);
+  // for ArchivesScene
+  yield fork(archives.handleInitializeArchivesScene);
 }

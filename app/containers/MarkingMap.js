@@ -143,7 +143,7 @@ class MarkingMap extends React.PureComponent {
     const {state, actions} = this.props;
     // if (!this.state.recording) {
     if (!state.isStarted) {
-      const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.blue}];
+      const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.deepOrange}];
       return (
         <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
           <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
@@ -157,8 +157,8 @@ class MarkingMap extends React.PureComponent {
       return (
         <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
           <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
-            <MAIcon name="stop" size={32} color={Colors.orange} style={{marginBottom:2}}/>
-            <Label small={true} bold={true} color={Colors.orange}>FINISH</Label>
+            <MAIcon name="stop" size={32} color={Colors.deepOrange} style={{marginBottom:2}}/>
+            <Label small={true} bold={true} color={Colors.deepOrange}>FINISH</Label>
           </TouchableOpacity>
         </View>
       );
@@ -189,7 +189,7 @@ class MarkingMap extends React.PureComponent {
         {pooAnimations}
         {/* うんちボタン */}
         <Animated.View style={{bottom}}>
-          <Icon source={require('./images/icon/poo.png')} raised={true} circle={true} backgroundColor={Colors.orange} onPress={handlePressPoo}/>
+          <Icon source={require('./images/icon/poo.png')} raised={true} circle={true} backgroundColor={Colors.amber} onPress={handlePressPoo}/>
         </Animated.View>
       </View>
     );

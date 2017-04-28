@@ -44,10 +44,17 @@ class SideMenu extends React.PureComponent {
     }
   }
 
+  archives() {
+    this.props.onChange();
+    this.props.navigator.replace({
+      name: 'ArchivesScene',
+    });
+  }
+
   settings() {
     this.props.onChange();
     this.props.navigator.replace({
-      name: 'Settings',
+      name: 'SettingsScene',
     });
   }
 
@@ -121,7 +128,8 @@ class SideMenu extends React.PureComponent {
             <ListGroup margin={false} border={false}>
               <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
               {list}
-              <List icon="settings" iconColor="#607D8B" title="設定" onPress={this.settings.bind(this)} chevron={true}/>
+              <List icon="account-balance" iconColor={Colors.red} title="アーカイブ" onPress={this.archives.bind(this)} chevron={true}/>
+              <List icon="settings" iconColor={Colors.blueGray} title="設定" onPress={this.settings.bind(this)} chevron={true}/>
               <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" onPress={this.logout.bind(this)}/>
             </ListGroup>
           </View>

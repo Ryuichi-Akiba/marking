@@ -48,7 +48,7 @@ export default class MarkingNavbar extends React.PureComponent {
   }
 
   renderSideButton(title : string, icon : string, handler) {
-    const color = !!this.props.transparent ? Colors.white : Colors.pink;
+    const color = !!this.props.transparent ? Colors.white : Colors.gray;
     if (icon) {
       return (
         <View style={{flexDirection: 'row', marginLeft:8, marginRight:8, marginTop:10}}>

@@ -10,8 +10,9 @@ import MarkingMap from './MarkingMap'
 import PetFormScene from './PetFormScene'
 import PetDetailScene from './PetDetailScene'
 import SettingsScene from './SettingsScene'
+import ArchivesScene from './ArchivesScene'
 import SelectableListViewScene from '../components/forms/SelectableListViewScene'
-import SideMenuComponent from './SideMenu'
+import SideMenuScene from './SideMenuScene'
 
 class RootScene extends React.PureComponent {
   static propTypes = {
@@ -73,18 +74,22 @@ class RootScene extends React.PureComponent {
     if (route.name === 'Map') {
       main = this.wrap(<MarkingMap openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
-    if (route.name === 'Settings') {
+    if (route.name === 'SettingsScene') {
       main = this.wrap(<SettingsScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'PetDetailScene') {
       main = this.wrap(<PetDetailScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
+    if (route.name === 'ArchivesScene') {
+      main = this.wrap(<ArchivesScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
+    }
     return (
       <Drawer
         ref={(ref) => this._drawer = ref}
-        content={<SideMenuComponent onChange={this.open.bind(this)} navigator={navigator} {...route.props}/>}
+        content={<SideMenuScene onChange={this.open.bind(this)} navigator={navigator} {...route.props}/>}
         type="overlay"
         tapToClose={true}
+        panOpenMask={20}
         panCloseMask={0.2}
         openDrawerOffset={0.2}
         styles={{

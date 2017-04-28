@@ -214,12 +214,12 @@ class PetDetailScene extends React.PureComponent {
   renderSummary() {
     const title = (
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-        <View style={{backgroundColor:Colors.lightGreen, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
+        <View style={{backgroundColor:Colors.green, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="explore" size={32} color={Colors.white} style={{marginBottom:5}}/>
           <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.distance}</Label>
           <Label small={true} color={Colors.white} bold={true}>m</Label>
         </View>
-        <View style={{backgroundColor:Colors.amber, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
+        <View style={{backgroundColor:Colors.orange, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="cloud" size={32} color={Colors.white} style={{marginBottom:5}}/>
           <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.poo}</Label>
           <Label small={true} color={Colors.white} bold={true}>Poo</Label>
