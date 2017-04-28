@@ -114,15 +114,13 @@ export function startMarking(markings, petId,  eventType) {
         })
         .then((result) => {
             if (eventType === 'END') {
-                console.log('開発中に毎回API投げるのはしんどいのでコメントアウト: ' + JSON.stringify(result.payload));
-                return result;
-                // return postMarkings(result.payload)
-                //     .then((result2) => {
-                //         return {payload: result2};
-                //     })
-                //     .catch((error) => {
-                //         return {error: error};
-                //     });
+                return postMarkings(result.payload)
+                    .then((result2) => {
+                        return {payload: result2};
+                    })
+                    .catch((error) => {
+                        return {error: error};
+                    });
             } else {
                 return result;
             }

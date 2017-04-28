@@ -7,6 +7,7 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import Icon from '../components/elements/Icon'
 import Label from '../components/elements/Label'
+import Stopwatch from '../components/elements/Stopwatch'
 import Colors from '../themes/Colors'
 import * as markingMapActions from '../redux/reducers/markingMap'
 import * as rootActions from '../redux/reducers/root'
@@ -160,6 +161,7 @@ class MarkingMap extends React.PureComponent {
             <MAIcon name="stop" size={32} color={Colors.deepOrange} style={{marginBottom:2}}/>
             <Label small={true} bold={true} color={Colors.deepOrange}>FINISH</Label>
           </TouchableOpacity>
+          <Stopwatch/>
         </View>
       );
     }
