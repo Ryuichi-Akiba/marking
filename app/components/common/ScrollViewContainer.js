@@ -4,6 +4,7 @@ import Colors from '../../themes/Colors'
 
 export default class ScrollViewContainer extends React.PureComponent {
   static propTypes = {
+    style: React.PropTypes.object,
   };
 
   constructor(props) {
@@ -12,7 +13,7 @@ export default class ScrollViewContainer extends React.PureComponent {
 
   render() {
     return (
-      <ScrollView style={{flex:1, backgroundColor:Colors.backgroundColor}}>
+      <ScrollView style={[{flex:1, backgroundColor:Colors.backgroundColor}, this.props.style]} {...this.props}>
         {this.props.children}
       </ScrollView>
     );

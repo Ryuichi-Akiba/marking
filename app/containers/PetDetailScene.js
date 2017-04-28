@@ -4,7 +4,6 @@ import {Navigator, StyleSheet, View, Image, TouchableHighlight, Dimensions, Aler
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
-import {Button} from 'react-native-elements'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import * as rootActions from '../redux/reducers/root'
@@ -17,6 +16,8 @@ import List from '../components/elements/List'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import PetImage from '../components/pets/PetImage'
 import Colors from '../themes/Colors'
+
+const window = Dimensions.get('window');
 
 class PetDetailScene extends React.PureComponent {
   static propTypes = {
@@ -50,17 +51,6 @@ class PetDetailScene extends React.PureComponent {
       const state = this.mapToState(this.state.date, nextProps.detailState.markings);
       this.refreshMarkers(state);
     }
-
-    // アーカイブされた場合に呼び出される
-    if (nextProps.detailState.archived !== this.props.detailState.archived) {
-      if (nextProps.detailState.archived) {
-        // TODO 共通処理してアーカイブした旨の表示したい
-        console.log('SUCCESS ARCHIVE!!');
-        var pet = this.props.pet;
-        pet.dead = true;
-        this.props.navigator.replace({name:'PetDetail', props:{pet, reload:true}});
-      }
-    }
   }
 
   // Stateが変更になった時（日付が変わった時）に呼び出され、地図にマーカーを描画する
@@ -76,7 +66,7 @@ class PetDetailScene extends React.PureComponent {
       const startMonth = start.month();
       const endMonth = end.month();
       if (startMonth !== endMonth) {
-        const pet = this.props.pet;
+        const pet = nextProps.detailState.pet;
         const thisMonth = this.state.date.month();
         if (thisMonth === startMonth) {
           this.props.detailActions.findNewMarkings({pet, date:end.toDate(), refresh:false}, this.props.detailState.dates);
@@ -119,30 +109,48 @@ class PetDetailScene extends React.PureComponent {
 
   refreshMarkers(state) {
     this.map.fitToCoordinates(state.markers, {
-      edgePadding: {top:60, right:60, bottom:60, left:60},
+      edgePadding: {top:200, right:60, bottom:60, left:60},
       animated: true,
     });
     this.setState(state);
   }
 
+  getImageHeight() {
+    const height = window.height;
+    return height / 2 - 110;
+  }
+
   renderBackground() {
     const deviceWidth = Dimensions.get('window').width;
     return (
-      <Image source={require('../components/common/images/bg/field.jpg')} style={{width:deviceWidth, height:300, resizeMode:'cover'}}/>
+      <Image source={require('../components/common/images/bg/leaf.jpg')} style={{width:deviceWidth, height:this.getImageHeight(), resizeMode:'cover'}}/>
     );
   }
 
   renderForeground() {
     return (
-      <View style={{paddingTop:56}}>
-        <PetImage source={{uri:this.props.pet.image}} size="large"/>
+      <View style={{paddingTop:48}}>
+        <PetImage source={{uri:this.props.detailState.pet.image}} size="middle"/>
       </View>
     );
   }
 
+  handlePressEditButton() {
+    this.props.navigator.push({
+      name:'PetFormScene',
+      props:{
+        isNewWindow:true,
+        pet:this.props.detailState.pet,
+        callback:(value) => this.props.detailActions.replacePet(value),
+      }
+    });
+  }
+
   renderFixedHeader() {
+    const left = {icon:'menu', handler:this.props.openMenu};
+    const right = {icon:'mode-edit', handler:this.handlePressEditButton.bind(this)};
     return (
-      <MarkingNavbar title={this.props.pet.name} left={{icon:'menu', handler:this.props.openMenu}} transparent={true}/>
+      <MarkingNavbar title={this.props.detailState.pet.name} left={left} right={right} transparent={true}/>
     );
   }
 
@@ -166,7 +174,7 @@ class PetDetailScene extends React.PureComponent {
         this.setState({date:d});
       };
       var element = (
-        <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+        <View key={i} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
           <Label small={true} style={{marginBottom:8}}>{days[d.day()]}</Label>
           <Badge color={color} disabled={disabled} active={active} onPress={changeStateDate}>{d.date()}</Badge>
         </View>
@@ -206,17 +214,17 @@ class PetDetailScene extends React.PureComponent {
   renderSummary() {
     const title = (
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-        <View style={{backgroundColor:Colors.lightBlue, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
+        <View style={{backgroundColor:Colors.lightGreen, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="explore" size={32} color={Colors.white} style={{marginBottom:5}}/>
           <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.distance}</Label>
           <Label small={true} color={Colors.white} bold={true}>m</Label>
         </View>
-        <View style={{backgroundColor:Colors.pink, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
+        <View style={{backgroundColor:Colors.amber, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="cloud" size={32} color={Colors.white} style={{marginBottom:5}}/>
           <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.poo}</Label>
           <Label small={true} color={Colors.white} bold={true}>Poo</Label>
         </View>
-        <View style={{backgroundColor:Colors.amber, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
+        <View style={{backgroundColor:Colors.blue, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="opacity" size={32} color={Colors.white} style={{marginBottom:5}}/>
           <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.pee}</Label>
           <Label small={true} color={Colors.white} bold={true}>Pee</Label>
@@ -224,7 +232,9 @@ class PetDetailScene extends React.PureComponent {
       </View>
     );
     return (
-      <List title={title} border={false} hideChevron={true}/>
+      <View style={{position:'absolute', top:40, left:8, right:8}}>
+        {title}
+      </View>
     );
   }
 
@@ -237,8 +247,7 @@ class PetDetailScene extends React.PureComponent {
   }
 
   renderMap() {
-    const window = Dimensions.get('window');
-    const mapStyle = {flex:1, height:window.height / 3};
+    const mapStyle = {flex:1, height:window.height / 2};
     const region = {latitude:0, longitude:0, latitudeDelta:0, longitudeDelta:0};
     return (
       <MapView style={mapStyle} ref={(ref) => {this.map = ref;}} initialRegion={region}>
@@ -247,36 +256,14 @@ class PetDetailScene extends React.PureComponent {
     );
   }
 
-  renderOther() {
-    if (!!this.props.pet.dead || this.props.pet.dead === '1') {
-      return (
-        <Button icon={{name:'account-balance'}} backgroundColor={Colors.red} title="アーカイブされています" />
-      );
-    } else {
-      return (
-        <ListGroup title="その他">
-          <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）する" border={false} onPress={this.handleArchiveLink.bind(this)}/>
-        </ListGroup>
-      );
-    }
-  }
-
-  handleArchiveLink() {
-    Alert.alert('アーカイブしますか？', '思い出になったペットをアーカイブします。アーカイブすると新しくマーキング記録できなくなります。', [
-      {text: 'Cancel', style: 'cancel'},
-      {text: 'OK', onPress: () => this.props.detailActions.archivePet(this.props.pet)},
-    ]);
-  }
-
   render() {
-    console.log(this.props.pet);
     var title = 'マーキングスポット';
     if (this.state.empty) {
       title = 'お散歩情報がありません';
     }
 
     return (
-      <ParallaxScrollView backgroundColor={Colors.backgroundColor} parallaxHeaderHeight={270} stickyHeaderHeight={64} backgroundSpeed={3}
+      <ParallaxScrollView backgroundColor={Colors.backgroundColor} parallaxHeaderHeight={this.getImageHeight()} stickyHeaderHeight={64} backgroundSpeed={3}
                           renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderFixedHeader={this.renderFixedHeader.bind(this)}>
         <ViewContainer>
           <ListGroup margin={false} borderTop={false}>
@@ -284,9 +271,8 @@ class PetDetailScene extends React.PureComponent {
           </ListGroup>
           <ListGroup title={title}>
             {this.renderMap()}
+            {this.renderSummary()}
           </ListGroup>
-          {this.renderSummary()}
-          {this.renderOther()}
         </ViewContainer>
       </ParallaxScrollView>
     );

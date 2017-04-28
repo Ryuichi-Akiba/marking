@@ -10,7 +10,7 @@ export default class Label extends React.PureComponent {
     small: React.PropTypes.bool,
     color: React.PropTypes.string,
     bold: React.PropTypes.bool,
-    style: React.PropTypes.string,
+    style: React.PropTypes.object,
   };
 
   constructor(props) {

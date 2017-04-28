@@ -104,7 +104,7 @@ class SideMenu extends React.PureComponent {
       if (!pet.dead) {
         var handlePress = () => {
           this.props.onChange();
-          this.props.navigator.replace({name:'PetDetail', props:{pet:pet}});
+          this.props.navigator.replace({name:'PetDetailScene', props:{pet:pet}});
         };
         list.push(
           <List key={i} avatar={{uri: pet.image}} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
