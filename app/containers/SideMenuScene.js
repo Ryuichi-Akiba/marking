@@ -109,7 +109,7 @@ class SideMenu extends React.PureComponent {
     var list = [];
     this.props.menuState.pets.forEach((pet, i) => {
       if (!pet.dead) {
-        var handlePress = () => {
+        const handlePress = () => {
           this.props.onChange();
           this.props.navigator.replace({name:'PetDetailScene', props:{pet:pet}});
         };
@@ -125,12 +125,12 @@ class SideMenu extends React.PureComponent {
         <ParallaxScrollView style={styles.parallax} parallaxHeaderHeight={200} stickyHeaderHeight={64} backgroundSpeed={3}
                             renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderStickyHeader={this.renderStickyHeader.bind(this)}>
           <View style={{flex:1, margin:0, padding:0, backgroundColor:Colors.white}}>
-            <ListGroup margin={false} border={false}>
-              <List icon="map" iconColor="#4CAF50" title="散歩マップ" onPress={goMap} chevron={true}/>
+            <ListGroup margin={false} borderTop={false}>
+              <List icon="map" iconColor={Colors.deepOrange} title="散歩マップ" onPress={goMap} chevron={true}/>
               {list}
-              <List icon="account-balance" iconColor={Colors.red} title="アーカイブ" onPress={this.archives.bind(this)} chevron={true}/>
+              <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" onPress={this.archives.bind(this)} chevron={true}/>
               <List icon="settings" iconColor={Colors.blueGray} title="設定" onPress={this.settings.bind(this)} chevron={true}/>
-              <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" onPress={this.logout.bind(this)}/>
+              <List icon="power-settings-new" iconColor={Colors.red} title="ログアウト" onPress={this.logout.bind(this)} border={false}/>
             </ListGroup>
           </View>
         </ParallaxScrollView>

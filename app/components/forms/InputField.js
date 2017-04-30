@@ -1,7 +1,7 @@
 import React from 'react'
 import {TextInput, View} from 'react-native'
 import {normalize} from 'react-native-elements'
-import List from '../elements/List'
+import ListFormView from '../forms/ListFormView'
 
 export default class InputField extends React.PureComponent {
   static propTypes = {
@@ -41,7 +41,7 @@ export default class InputField extends React.PureComponent {
     };
 
     const textInput = (
-      <TextInput style={{height: 30, fontSize:normalize(14)}}
+      <TextInput style={{flex:1, height: 30, fontSize:normalize(14)}}
         {...inputProps}
                  onChangeText={onChangeText}
                  onBlur={input.onChange}
@@ -53,9 +53,7 @@ export default class InputField extends React.PureComponent {
     );
 
     return (
-      <View>
-        <List icon={this.props.icon} title={textInput} hideChevron={true} border={this.props.border} valid={this.isValid()}/>
-      </View>
+      <ListFormView icon={this.props.icon} component={textInput} border={this.props.border} valid={this.isValid()} margin={6}/>
     );
   }
 }

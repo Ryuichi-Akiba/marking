@@ -29,19 +29,12 @@ export function findNewMarkings(params, dates) {
 export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
 export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
 
-// ステートが保持しているペット情報を置換するアクション.
-export const REPLACE_PET = 'FIND_NEW_MARKINGS';
-export const replacePet = createAction(REPLACE_PET, (payload) => payload);
-
 // -------------------- Immutable State Model の定義 --------------------
 export const PetDetailRecord = new Record({
   // 日付をキーに取得できるようにマップ形式にする
   dates: Set(),
   markings: Map(),
   markers: [],
-
-  // 別の画面から引数として渡ってきたペットの情報（画面に表示するペット情報）
-  pet: {},
 });
 
 // マーキングマップに取得したデータを積み上げる
@@ -64,70 +57,12 @@ export function petDetailReducer(state = new PetDetailRecord(), action) {
     // 初期ロード時・年月変更時の年月を積み上げる
     case INITIALIZE_PET_DETAIL_SCENE:
       var date = moment(action.payload.date).startOf('month');
-      return state.set('dates', state.dates.add(date)).set('pet', action.payload.pet);
+      return state.set('dates', state.dates.add(date));
 
     case SUCCESS_GET_MARKINGS:
-      // return state.set('markings', mergeMarkersMap(state.markings, action.payload));
-      if (state.dates.size === 1) {
-        return state.set('markings', mergeMarkersMap(state.markings, testdata));
-      } else {
-        return state.set('markings', mergeMarkersMap(state.markings, testdata2));
-      }
-
-    case REPLACE_PET:
-      return state.set('pet', action.payload);
+      return state.set('markings', mergeMarkersMap(state.markings, action.payload));
 
     default:
       return state;
   }
 }
-
-// FIXME テストデータなので後で消すこと
-const testdata = [{
-  distance: 1230,
-  startDateTime: "2017-04-01T12:10:00.000+09:00",
-  events: [
-    {
-      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
-      "eventType": "PEE",
-      "eventDateTime": "2017-04-01T12:15:00.000+09:00",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [139.766247, 35.681298]
-      }
-    },
-    {
-      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
-      "eventType": "POO",
-      "eventDateTime": "2017-04-01T12:20:00.000+09:00",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [139.766247, 35.682298]
-      }
-    }
-  ]
-}];
-const testdata2 = [{
-  distance: 1230,
-  startDateTime: "2017-03-31T12:10:00.000+09:00",
-  events: [
-    {
-      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
-      "eventType": "PEE",
-      "eventDateTime": "2017-04-01T12:15:00.000+09:00",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [139.766247, 35.681298]
-      }
-    },
-    {
-      "petId": "19388edd-791b-420e-b617-ceaa01658c20",
-      "eventType": "POO",
-      "eventDateTime": "2017-04-01T12:20:00.000+09:00",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [139.766247, 35.682298]
-      }
-    }
-  ]
-}];

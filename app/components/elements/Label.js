@@ -1,5 +1,6 @@
 import React from 'react'
-import {Text, normalize} from 'react-native-elements'
+import {Text} from 'react-native'
+import {normalize} from 'react-native-elements'
 import Colors from '../../themes/Colors'
 
 // スタイルを共通化したラベルコンポーネント
@@ -10,7 +11,9 @@ export default class Label extends React.PureComponent {
     small: React.PropTypes.bool,
     color: React.PropTypes.string,
     bold: React.PropTypes.bool,
+    size: React.PropTypes.oneOf(['large', 'middle', 'small']),
     style: React.PropTypes.object,
+    numberOfLines: React.PropTypes.number,
   };
 
   constructor(props) {
@@ -18,11 +21,12 @@ export default class Label extends React.PureComponent {
   }
 
   render() {
-    const fontSize = !!this.props.small ? normalize(10) : !!this.props.large ? normalize(18) : normalize(14);
+    const fontSize = this.props.size === 'small' ? normalize(12) : this.props.size === 'large' ? normalize(18) : normalize(14);
+
     const color = !!this.props.placeholder ? '#9E9E9E' : !!this.props.color ? this.props.color : Colors.text;
     const weight = !!this.props.bold ? 'bold' : 'normal';
     return (
-      <Text style={[this.props.style, {fontSize:fontSize, color:color, fontWeight:weight}]}>{this.props.children}</Text>
+      <Text style={[this.props.style, {fontSize:fontSize, color:color, fontWeight:weight}]} numberOfLines={this.props.numberOfLines}>{this.props.children}</Text>
     );
   }
 }

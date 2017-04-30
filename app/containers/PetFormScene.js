@@ -166,7 +166,7 @@ class PetFormScene extends React.Component {
     return <MarkingNavbar title={title} left={leftConfig} right={rightConfig}/>;
   }
 
-  trunsform(values) {
+  transform(values) {
     // APIに合うようにフォームをトランスフォームする
     values.sex = values.sex.value;
     values.user = {};
@@ -180,9 +180,9 @@ class PetFormScene extends React.Component {
 
     if (this.props.valid) {
       const {petForm} = this.props.reduxFormState;
-      var values = petForm.values;
+      var values = Object.assign({}, petForm.values);
       values.image = this.state.image;
-      const pet = this.trunsform(values);
+      const pet = this.transform(values);
       this.props.petFormActions.addMyPet(pet);
       this.setState({pet});
     } else {
@@ -217,7 +217,7 @@ class PetFormScene extends React.Component {
 
     return (
       <ListGroup title="アーカイブ">
-        <List icon="account-balance" iconColor={Colors.red} title="アーカイブ（思い出）にする" border={false} onPress={this.handleArchiveLink.bind(this)}/>
+        <List icon="account-balance" iconColor={Colors.purple} title="アーカイブ（思い出）にする" border={false} onPress={this.handleArchiveLink.bind(this)}/>
       </ListGroup>
     );
   }
@@ -273,7 +273,7 @@ const validate = (values) => {
     errors.birthDate = 'ペットの生年月日を入力してください。';
   }
   if (!values.breed) {
-    errors.type = 'ペットの品種を入力してください。';
+    errors.breed = 'ペットの品種を入力してください。';
   }
   if (!values.color) {
     errors.color = 'ペットの色を入力してください。';

@@ -1,7 +1,7 @@
 import React from 'react'
 import {View} from 'react-native'
-import List from '../elements/List'
 import Label from '../elements/Label'
+import ListFormView from '../forms/ListFormView'
 
 export default class SelectableListViewField extends React.PureComponent {
   static propTypes = {
@@ -56,9 +56,7 @@ export default class SelectableListViewField extends React.PureComponent {
     const text = !!input.value ? <Label>{this.props.converter(input.value)}</Label> : <Label placeholder={true}>{this.props.placeholder}</Label>;
 
     return (
-      <View>
-        <List icon={this.props.icon} title={text} chevron={true} onPress={this.openModal.bind(this)} border={this.props.border} valid={this.isValid()}/>
-      </View>
+      <ListFormView icon={this.props.icon} component={text} onPress={this.openModal.bind(this)} border={this.props.border} valid={this.isValid()} margin={12}/>
     );
   }
 }

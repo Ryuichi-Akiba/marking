@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React from 'react'
 import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
@@ -31,9 +32,15 @@ class ArchiveScene extends React.PureComponent {
   }
 
   renderArchivedPets() {
+    const size = this.props.archivesState.pets.length;
     var list = [];
     this.props.archivesState.pets.forEach((pet, i) => {
-      list.push(<List key={i} avatar={{uri:pet.image}} title={pet.name} chevron={true}/>);
+      const handle = () => {
+        this.props.navigator.push({name:'PetDetailScene', props:{pet}});
+      };
+      const subtitle = moment(pet.lastModifiedDate).format('YYYY年MM月DD日没') + '  ' + pet.type;
+      const border = size - 1 === i ? false : true;
+      list.push(<List key={i} avatar={{uri:pet.image}} title={pet.name} subtitle={subtitle} chevron={true} onPress={handle} border={border}/>);
     });
 
     if (list.length === 0) {
@@ -50,7 +57,7 @@ class ArchiveScene extends React.PureComponent {
   render() {
     return (
       <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="アーカイブ" left={{icon:'menu', handler:this.props.openMenu}}/>
+        <MarkingNavbar title="アーカイブス" left={{icon:'menu', handler:this.props.openMenu}}/>
         <ScrollViewContainer>
           {this.renderArchivedPets()}
         </ScrollViewContainer>

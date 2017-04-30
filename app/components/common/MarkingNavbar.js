@@ -28,7 +28,7 @@ export default class MarkingNavbar extends React.PureComponent {
   title() {
     const color = !!this.props.transparent ? Colors.white : Colors.text;
     return {
-      title: this.props.title ? this.props.title : '',
+      title: this.props.title ? this.props.title.length > 10 ? this.props.title.substr(0, 10) + '...' : this.props.title : '',
       tintColor: color,
     };
   }

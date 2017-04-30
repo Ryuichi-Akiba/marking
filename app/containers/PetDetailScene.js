@@ -12,7 +12,6 @@ import ViewContainer from '../components/common/ViewContainer'
 import Label from '../components/elements/Label'
 import Badge from '../components/elements/Badge'
 import ListGroup from '../components/elements/ListGroup'
-import List from '../components/elements/List'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import PetImage from '../components/pets/PetImage'
 import Colors from '../themes/Colors'
@@ -35,14 +34,14 @@ class PetDetailScene extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {date:moment().startOf('date'), markers:[], distance:0, poo:0, pee:0};
+    this.state = {date:moment().startOf('date'), pet:{}, markers:[], distance:0, poo:0, pee:0};
   };
 
   // 初回ロード時に呼び出され、ペットのマーキング情報を取得する
-  componentDidMount() {
+  componentWillMount() {
     const date = this.state.date.toDate();
-    const pet = this.props.pet;
-    this.props.detailActions.initialize({pet, date, refresh:true});
+    this.setState({pet:this.props.pet});
+    this.props.detailActions.initialize({pet:this.props.pet, date, refresh:true});
   }
 
   // Propsが変更になった時（データが更新された時）に呼び出され、地図にマーカーを描画する
@@ -66,7 +65,7 @@ class PetDetailScene extends React.PureComponent {
       const startMonth = start.month();
       const endMonth = end.month();
       if (startMonth !== endMonth) {
-        const pet = nextProps.detailState.pet;
+        const pet = this.props.pet;
         const thisMonth = this.state.date.month();
         if (thisMonth === startMonth) {
           this.props.detailActions.findNewMarkings({pet, date:end.toDate(), refresh:false}, this.props.detailState.dates);
@@ -128,9 +127,10 @@ class PetDetailScene extends React.PureComponent {
   }
 
   renderForeground() {
+    const pet = this.state.pet;
     return (
       <View style={{paddingTop:48}}>
-        <PetImage source={{uri:this.props.detailState.pet.image}} size="middle"/>
+        <PetImage source={{uri:pet.image}} size="middle"/>
       </View>
     );
   }
@@ -140,18 +140,27 @@ class PetDetailScene extends React.PureComponent {
       name:'PetFormScene',
       props:{
         isNewWindow:true,
-        pet:this.props.detailState.pet,
-        callback:(value) => this.props.detailActions.replacePet(value),
+        pet:this.state.pet,
+        callback:(value) => this.setState({pet:value}),
       }
     });
   }
 
+  // ナビゲーションバーをレンダリングする（アーカイブされたペットと、そうでないペットとで出し分ける）
   renderFixedHeader() {
-    const left = {icon:'menu', handler:this.props.openMenu};
-    const right = {icon:'mode-edit', handler:this.handlePressEditButton.bind(this)};
-    return (
-      <MarkingNavbar title={this.props.detailState.pet.name} left={left} right={right} transparent={true}/>
-    );
+    const pet = this.state.pet;
+    if (!!pet.dead) {
+      const left = {icon:'arrow-back', handler:() => this.props.navigator.pop()};
+      return (
+        <MarkingNavbar title={pet.name} left={left} transparent={true}/>
+      );
+    } else {
+      const left = {icon:'menu', handler:this.props.openMenu};
+      const right = {icon:'mode-edit', handler:this.handlePressEditButton.bind(this)};
+      return (
+        <MarkingNavbar title={pet.name} left={left} right={right} transparent={true}/>
+      );
+    }
   }
 
   handlePressNextWeek(num) {
@@ -175,7 +184,7 @@ class PetDetailScene extends React.PureComponent {
       };
       var element = (
         <View key={i} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-          <Label small={true} style={{marginBottom:8}}>{days[d.day()]}</Label>
+          <Label style={{marginBottom:8}} size="small">{days[d.day()]}</Label>
           <Badge color={color} disabled={disabled} active={active} onPress={changeStateDate}>{d.date()}</Badge>
         </View>
       );
@@ -184,30 +193,27 @@ class PetDetailScene extends React.PureComponent {
 
     const handleNext = () => this.handlePressNextWeek(7);
     const handleBefore = () => this.handlePressNextWeek(-7);
-    const title = (
-      <View style={{marginTop:8, marginBottom:8}}>
+    return (
+      <View style={{padding:8}}>
         <View style={{flex:1, flexDirection:'row'}}>
           <TouchableHighlight onPress={handleBefore} underlayColor={Colors.white}>
             <View style={{flex:1, justifyContent:'center', alignItems:'center', marginLeft:-5, marginRight:-5}}>
-              <Label small={true} style={{marginBottom:8}}> </Label>
+              <Label size="small" style={{marginBottom:8}}> </Label>
               <MAIcon name="keyboard-arrow-left" size={24} color={Colors.gray}/>
             </View>
           </TouchableHighlight>
           {list}
           <TouchableHighlight onPress={handleNext} underlayColor={Colors.white}>
             <View style={{flex:1, justifyContent:'center', alignItems:'center', marginLeft:-5, marginRight:-5}}>
-              <Label small={true} style={{marginBottom:8}}> </Label>
+              <Label size="small" style={{marginBottom:8}}> </Label>
               <MAIcon name="keyboard-arrow-right" size={24} color={Colors.gray}/>
             </View>
           </TouchableHighlight>
         </View>
         <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center', marginTop:8}}>
-          <Label>{this.state.date.format('YYYY年MM月DD日') + days[this.state.date.day()] + '曜日'}</Label>
+          <Label size="small">{this.state.date.format('YYYY年MM月DD日') + days[this.state.date.day()] + '曜日'}</Label>
         </View>
       </View>
-    );
-    return (
-      <List title={title} border={false} hideChevron={true}/>
     );
   }
 
@@ -216,18 +222,18 @@ class PetDetailScene extends React.PureComponent {
       <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
         <View style={{backgroundColor:Colors.green, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="explore" size={32} color={Colors.white} style={{marginBottom:5}}/>
-          <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.distance}</Label>
-          <Label small={true} color={Colors.white} bold={true}>m</Label>
+          <Label size="large" color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.distance}</Label>
+          <Label size="small" color={Colors.white} bold={true}>m</Label>
         </View>
         <View style={{backgroundColor:Colors.orange, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="cloud" size={32} color={Colors.white} style={{marginBottom:5}}/>
-          <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.poo}</Label>
-          <Label small={true} color={Colors.white} bold={true}>Poo</Label>
+          <Label size="large" color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.poo}</Label>
+          <Label size="small" color={Colors.white} bold={true}>Poo</Label>
         </View>
         <View style={{backgroundColor:Colors.blue, margin:5, width:100, height:100, borderRadius:50, justifyContent:'center', alignItems:'center'}}>
           <MAIcon name="opacity" size={32} color={Colors.white} style={{marginBottom:5}}/>
-          <Label large={true} color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.pee}</Label>
-          <Label small={true} color={Colors.white} bold={true}>Pee</Label>
+          <Label size="large" color={Colors.white} bold={true} style={{marginBottom:5}}>{this.state.pee}</Label>
+          <Label size="small" color={Colors.white} bold={true}>Pee</Label>
         </View>
       </View>
     );

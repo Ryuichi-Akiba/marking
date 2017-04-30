@@ -1,8 +1,8 @@
 import React from 'react'
 import {View, DatePickerIOS} from 'react-native'
 import moment from 'moment'
-import List from '../elements/List'
 import Label from '../elements/Label'
+import ListFormView from '../forms/ListFormView'
 
 export default class DatePickerField extends React.PureComponent {
   static propTypes = {
@@ -46,13 +46,12 @@ export default class DatePickerField extends React.PureComponent {
 
     var pickerComponent = null;
     if (this.state.show) {
-      const picker = <DatePickerIOS date={this.state.date} mode="date" timeZoneOffsetInMinutes={9 * 60} onDateChange={this.onDateChange.bind(this)}/>;
-      pickerComponent = <List title={picker}/>;
+      pickerComponent = <DatePickerIOS date={this.state.date} mode="date" timeZoneOffsetInMinutes={9 * 60} onDateChange={this.onDateChange.bind(this)}/>;
     }
 
     return (
       <View>
-        <List icon={this.props.icon} title={text} chevron={true} onPress={this.toggle.bind(this)} border={this.props.border} valid={this.isValid()}/>
+        <ListFormView icon={this.props.icon} component={text} onPress={this.toggle.bind(this)} border={this.props.border} valid={this.isValid()} margin={12}/>
         {pickerComponent}
       </View>
     );

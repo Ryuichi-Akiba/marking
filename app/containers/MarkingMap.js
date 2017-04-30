@@ -146,20 +146,20 @@ class MarkingMap extends React.PureComponent {
     if (!state.isStarted) {
       const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.deepOrange}];
       return (
-        <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
+        <View style={{flex:1, alignItems:'center'}}>
           <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
-            <MAIcon name="play-arrow" size={32} color={Colors.white} style={{marginBottom:2}}/>
-            <Label small={true} bold={true} color={Colors.white}>START</Label>
+            <MAIcon name="play-arrow" size={32} color={Colors.white} style={{marginBottom:1}}/>
+            <Label color={Colors.white} size="small">START</Label>
           </TouchableOpacity>
         </View>
       );
     } else {
       const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.underlayColor}];
       return (
-        <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
+        <View style={{flex:1, alignItems:'center'}}>
           <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
-            <MAIcon name="stop" size={32} color={Colors.deepOrange} style={{marginBottom:2}}/>
-            <Label small={true} bold={true} color={Colors.deepOrange}>FINISH</Label>
+            <MAIcon name="stop" size={32} color={Colors.deepOrange} style={{marginBottom:1}}/>
+            <Label color={Colors.deepOrange} size="small">FINISH</Label>
           </TouchableOpacity>
           <Stopwatch/>
         </View>
