@@ -20,7 +20,7 @@ export function getAccessToken(token) {
       return {payload:response.data};
     })
     .catch(error => {
-      return {error};
+      return {error:error.response};
     });
 }
 
@@ -44,7 +44,7 @@ export function get(uri, params) {
         return {payload:response.data};
       })
       .catch(error => {
-        return {error};
+        return {error:error.response};
       });
   });
 }
@@ -58,13 +58,16 @@ export function post(uri, data, params) {
 
     return axios.post(`${SERVER}${uri}`, data, {headers: headers, params: params})
       .then(response => {
+        if (response.status < 200 && response.status > 299) {
+          return Promise.reject({error:response.data});
+        }
         if (!response.data || response.data === '') {
           return {payload:{}};
         }
         return {payload:response.data};
       })
       .catch(error => {
-        return {error};
+        return {error:error.response};
       });
   });
 }
@@ -80,7 +83,7 @@ export function del(uri, params) {
         return {payload:response.data};
       })
       .catch(error => {
-        return {error};
+        return {error:error.response};
       });
   });
 }

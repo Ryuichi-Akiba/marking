@@ -18,6 +18,7 @@ export default class List extends React.PureComponent {
     border: React.PropTypes.bool,
     chevron: React.PropTypes.bool,
     rightTitle: React.PropTypes.string,
+    style: React.PropTypes.object,
   };
 
   static defaultProps = {
@@ -114,7 +115,7 @@ export default class List extends React.PureComponent {
   render() {
     const border = !!this.props.border ? 0.5 : 0;
     const component = (
-      <View style={{flex:1, flexDirection:'row'}}>
+      <View style={[{flex:1, flexDirection:'row'}, this.props.style]}>
         {this.renderIconContainer()}
 
         <View style={{flex:1, flexDirection:'row', borderBottomWidth:border, borderBottomColor:Colors.borderColor, paddingRight:8}}>

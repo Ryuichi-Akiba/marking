@@ -3,6 +3,7 @@ import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableO
 import {bindActionCreators} from 'redux'
 import {connect} from "react-redux"
 import Drawer from 'react-native-drawer'
+import DropdownAlert from 'react-native-dropdownalert'
 import * as rootActions from '../redux/reducers/root'
 import LoadingScene from './LoadingScene'
 import Login from './Login'
@@ -13,20 +14,34 @@ import SettingsScene from './SettingsScene'
 import ArchivesScene from './ArchivesScene'
 import SelectableListViewScene from '../components/forms/SelectableListViewScene'
 import SideMenuScene from './SideMenuScene'
+import Colors from '../themes/Colors'
 
 class RootScene extends React.PureComponent {
   static propTypes = {
     rootState: React.PropTypes.object,
     rootActions: React.PropTypes.object,
+    commonState: React.PropTypes.object,
   };
 
   constructor(props) {
     super(props);
-  };
+    // this.state = {hasErrors:false};
+    // this.state = {click:0, errors:[]}; // FIXME 後でもとに戻すこと
+  }
 
   componentWillMount() {
     // シーンを初期化する
     this.props.rootActions.initializeRootScene();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // エラー情報が積み上げられたことを検知して、アラートを表示する
+    console.log(nextProps);
+    if (this.props.rootState.failures !== nextProps.rootState.failures) {
+      console.log(nextProps.rootState.failures);
+      var item = {type:'error', title:'ERROR', message:JSON.stringify(nextProps.rootState.failures)};
+      this.showAlert(item);
+    }
   }
 
   render() {
@@ -104,15 +119,38 @@ class RootScene extends React.PureComponent {
       >
         <View style={{flex:1}}>
           {main}
+          <DropdownAlert
+            ref={(ref) => this.dropdown = ref}
+            containerStyle={{
+            backgroundColor:Colors.red,
+          }}
+            onClose={(data) => this.onClose(data)}
+            imageSrc={'https://facebook.github.io/react/img/logo_og.png'}
+          />
         </View>
       </Drawer>
     );
+  }
+
+  showAlert(item) {
+    if (item.type == 'dismiss') {
+      this.dropdown.onClose();
+    } else {
+      const random = Math.floor((Math.random() * 1000) + 1);
+      const title = item.title + ' #' + random;
+      this.dropdown.alertWithType(item.type, title, item.message);
+    }
+  }
+
+  onClose(data) {
+    console.log(data);
   }
 }
 
 function mapStateToProps(state) {
   return {
     rootState: state.root,
+    commonState: state.common,
   };
 }
 

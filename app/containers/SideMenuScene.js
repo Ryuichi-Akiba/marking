@@ -88,15 +88,6 @@ class SideMenu extends React.PureComponent {
     );
   }
 
-  renderStickyHeader() {
-    const user = this.props.loginState.user;
-    return (
-      <View style={{backgroundColor:'#FFFFFF', paddingTop:20, paddingBottom:16}}>
-        <List avatar={{uri: user.imageUrl}} title={user.username} border={false} hideChevron={true}/>
-      </View>
-    );
-  }
-
   render() {
     var goMap = () => {
       this.props.onChange();
@@ -123,7 +114,7 @@ class SideMenu extends React.PureComponent {
     return (
       <View style={{flex:1, backgroundColor:'#FFFFFF'}}>
         <ParallaxScrollView style={styles.parallax} parallaxHeaderHeight={200} stickyHeaderHeight={64} backgroundSpeed={3}
-                            renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderStickyHeader={this.renderStickyHeader.bind(this)}>
+                            renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)}>
           <View style={{flex:1, margin:0, padding:0, backgroundColor:Colors.white}}>
             <ListGroup margin={false} borderTop={false}>
               <List icon="map" iconColor={Colors.deepOrange} title="散歩マップ" onPress={goMap} chevron={true}/>

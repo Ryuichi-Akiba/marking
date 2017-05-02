@@ -22,6 +22,17 @@ export const viewLoadingScene = createAction(VIEW_LOADING_SCENE);
 export const DESTROY_LOADING_SCENE = 'DESTROY_LOADING_SCENE';
 export const destroyLoadingScene = createAction(DESTROY_LOADING_SCENE);
 
+// API呼び出し失敗時のアクション
+export const FAILURE_CALL_API = 'App/RootScene/FAILURE_CALL_API';
+export function failureCallApi(error) {
+  return {
+    type: FAILURE_CALL_API,
+    payload: {},
+    meta: {error},
+    error: true
+  }
+}
+
 // -------------------- Immutable State Model の定義 --------------------
 
 export const RootRecord = new Record({
@@ -30,6 +41,7 @@ export const RootRecord = new Record({
   facebookToken: null,
   // 処理中であることを示すフラグ
   isLoading: false,
+  failures:[],
 });
 
 // -------------------- Reducer の定義 --------------------
@@ -48,6 +60,14 @@ export function rootReducer(state = new RootRecord(), action) {
     case SUCCESS_INITIALIZE_ROOT_SCENE:
     case DESTROY_LOADING_SCENE:
       return state.set('isLoading', false);
+
+    // エラーをステートに保存して他から使えるようにしておく
+    case FAILURE_CALL_API:
+      var errors = state.get('failures');
+      var failures = [].concat(errors);
+      failures.push(action.meta.error.data);
+      console.log(failures);
+      return state.set('failures', failures);
 
     default:
       return state;

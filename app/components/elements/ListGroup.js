@@ -10,6 +10,7 @@ export default class ListGroup extends React.PureComponent {
     borderTop: React.PropTypes.bool,
     borderBottom: React.PropTypes.bool,
     title: React.PropTypes.string,
+    style: React.PropTypes.object,
   };
 
   static defaultProps = {
@@ -32,14 +33,14 @@ export default class ListGroup extends React.PureComponent {
 
     if (this.props.title) {
       return (
-        <List containerStyle={[{borderColor:Colors.borderColor, marginTop:marginTop}, border, borderTop, borderBottom]}>
+        <List containerStyle={[{borderColor:Colors.borderColor, marginTop:marginTop}, border, borderTop, borderBottom, this.props.style]}>
           {title}
           {this.props.children}
         </List>
       );
     } else {
       return (
-        <List containerStyle={[{borderColor:Colors.borderColor, marginTop:marginTop}, border, borderTop, borderBottom]}>
+        <List containerStyle={[{borderColor:Colors.borderColor, marginTop:marginTop}, border, borderTop, borderBottom, this.props.style]}>
           {this.props.children}
         </List>
       );
