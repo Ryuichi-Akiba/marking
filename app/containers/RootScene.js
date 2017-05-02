@@ -6,6 +6,7 @@ import Drawer from 'react-native-drawer'
 import DropdownAlert from 'react-native-dropdownalert'
 import * as rootActions from '../redux/reducers/root'
 import * as commonActions from '../redux/reducers/common'
+import * as loginActions from '../redux/reducers/login'
 import LoadingScene from './LoadingScene'
 import Login from './Login'
 import MarkingMap from './MarkingMap'
@@ -53,8 +54,15 @@ class RootScene extends React.PureComponent {
     // 共通ステートに処理成功情報が積み上げられたことを検知して、メッセージを表示する
     if (this.props.commonState.message !== nextProps.commonState.message) {
       if (nextProps.commonState.message) {
-        const item = {type:'success', title:'SUCCESS', message:nextProps.commonState.message};
+        const item = {type:'success', title:'', message:nextProps.commonState.message};
         this.showAlert(item);
+      }
+    }
+
+    // フェイスブックログイン済みだった場合は、もう一度ログイン処理する
+    if (nextProps.rootState.isFacebookLogin !== this.props.rootState.isFacebookLogin) {
+      if (nextProps.rootState.isFacebookLogin) {
+        nextProps.loginActions.loginWithFacebook(); // 再ログインする
       }
     }
   }
@@ -91,6 +99,8 @@ class RootScene extends React.PureComponent {
   }
 
   renderScene(route, navigator) {
+    this.navigator = navigator;
+
     if (route.name === 'Login') {
       return this.wrap(<Login navigator={navigator} {...route.props}/>);
     }
@@ -166,6 +176,7 @@ function mapDispatchToProps(dispatch) {
   return {
     rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
     commonActions: bindActionCreators(Object.assign({}, commonActions), dispatch),
+    loginActions: bindActionCreators(Object.assign({}, loginActions), dispatch),
   };
 }
 

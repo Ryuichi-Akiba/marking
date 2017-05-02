@@ -9,11 +9,16 @@ import * as rootActions from '../redux/reducers/root';
 
 class Login extends React.PureComponent {
   static propTypes = {
+    // map from redux
     loginState: PropTypes.object,
     loginActions: PropTypes.object,
     rootState: PropTypes.object,
     rootActions: PropTypes.object,
   };
+
+  constructor(props) {
+    super(props);
+  }
 
   componentWillUpdate(nextProps, nextState) {
     // ログイン処理後、ログインステートの変更を検知し、ログインが成功していれば画面遷移する
@@ -22,14 +27,6 @@ class Login extends React.PureComponent {
         this.props.navigator.replace({
           name: 'PetFormScene'
         });
-      }
-    }
-
-    // フェイスブックログイン済みだった場合は、新しくトークン発行し直すだけで、ログイン画面はスキップする
-    if (nextProps.rootState !== this.props.rootState) {
-      if (nextProps.rootState.isAlreadyLoggedInFacebook) {
-        const token = nextProps.rootState.facebookToken;
-        this.props.loginActions.successLoginWithFacebook(token);
       }
     }
   }

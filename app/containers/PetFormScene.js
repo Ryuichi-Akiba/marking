@@ -105,11 +105,19 @@ class PetFormScene extends React.Component {
     } else {
       this.props.petFormActions.initializeSkipPetForm();
     }
+
+    // TODO ページを飛ばす判断はここではなく、ログイン画面でやるべきな気がする
+    if (this.props.petFormState.skip) {
+      this.props.navigator.replace({
+        name: 'Map'
+      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     // 初回ロード時
     if (nextProps.petFormState.skip !== this.props.petFormState.skip) {
+      // TODO ページを飛ばす判断はここではなく、ログイン画面でやるべきな気がする
       if (nextProps.petFormState.skip) {
         this.props.navigator.replace({
           name: 'Map'

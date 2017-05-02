@@ -3,9 +3,8 @@ import {
   handleInitializeRootScene
 } from './root'
 import {
-  handleRequestFacebookLogin,
-  handleGetAccessToken,
-  handleGetMe,
+  handleLoginWithFacebook,
+  handleSuccessGetAccessToken,
   handleLogout,
 } from './login'
 import {
@@ -41,9 +40,8 @@ export default function* sagas() {
   // ROOT SCENE
   yield fork(handleInitializeRootScene);
   // LOGIN
-  yield fork(handleRequestFacebookLogin);
-  yield fork(handleGetAccessToken);
-  yield fork(handleGetMe);
+  yield fork(handleLoginWithFacebook);
+  yield fork(handleSuccessGetAccessToken);
   yield fork(handleLogout);
   // SIDE MENU SCENE
   yield fork(handleInitializeMenuContainer);

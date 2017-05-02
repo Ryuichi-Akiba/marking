@@ -4,11 +4,11 @@ import {Record} from 'immutable'
 // -------------------- ActionCreator の定義 --------------------
 
 // マイペットページのコンテナを初期化するアクション
-export const INITIALIZE_MENU_CONTAINER = 'App/SideMenuScene/INITIALIZE_MENU_CONTAINER';
+export const INITIALIZE_MENU_CONTAINER = 'App/SideMenu/INITIALIZE_MENU_CONTAINER';
 export const initialize = createAction(INITIALIZE_MENU_CONTAINER);
 
 // マイペットの取得成功時のアクション
-export const SUCCESS_GET_MY_PETS = 'App/SideMenuScene/SUCCESS_GET_MY_PETS';
+export const SUCCESS_GET_MY_PETS = 'App/SideMenu/SUCCESS_GET_MY_PETS';
 export const successGetMyPets = createAction(SUCCESS_GET_MY_PETS, (payload) => payload);
 
 // -------------------- Immutable State Model の定義 --------------------

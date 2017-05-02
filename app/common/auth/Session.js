@@ -35,7 +35,7 @@ export default class Session {
   }
 
   static setToken(object : Object) {
-    return AsyncStorage.setItem(TOKEN_STORE_KEY, JSON.stringify(object));
+    return AsyncStorage.setItem(TOKEN_STORE_KEY, JSON.stringify(object)).then(() => Promise.resolve(object));
   }
 
   static getToken() {

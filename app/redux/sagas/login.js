@@ -1,49 +1,35 @@
-import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
-import {getAccessToken} from '../../common/api/api'
+import {call, put, take} from 'redux-saga/effects'
 import {getMe} from '../../common/api/me'
-import {getFacebookAccessToken} from '../../common/api/facebook';
+import * as auth from '../../common/auth/auth'
 import {
-  successLoginWithFacebook,
   failureLoginWithFacebook,
   successGetAccessToken,
-  failureGetAccessToken,
   successGetMe,
   failureGetMe,
   successDestroySession,
-  ON_LOGIN_WITH_FACEBOOK,
-  SUCCESS_LOGIN_WITH_FACEBOOK,
+  LOGIN_WITH_FACEBOOK,
   SUCCESS_GET_ACCESS_TOKEN,
   LOGOUT,
 } from '../reducers/login'
 import Session from '../../common/auth/Session'
 
-export function* handleRequestFacebookLogin() {
+// フェイスブックのログイン機構を用いてログインに成功したら（LoginReducer#LOGIN_WITH_FACEBOOK）、ペティカルのアクセストークンを発行する
+export function* handleLoginWithFacebook() {
   while (true) {
-    const action = yield take(ON_LOGIN_WITH_FACEBOOK);
-    const {payload, error} = yield call(getFacebookAccessToken);
+    yield take(LOGIN_WITH_FACEBOOK);
+    const {payload, error} = yield call(auth.loginWithFacebook);
     if (payload && !error) {
-      yield put(successLoginWithFacebook(payload));
+      yield put(successGetAccessToken(payload));
     } else {
       yield put(failureLoginWithFacebook(error));
     }
   }
 }
 
-export function* handleGetAccessToken() {
+// アクセストークンの取得に成功したら（LoginReducer#SUCCESS_GET_ACCESS_TOKEN）、ログインしているユーザーの基本情報を取得する
+export function* handleSuccessGetAccessToken() {
   while (true) {
-    const action = yield take(SUCCESS_LOGIN_WITH_FACEBOOK);
-    const {payload, error} = yield call(getAccessToken, action.payload.facebookAccessToken);
-    if (payload && !error) {
-      yield put(successGetAccessToken(payload));
-    } else {
-      yield put(failureGetAccessToken(error));
-    }
-  }
-}
-
-export function* handleGetMe() {
-  while (true) {
-    const action = yield take(SUCCESS_GET_ACCESS_TOKEN);
+    yield take(SUCCESS_GET_ACCESS_TOKEN);
     const {payload, error} = yield call(getMe);
     if (payload && !error) {
       yield put(successGetMe(payload));
@@ -53,9 +39,7 @@ export function* handleGetMe() {
   }
 }
 
-/**
- * ログアウト処理後に非同期で行う必要のあるログアウト処理を実行する.
- */
+// ログアウトのアクションが実行されたら（LoginReducer#LOGOUT）、セッション等の情報を全て破棄してログアウトする
 export function* handleLogout() {
   while (true) {
     yield take(LOGOUT);

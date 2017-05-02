@@ -39,10 +39,12 @@ export function commonReducer(state = new CommonRecord(), action) {
   switch (action.type) {
     // エラーをステートに保存して他から使えるようにしておく
     case FAILURE_CALL_API:
+      console.error(action);
       if (action.error) {
+        const error = action.meta.error;
         const current = state.get('errors');
         var errors = [].concat(current);
-        errors.push(action.meta.error.data);
+        errors.push(error.data);
         return state.set('errors', errors);
       }
       return state;
