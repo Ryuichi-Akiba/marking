@@ -67,7 +67,10 @@ export function startMarking(markings, petId,  eventType) {
     return loadMyPets(false)
         .then((result) => {
             const petIds = [];
-            result.payload.forEach((pet) => {
+            result.payload.filter((pet) => {
+                return (pet.dead === undefined || pet.dead == '0');
+            })
+            .forEach((pet) => {
                 petIds.push(pet.id);
             });
             return petIds;
