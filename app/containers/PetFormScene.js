@@ -7,6 +7,7 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
 import * as rootActions from '../redux/reducers/root'
+import * as commonActions from '../redux/reducers/common'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
 import SelectableListViewField from '../components/forms/SelectableListViewField'
@@ -14,7 +15,6 @@ import MarkingNavbar from '../components/common/MarkingNavbar'
 import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
 import List from '../components/elements/List'
-import MessageContainer from '../components/forms/MessageContainer'
 import Colors from '../themes/Colors'
 
 var styles = StyleSheet.create({
@@ -80,6 +80,7 @@ class PetFormScene extends React.Component {
     petFormActions: PropTypes.object,
     rootState: PropTypes.object,
     rootActions: PropTypes.object,
+    commonActions: React.PropTypes.object,
     // map from redux-form
     initialize: React.PropTypes.func,
     reduxFormState: PropTypes.object,
@@ -91,7 +92,7 @@ class PetFormScene extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {click:0, image:null};
+    this.state = {image:null};
   }
 
   componentWillMount() {
@@ -119,9 +120,8 @@ class PetFormScene extends React.Component {
     // ペット情報を保存した場合の遷移先を定義する
     if (nextProps.petFormState.created !== this.props.petFormState.created) {
       if (this.props.isNewWindow) {
-        // TODO 本来ならコールバックにして入れ替えたほうが軽くて良い
         const pet = nextProps.petFormState.updated;
-        this.props.callback(pet);
+        this.props.callback(pet); // コールバック処理を呼び出して、呼び出し元のペット情報を入れ替える
         nextProps.navigator.pop();
       } else {
         nextProps.navigator.replace({name:'Map'});
@@ -131,7 +131,6 @@ class PetFormScene extends React.Component {
     // アーカイブされた場合に呼び出される
     if (nextProps.petFormState.archived !== this.props.petFormState.archived) {
       if (nextProps.petFormState.archived) {
-        // TODO 共通処理してアーカイブした旨の表示したい
         const pet = nextProps.petFormState.updated;
         this.props.callback(pet);
         nextProps.navigator.pop();
@@ -179,6 +178,7 @@ class PetFormScene extends React.Component {
     this.props.submit();
 
     if (this.props.valid) {
+      // バリデーションエラーではないので保存する
       const {petForm} = this.props.reduxFormState;
       var values = Object.assign({}, petForm.values);
       values.image = this.state.image;
@@ -186,7 +186,18 @@ class PetFormScene extends React.Component {
       this.props.petFormActions.addMyPet(pet);
       this.setState({pet});
     } else {
-      this.setState({click: ++this.state.click});
+      // 入力エラーがあるのでエラーにする
+      const {petForm} = this.props.reduxFormState;
+      if (petForm) {
+        const values = petForm.syncErrors;
+        const keys = Object.keys(values);
+        var errors = [];
+        keys.forEach((key) => {
+          errors.push({detail:values[key]});
+        });
+        console.log(errors);
+        this.props.commonActions.showErrors(errors);
+      }
     }
   }
 
@@ -225,11 +236,6 @@ class PetFormScene extends React.Component {
   render() {
     const colors = this.props.petFormState.colors;
     const breeds = this.props.petFormState.breeds;
-    const {petForm} = this.props.reduxFormState;
-    var errors = null;
-    if (petForm) {
-      errors = petForm.syncErrors;
-    }
 
     var image = <View style={[styles.avatar, {alignItems:'center', justifyContent:'center', backgroundColor:'#FFFFFF'}]}><MAIcon name="photo" size={48} style={{color:'#BDBDBD'}}/></View>;
     if (this.state.image) {
@@ -257,7 +263,6 @@ class PetFormScene extends React.Component {
             <Field icon="wc" name="sex" placeholder="ペットの性別" component={SelectableListViewField} navigator={this.props.navigator} data={genders} converter={(value) => value.label} border={false}/>
           </ListGroup>
           {this.renderOther()}
-          <MessageContainer errors={errors} notify={this.state.click}/>
         </ScrollViewContainer>
       </View>
     );
@@ -302,6 +307,7 @@ function mapDispatchToProps(dispatch) {
   return {
     petFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
     rootActions:  bindActionCreators(Object.assign({}, rootActions), dispatch),
+    commonActions:  bindActionCreators(Object.assign({}, commonActions), dispatch),
   };
 }
 

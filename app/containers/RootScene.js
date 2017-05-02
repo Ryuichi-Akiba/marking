@@ -5,6 +5,7 @@ import {connect} from "react-redux"
 import Drawer from 'react-native-drawer'
 import DropdownAlert from 'react-native-dropdownalert'
 import * as rootActions from '../redux/reducers/root'
+import * as commonActions from '../redux/reducers/common'
 import LoadingScene from './LoadingScene'
 import Login from './Login'
 import MarkingMap from './MarkingMap'
@@ -18,15 +19,15 @@ import Colors from '../themes/Colors'
 
 class RootScene extends React.PureComponent {
   static propTypes = {
+    // map from redux
     rootState: React.PropTypes.object,
     rootActions: React.PropTypes.object,
     commonState: React.PropTypes.object,
+    commonActions: React.PropTypes.object,
   };
 
   constructor(props) {
     super(props);
-    // this.state = {hasErrors:false};
-    // this.state = {click:0, errors:[]}; // FIXME 後でもとに戻すこと
   }
 
   componentWillMount() {
@@ -35,12 +36,26 @@ class RootScene extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    // エラー情報が積み上げられたことを検知して、アラートを表示する
-    console.log(nextProps);
-    if (this.props.rootState.failures !== nextProps.rootState.failures) {
-      console.log(nextProps.rootState.failures);
-      var item = {type:'error', title:'ERROR', message:JSON.stringify(nextProps.rootState.failures)};
-      this.showAlert(item);
+    // 共通ステートにエラー情報が積み上げられたことを検知して、メッセージを表示する
+    if (this.props.commonState.errors !== nextProps.commonState.errors) {
+      if (nextProps.commonState.errors.length !== 0) {
+        const errors = nextProps.commonState.errors;
+        var messages = '';
+        errors.forEach((error, i) => {
+          messages = messages + error.detail;
+          messages = i === errors.length - 1 ? messages : messages + '\n';
+        });
+        const item = {type:'error', title:'', message:messages};
+        this.showAlert(item);
+      }
+    }
+
+    // 共通ステートに処理成功情報が積み上げられたことを検知して、メッセージを表示する
+    if (this.props.commonState.message !== nextProps.commonState.message) {
+      if (nextProps.commonState.message) {
+        const item = {type:'success', title:'SUCCESS', message:nextProps.commonState.message};
+        this.showAlert(item);
+      }
     }
   }
 
@@ -70,6 +85,7 @@ class RootScene extends React.PureComponent {
       <View style={{flex:1}}>
         {component}
         <LoadingScene/>
+        <DropdownAlert ref={(ref) => this.dropdown = ref} onClose={(data) => this.onClose(data)} errorColor={Colors.error} infoColor={Colors.info} successColor={Colors.success} messageNumOfLines={10}/>
       </View>
     );
   }
@@ -98,6 +114,7 @@ class RootScene extends React.PureComponent {
     if (route.name === 'ArchivesScene') {
       main = this.wrap(<ArchivesScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
+
     return (
       <Drawer
         ref={(ref) => this._drawer = ref}
@@ -119,14 +136,6 @@ class RootScene extends React.PureComponent {
       >
         <View style={{flex:1}}>
           {main}
-          <DropdownAlert
-            ref={(ref) => this.dropdown = ref}
-            containerStyle={{
-            backgroundColor:Colors.red,
-          }}
-            onClose={(data) => this.onClose(data)}
-            imageSrc={'https://facebook.github.io/react/img/logo_og.png'}
-          />
         </View>
       </Drawer>
     );
@@ -136,14 +145,13 @@ class RootScene extends React.PureComponent {
     if (item.type == 'dismiss') {
       this.dropdown.onClose();
     } else {
-      const random = Math.floor((Math.random() * 1000) + 1);
-      const title = item.title + ' #' + random;
-      this.dropdown.alertWithType(item.type, title, item.message);
+      this.dropdown.alertWithType(item.type, item.title, item.message);
     }
   }
 
-  onClose(data) {
-    console.log(data);
+  onClose() {
+    // エラーをクリアする
+    this.props.commonActions.clearErrors();
   }
 }
 
@@ -157,6 +165,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
+    commonActions: bindActionCreators(Object.assign({}, commonActions), dispatch),
   };
 }
 

@@ -1,5 +1,5 @@
 import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
-import {failureCallApi} from '../reducers/root'
+import {failureCallApi} from '../reducers/common'
 import {
     GET_CURRENT_LOCATION,
     successGetCurrentLocation,

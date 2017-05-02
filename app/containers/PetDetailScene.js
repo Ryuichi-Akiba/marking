@@ -25,6 +25,7 @@ class PetDetailScene extends React.PureComponent {
     openMenu: React.PropTypes.func.isRequired,
     // map from other scene
     pet: React.PropTypes.object.isRequired,
+    isNewWindow: React.PropTypes.object,
     // map from react-redux
     rootState: React.PropTypes.object,
     rootActions: React.PropTypes.object,
@@ -149,14 +150,14 @@ class PetDetailScene extends React.PureComponent {
   // ナビゲーションバーをレンダリングする（アーカイブされたペットと、そうでないペットとで出し分ける）
   renderFixedHeader() {
     const pet = this.state.pet;
-    if (!!pet.dead) {
+    if (!!this.props.isNewWindow) {
       const left = {icon:'arrow-back', handler:() => this.props.navigator.pop()};
       return (
         <MarkingNavbar title={pet.name} left={left} transparent={true}/>
       );
     } else {
       const left = {icon:'menu', handler:this.props.openMenu};
-      const right = {icon:'mode-edit', handler:this.handlePressEditButton.bind(this)};
+      const right = !!pet.dead ? null : {icon:'mode-edit', handler:this.handlePressEditButton.bind(this)};
       return (
         <MarkingNavbar title={pet.name} left={left} right={right} transparent={true}/>
       );
