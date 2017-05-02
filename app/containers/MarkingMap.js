@@ -93,8 +93,6 @@ class MarkingMap extends React.PureComponent {
     console.log('peeしたペットは:' + petId);
 
     actions.pee(state.markings, petId);
-
-    actions.handleShowPee(state.peeActive);
   }
 
   poo(petId) {
@@ -103,8 +101,6 @@ class MarkingMap extends React.PureComponent {
     console.log('pooしたペットは:' + petId);
 
     actions.poo(state.markings, petId);
-
-    actions.handleShowPoo(state.pooActive);
   }
 
   peeAnimate() {
@@ -184,7 +180,15 @@ class MarkingMap extends React.PureComponent {
         )
       }) : () => {return (<View/>)};
 
-    const handlePressPoo = () => this.setState({visiblePoo:!this.state.visiblePoo});
+    const handlePressPoo = () => {
+      // 選択したペット(散歩に連れていくペット)が１匹だけの場合はペット選択用アイコンを表示しない
+      if (this.state.selected.length === 1) {
+        this.poo(this.state.selected[0].id);
+      } else {
+        this.setState({visiblePoo: !this.state.visiblePoo});
+      }
+    };
+
     return (
       <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
         {/* うんちするペットボタン */}
@@ -214,7 +218,14 @@ class MarkingMap extends React.PureComponent {
         )
       }) : () => {return (<View/>)};
 
-    const handlePressPee = () => this.setState({visiblePee:!this.state.visiblePee});
+    const handlePressPee = () => {
+      // 選択したペット(散歩に連れていくペット)が１匹だけの場合はペット選択用アイコンを表示しない
+      if (this.state.selected.length === 1) {
+        this.pee(this.state.selected[0].id);
+      }else {
+        this.setState({visiblePee: !this.state.visiblePee});
+      }
+    };
     return (
       <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
         {/* おしっこするペットボタン */}

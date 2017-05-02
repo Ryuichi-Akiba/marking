@@ -167,22 +167,12 @@ export function failureFinishMarking(error) {
   }
 }
 
-export const HANDLE_SHOW_PEE = 'HANDLE_SHOW_PEE';
-export function handleShowPee(payload) {
-  return {
-    type: HANDLE_SHOW_PEE,
-    payload: payload,
-    meta: {},
-    error: false
-  }
-}
-
 export const PEE = 'PEE';
 export function pee(payload, petId) {
   return {
     type: PEE,
     payload: payload,
-    meta: {petId},
+    meta: petId,
     error: false
   }
 }
@@ -206,22 +196,13 @@ export function failurePee(error) {
     error: true
   }
 }
-export const HANDLE_SHOW_POO = 'HANDLE_SHOW_POO';
-export function handleShowPoo(payload) {
-  return {
-    type: HANDLE_SHOW_POO,
-    payload: payload,
-    meta: {},
-    error: false
-  }
-}
 
 export const POO = 'POO';
 export function poo(payload, petId) {
   return {
     type: POO,
     payload: payload,
-    meta: {petId},
+    meta: petId,
     error: false
   }
 }
@@ -291,8 +272,6 @@ export const MarkingMapRecord = new Record({
   region: {},
   watchId: null,
   isStarted: false,
-  peeActive: false,
-  pooActive: false,
   visibility: new Animated.Value(0),
   peeAnim: new Animated.Value(0),
   pooAnim: new Animated.Value(0),
@@ -324,20 +303,15 @@ export function markingMap(state = new MarkingMapRecord(), action) {
     case START_MARKING:
       return state.set('isStarted', true);
     case SUCCESS_START_MARKING:
-      console.log("ここはreducerです。action.payload: " + JSON.stringify(action.payload));
       return state.set('markings', action.payload);
     case FINISH_MARKING:
       return state.set('isStarted', false);
     case SUCCESS_FINISH_MARKING:
       return state.set('markings', action.payload);
-    case HANDLE_SHOW_PEE:
-      return state.set('peeActive', !action.payload);
     case PEE:
       return state;
     case SUCCESS_PEE:
       return state.set('markings', action.payload);
-    case HANDLE_SHOW_POO:
-      return state.set('pooActive', !action.payload);
     case POO:
       return state;
     case SUCCESS_POO:
