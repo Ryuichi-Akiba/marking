@@ -7,13 +7,15 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
 import * as rootActions from '../redux/reducers/root'
+import * as commonActions from '../redux/reducers/common'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
 import SelectableListViewField from '../components/forms/SelectableListViewField'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
-import MessageContainer from '../components/forms/MessageContainer'
+import List from '../components/elements/List'
+import Colors from '../themes/Colors'
 
 var styles = StyleSheet.create({
   container: {
@@ -62,74 +64,148 @@ var styles = StyleSheet.create({
   }
 });
 
+// 性別は固定値にしておく（サーバ側も可変ではないため）
+const genders = [{label:'オス', value:"MALE"}, {label:'メス', value:"FEMALE"}, {label:'不明', value:"NONE"}];
+
 class PetFormScene extends React.Component {
   static propTypes = {
     // map from route navigation
     navigator: React.PropTypes.object.isRequired,
     force: React.PropTypes.bool, // 登録フォームを表示可能か否かのBOOL値（falseの場合は、1匹もペットが登録されていない時のみ表示可能）FIXME よく考えると不要になる可能性あり
     isNewWindow: React.PropTypes.bool, // 別画面で開いている場合はTRUE（設定画面から来た場合はこれがTRUEになっている）
+    pet: React.PropTypes.object, // 登録済みのペットを編集する場合は値が入っている
+    callback: React.PropTypes.func, // 登録処理が終わった後にコールバックして欲しい場合に呼び出すファンクション
     // map from react-redux
     petFormState: PropTypes.object,
-    myPetFormActions: PropTypes.object,
+    petFormActions: PropTypes.object,
     rootState: PropTypes.object,
     rootActions: PropTypes.object,
+    commonActions: React.PropTypes.object,
     // map from redux-form
+    initialize: React.PropTypes.func,
     reduxFormState: PropTypes.object,
-    initialValues: PropTypes.object,
+  };
+
+  static defaultProps = {
+    callback: (value) => value,
   };
 
   constructor(props) {
     super(props);
-    this.state = {click:0, image:null};
+    this.state = {image:null};
   }
 
-  componentDidMount() {
+  componentWillMount() {
     // ペットフォームを初期化する
-    this.props.petFormActions.initialize(!this.props.force);
+    this.props.petFormActions.initialize();
+
+    if (this.props.isNewWindow) {
+      this.props.petFormActions.initializePetForm(this.props.pet);
+      this.initializeForm(this.props.pet ? this.props.pet : {});
+    } else {
+      this.props.petFormActions.initializeSkipPetForm();
+    }
+
+    // TODO ページを飛ばす判断はここではなく、ログイン画面でやるべきな気がする
+    if (this.props.petFormState.skip) {
+      this.props.navigator.replace({
+        name: 'Map'
+      });
+    }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (nextProps.petFormState !== this.props.petFormState) {
-      // 初回ロード時
+  componentWillReceiveProps(nextProps) {
+    // 初回ロード時
+    if (nextProps.petFormState.skip !== this.props.petFormState.skip) {
+      // TODO ページを飛ばす判断はここではなく、ログイン画面でやるべきな気がする
       if (nextProps.petFormState.skip) {
         this.props.navigator.replace({
           name: 'Map'
         });
       }
+    }
 
-      // 新しくペットを登録した場合の遷移先を定義する
-      if (nextProps.petFormState.created) {
-        if (this.props.isNewWindow) {
-          this.props.navigator.pop();
-        } else {
-          this.props.navigator.replace({name:'Map'});
-        }
+    // ペット情報を保存した場合の遷移先を定義する
+    if (nextProps.petFormState.created !== this.props.petFormState.created) {
+      if (this.props.isNewWindow) {
+        const pet = nextProps.petFormState.updated;
+        this.props.callback(pet); // コールバック処理を呼び出して、呼び出し元のペット情報を入れ替える
+        nextProps.navigator.pop();
+      } else {
+        nextProps.navigator.replace({name:'Map'});
       }
     }
+
+    // アーカイブされた場合に呼び出される
+    if (nextProps.petFormState.archived !== this.props.petFormState.archived) {
+      if (nextProps.petFormState.archived) {
+        const pet = nextProps.petFormState.updated;
+        this.props.callback(pet);
+        nextProps.navigator.pop();
+      }
+    }
+  }
+
+  // RESTで取得したオブジェクトとフォームのオブジェクトの型が異なる部分があるため、ここでフォーム用に整形する
+  initializeForm(pet) {
+    if (pet.sex) {
+      const exists = genders.filter((gender) => gender.value === pet.sex);
+      if (exists.length !== 0) {
+        pet.sex = exists[0];
+      }
+    }
+    if (pet.image) {
+      this.setState({image:{uri:pet.image}});
+    }
+    this.props.initialize(pet);
   }
 
   createNavbar() {
     var leftConfig;
     if (this.props.isNewWindow) {
-      leftConfig = {icon:'chevron-left', handler:this.props.navigator.pop};
+      leftConfig = {icon:'arrow-back', handler:this.props.navigator.pop};
     } else {
       leftConfig = {icon:'clear', handler:() => this.props.navigator.replace({name:'Map'})};
     }
 
     const rightConfig = {title:'保存', handler:this.save.bind(this)};
-    return <MarkingNavbar title="ペットを登録" left={leftConfig} right={rightConfig}/>;
+    const title = !!this.props.pet ? 'ペットを編集' : 'ペットを登録';
+    return <MarkingNavbar title={title} left={leftConfig} right={rightConfig}/>;
+  }
+
+  transform(values) {
+    // APIに合うようにフォームをトランスフォームする
+    values.sex = values.sex.value;
+    values.user = {};
+    values.kind = values.breed.kind;
+    values.type = values.breed.type;
+    return values;
   }
 
   save() {
     this.props.submit();
 
     if (this.props.valid) {
+      // バリデーションエラーではないので保存する
       const {petForm} = this.props.reduxFormState;
-      var values = petForm.values;
+      var values = Object.assign({}, petForm.values);
       values.image = this.state.image;
-      this.props.petFormActions.addMyPet(values);
+      const pet = this.transform(values);
+      this.props.petFormActions.addMyPet(pet);
+      this.setState({pet});
     } else {
-      this.setState({click: ++this.state.click});
+      // 入力エラーがあるのでエラーにする
+      const {petForm} = this.props.reduxFormState;
+      if (petForm) {
+        const values = petForm.syncErrors;
+        const keys = Object.keys(values);
+        var errors = [];
+        keys.forEach((key) => {
+          errors.push({detail:values[key]});
+        });
+        console.log(errors);
+        this.props.commonActions.showErrors(errors);
+      }
     }
   }
 
@@ -145,17 +221,29 @@ class PetFormScene extends React.Component {
     });
   }
 
-  render() {
-    // TODO とりあえず（本当はRESTから取得する）
-    const kinds = ["犬", "猫", "ハムスター", "フェレット", "とかげ", "へび"];
-    const colors = ["茶・ブラウン", "黒・ブラック", "白・ホワイト", "鼠・グレー"];
-    const genders = [{label:'オス', value:"MALE"}, {label:'メス', value:"FEMALE"}, {label:'不明', value:"NONE"}];
+  handleArchiveLink() {
+    Alert.alert('アーカイブしますか？', '思い出になったペットをアーカイブします。アーカイブすると新しくマーキング記録できなくなります。', [
+      {text: 'キャンセル', style: 'cancel'},
+      {text: 'アーカイブ', onPress: () => this.props.petFormActions.archivePet(this.props.pet)},
+    ]);
+  }
 
-    const {petForm} = this.props.reduxFormState;
-    var errors = null;
-    if (petForm) {
-      errors = petForm.syncErrors;
+  renderOther() {
+    // 登録画面の時は表示しない
+    if (!this.props.pet || !this.props.pet.id) {
+      return null;
     }
+
+    return (
+      <ListGroup title="アーカイブ">
+        <List icon="account-balance" iconColor={Colors.purple} title="アーカイブ（思い出）にする" border={false} onPress={this.handleArchiveLink.bind(this)}/>
+      </ListGroup>
+    );
+  }
+
+  render() {
+    const colors = this.props.petFormState.colors;
+    const breeds = this.props.petFormState.breeds;
 
     var image = <View style={[styles.avatar, {alignItems:'center', justifyContent:'center', backgroundColor:'#FFFFFF'}]}><MAIcon name="photo" size={48} style={{color:'#BDBDBD'}}/></View>;
     if (this.state.image) {
@@ -178,11 +266,11 @@ class PetFormScene extends React.Component {
           </ListGroup>
           <ListGroup>
             <Field icon="date-range" name="birthDate" placeholder="ペットの生年月日" component={DatePickerField}/>
-            <Field icon="folder-open" name="type" placeholder="ペットの品種" component={SelectableListViewField} navigator={this.props.navigator} data={kinds}/>
-            <Field icon="invert-colors" name="color" placeholder="ペットの色" component={SelectableListViewField} navigator={this.props.navigator} data={colors}/>
+            <Field icon="folder-open" name="breed" placeholder="ペットの品種" component={SelectableListViewField} navigator={this.props.navigator} data={breeds} converter={(value) => value.kind + ':' + value.type} search={true}/>
+            <Field icon="invert-colors" name="color" placeholder="ペットの色" component={SelectableListViewField} navigator={this.props.navigator} data={colors} search={true}/>
             <Field icon="wc" name="sex" placeholder="ペットの性別" component={SelectableListViewField} navigator={this.props.navigator} data={genders} converter={(value) => value.label} border={false}/>
           </ListGroup>
-          <MessageContainer errors={errors} notify={this.state.click}/>
+          {this.renderOther()}
         </ScrollViewContainer>
       </View>
     );
@@ -197,8 +285,8 @@ const validate = (values) => {
   if (!values.birthDate) {
     errors.birthDate = 'ペットの生年月日を入力してください。';
   }
-  if (!values.type) {
-    errors.type = 'ペットの品種を入力してください。';
+  if (!values.breed) {
+    errors.breed = 'ペットの品種を入力してください。';
   }
   if (!values.color) {
     errors.color = 'ペットの色を入力してください。';
@@ -220,7 +308,6 @@ function mapStateToProps(state) {
     petFormState: state.addMyPetForm,
     rootState: state.root,
     reduxFormState: state.form,
-    initialValues: state.addMyPetForm.form
   };
 }
 
@@ -228,6 +315,7 @@ function mapDispatchToProps(dispatch) {
   return {
     petFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
     rootActions:  bindActionCreators(Object.assign({}, rootActions), dispatch),
+    commonActions:  bindActionCreators(Object.assign({}, commonActions), dispatch),
   };
 }
 

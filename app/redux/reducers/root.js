@@ -26,8 +26,7 @@ export const destroyLoadingScene = createAction(DESTROY_LOADING_SCENE);
 
 export const RootRecord = new Record({
   // フェイスブックログイン済みであることを示すフラグ
-  isAlreadyLoggedInFacebook: false,
-  facebookToken: null,
+  isFacebookLogin: false,
   // 処理中であることを示すフラグ
   isLoading: false,
 });
@@ -41,9 +40,7 @@ export function rootReducer(state = new RootRecord(), action) {
       return state.set('isLoading', true);
 
     case ALREADY_LOGGED_IN_FACEBOOK:
-      return state
-        .set('isAlreadyLoggedInFacebook', true)
-        .set('facebookToken', action.payload);
+      return state.set('isFacebookLogin', true);
 
     case SUCCESS_INITIALIZE_ROOT_SCENE:
     case DESTROY_LOADING_SCENE:

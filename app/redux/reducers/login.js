@@ -1,31 +1,15 @@
-import {AccessToken, LoginManager} from 'react-native-fbsdk'
 import {Record} from 'immutable'
+import {createAction} from 'redux-actions'
+import {AccessToken, LoginManager} from 'react-native-fbsdk'
 import Session from '../../common/auth/Session'
 import {USER} from '../../common/auth/sessionKey'
 
 // -------------------- ActionCreator の定義 --------------------
 
 // フェイスブックログイン成功時にキックするアクション
-export const ON_LOGIN_WITH_FACEBOOK = 'ON_LOGIN_WITH_FACEBOOK';
-export function loginWithFacebook(results) {
-  return {
-    type: ON_LOGIN_WITH_FACEBOOK,
-    payload: {},
-    meta: {results},
-    error: false
-  }
-}
+export const LOGIN_WITH_FACEBOOK = 'App/Login/LOGIN_WITH_FACEBOOK';
+export const loginWithFacebook = createAction(LOGIN_WITH_FACEBOOK);
 
-// フェイスブックログイン成功時のアクション
-export const SUCCESS_LOGIN_WITH_FACEBOOK = 'SUCCESS_LOGIN_WITH_FACEBOOK';
-export function successLoginWithFacebook(payload) {
-  return {
-    type: SUCCESS_LOGIN_WITH_FACEBOOK,
-    payload: {facebookAccessToken:payload},
-    meta: {payload},
-    error: false
-  }
-}
 // フェイスブックログイン失敗時のアクション
 export const FAILURE_LOGIN_WITH_FACEBOOK = 'FAILURE_LOGIN_WITH_FACEBOOK';
 export function failureLoginWithFacebook(error) {
@@ -135,20 +119,14 @@ export const LoginRecord = new Record({
 // -------------------- Reducer の定義 --------------------
 export function loginReducer(state = new LoginRecord(), action) {
   switch (action.type) {
-    // フェイスブックログイン処理後のステート変更処理
-    case ON_LOGIN_WITH_FACEBOOK:
-      return new LoginRecord(action.payload);
 
-    // フェイスブックログイン成功時のステート変更処理
-    case SUCCESS_LOGIN_WITH_FACEBOOK:
-      return new LoginRecord(action.payload);
     case FAILURE_LOGIN_WITH_FACEBOOK:
       console.log('FAILURE_LOGIN_WITH_FACEBOOK');
 
     // アクセストークン取得成功時のステート変更処理
     case SUCCESS_GET_ACCESS_TOKEN:
       console.log(action.payload);
-      Session.setToken(action.payload.token);
+      // Session.setToken(action.payload.token);
       return new LoginRecord(action.payload);
 
     // アクセストークン取得失敗時のステート変更処理

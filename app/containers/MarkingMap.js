@@ -7,6 +7,7 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import Icon from '../components/elements/Icon'
 import Label from '../components/elements/Label'
+import Stopwatch from '../components/elements/Stopwatch'
 import Colors from '../themes/Colors'
 import * as markingMapActions from '../redux/reducers/markingMap'
 import * as rootActions from '../redux/reducers/root'
@@ -143,23 +144,24 @@ class MarkingMap extends React.PureComponent {
     const {state, actions} = this.props;
     // if (!this.state.recording) {
     if (!state.isStarted) {
-      const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.blue}];
+      const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.deepOrange}];
       return (
-        <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
+        <View style={{flex:1, alignItems:'center'}}>
           <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
-            <MAIcon name="play-arrow" size={32} color={Colors.white} style={{marginBottom:2}}/>
-            <Label small={true} bold={true} color={Colors.white}>START</Label>
+            <MAIcon name="play-arrow" size={32} color={Colors.white} style={{marginBottom:1}}/>
+            <Label color={Colors.white} size="small">START</Label>
           </TouchableOpacity>
         </View>
       );
     } else {
       const style = [styles.mainCircleButton, styles.raised, {backgroundColor:Colors.underlayColor}];
       return (
-        <View style={{flex:1, alignItems:'center', justifyContent:'flex-end'}}>
+        <View style={{flex:1, alignItems:'center'}}>
           <TouchableOpacity style={style} onPress={() => this.handleMarking(!state.isStarted)}>
-            <MAIcon name="stop" size={32} color={Colors.orange} style={{marginBottom:2}}/>
-            <Label small={true} bold={true} color={Colors.orange}>FINISH</Label>
+            <MAIcon name="stop" size={32} color={Colors.deepOrange} style={{marginBottom:1}}/>
+            <Label color={Colors.deepOrange} size="small">FINISH</Label>
           </TouchableOpacity>
+          <Stopwatch/>
         </View>
       );
     }
@@ -189,7 +191,7 @@ class MarkingMap extends React.PureComponent {
         {pooAnimations}
         {/* うんちボタン */}
         <Animated.View style={{bottom}}>
-          <Icon source={require('./images/icon/poo.png')} raised={true} circle={true} backgroundColor={Colors.orange} onPress={handlePressPoo}/>
+          <Icon source={require('./images/icon/poo.png')} raised={true} circle={true} backgroundColor={Colors.amber} onPress={handlePressPoo}/>
         </Animated.View>
       </View>
     );

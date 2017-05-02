@@ -2,12 +2,16 @@
 
 const colors = {
   text: '#212121',
+
+  error: '#D32F2F',
+  info: '#2196F3',
+  success: '#8BC34A',
+
   backgroundColor: '#F5F5F5',
   underlayColor: '#F5F5F5',
   white: '#FFFFFF',
   black: '#000000',
   red: '#F44336',
-  error: '#C62828',
   pink: '#E91E63',
   purple: '#9C27B0',
   deepPurple: '#673AB7',

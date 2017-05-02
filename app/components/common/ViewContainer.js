@@ -2,7 +2,7 @@ import React from 'react'
 import {View} from 'react-native'
 import Colors from '../../themes/Colors'
 
-export default class ScrollViewContainer extends React.PureComponent {
+export default class ViewContainer extends React.PureComponent {
   static propTypes = {
   };
 

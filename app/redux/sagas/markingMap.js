@@ -1,4 +1,5 @@
 import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
+import {failureCallApi} from '../reducers/common'
 import {
     GET_CURRENT_LOCATION,
     successGetCurrentLocation,
@@ -96,7 +97,7 @@ export function* handleFinishMarking() {
     if (payload && !error) {
       yield put(successFinishMarking(payload));
     } else {
-      yield put(failureFinishMarking(error));
+      yield put(failureCallApi(error));
     }
   }
 }

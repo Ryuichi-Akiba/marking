@@ -1,15 +1,9 @@
 import React from 'react'
-import {StyleSheet} from 'react-native'
-import {ListItem, normalize} from 'react-native-elements'
+import {StyleSheet, View, Text, Image, TouchableHighlight} from 'react-native'
+import MAIcon from 'react-native-vector-icons/MaterialIcons'
+import Label from './Label'
+import Avatar from './Avatar'
 import Colors from '../../themes/Colors'
-
-var styles = StyleSheet.create({
-  icon: {
-    fontSize: 24,
-    paddingLeft: 5,
-    paddingRight: 5
-  }
-});
 
 export default class List extends React.PureComponent {
   static propTypes = {
@@ -17,63 +11,120 @@ export default class List extends React.PureComponent {
     avatar: React.PropTypes.any,
     icon: React.PropTypes.string,
     iconColor: React.PropTypes.string,
-    title: React.PropTypes.any,
+    title: React.PropTypes.string,
+    titleLines: React.PropTypes.number,
+    subtitle: React.PropTypes.string,
+    subtitleLines: React.PropTypes.number,
     border: React.PropTypes.bool,
     chevron: React.PropTypes.bool,
-    hideChevron: React.PropTypes.bool,
     rightTitle: React.PropTypes.string,
-    padding: React.PropTypes.bool,
-    valid: React.PropTypes.bool, // 正常値であれば緑、異常値であれば赤のアイコンにするためのフラグ
+    style: React.PropTypes.object,
   };
 
   static defaultProps = {
+    iconColor: Colors.gray,
+    titleLines: 1,
+    subtitleLines: 1,
     valid: undefined,
     padding: true,
+    border: true,
   };
 
   constructor(props) {
     super(props);
   }
 
-  getIconColor() {
-    if (this.props.iconColor) {
-      return this.props.iconColor;
-    } else if (this.props.valid === undefined || this.props.valid === null) {
-      return '#BDBDBD';
-    } else if (this.props.valid === true) {
-      return '#8BC34A';
-    } else {
-      return '#D32F2F';
+  renderIconContainer() {
+    const margin = !!this.props.subtitle ? 4 : 0;
+
+    // アイコンが指定されている場合
+    var icon = null;
+    if (this.props.icon) {
+      icon = <MAIcon name={this.props.icon} size={24} color={this.props.iconColor} style={{marginTop:margin}}/>;
     }
+
+    // アバターが指定されている場合
+    if (this.props.avatar) {
+      icon = <Avatar source={this.props.avatar} name={this.props.title} size="small" style={{marginTop:margin}}/>
+    }
+
+    // アイコンエリアを描画する
+    return (
+      <View style={{width:48, paddingTop:8, paddingLeft:12, paddingRight:12, marginTop:margin}}>
+        {icon}
+      </View>
+    );
+  }
+
+  renderTitleContainer() {
+    // コンテンツ部分の余白を条件によって動的に変更する
+    const padding = !!this.props.subtitle ? 10 : 12;
+    const left = !!this.props.icon || !!this.props.avatar ? 0 : 8;
+    const style = {flex:1, paddingTop:padding, paddingBottom:padding, paddingLeft:left};
+
+    var sub = null;
+    if (this.props.subtitle) {
+      sub = <Label color={Colors.gray} size="small" numberOfLines={this.props.titleLines} style={{marginTop:2}}>{this.props.subtitle}</Label>
+    }
+
+    return (
+      <View style={style}>
+        <Label numberOfLines={this.props.titleLines}>{this.props.title}</Label>
+        {sub}
+      </View>
+    );
+  }
+
+  renderRightContent() {
+    if (this.props.rightTitle) {
+      const padding = !!this.props.subtitle ? 10 : 12;
+      const right = !!this.props.chevron ? 0 : 24;
+      const style = {paddingTop:padding, paddingBottom:padding, paddingRight:right};
+      return (
+        <View style={style}>
+          <Label color={Colors.gray}>{this.props.rightTitle}</Label>
+        </View>
+      );
+    }
+    return null;
+  }
+
+  renderChevron() {
+    if (this.props.chevron) {
+      const padding = !!this.props.subtitle ? 16 : 8;
+      return (
+        <View style={{paddingTop:padding, paddingBottom:padding}}>
+          <MAIcon name="chevron-right" size={24} color={Colors.borderColor}/>
+        </View>
+      );
+    }
+    return null;
+  }
+
+  wrap(component) {
+    if (this.props.onPress) {
+      return (
+        <TouchableHighlight underlayColor={Colors.onPressColor} onPress={this.props.onPress}>
+          {component}
+        </TouchableHighlight>
+      );
+    }
+    return component;
   }
 
   render() {
-    const border = this.props.border === undefined || !!this.props.border ? 0.5 : 0;
+    const border = !!this.props.border ? 0.5 : 0;
+    const component = (
+      <View style={[{flex:1, flexDirection:'row'}, this.props.style]}>
+        {this.renderIconContainer()}
 
-    const iconColor = this.getIconColor();
-    const leftIcon = !!this.props.icon ? {name:this.props.icon, style:[styles.icon, {color:iconColor}]} : {};
-    const avatarStyle = !!this.props.avatar ? {marginLeft:5, marginRight:13, marginTop:2, width:24, height:24, borderRadius:12} : {};
-    const containerStyle = {borderBottomColor:'#E0E0E0', borderBottomWidth:border, paddingTop:8, paddingBottom:8};
-    const chevronColor = !!this.props.chevron ? '#BDBDBD' : '#ffffff';
-    const rightTitleStyle = !!this.props.rightTitle ? {color:'#9E9E9E', fontSize: normalize(14)} : {};
-    const padding = !this.props.padding ? {paddingTop:0, paddingBottom:0, paddingLeft:0, paddingRight:0, marginTop:0, marginBottom:0, marginLeft:0, marginRight:0} : {};
-
-    return (
-      <ListItem
-        avatar={this.props.avatar}
-        avatarStyle={avatarStyle}
-        roundAvatar={true}
-        leftIcon={leftIcon}
-        title={this.props.title}
-        containerStyle={[containerStyle, padding]}
-        chevronColor={chevronColor}
-        rightTitle={this.props.rightTitle}
-        rightTitleStyle={rightTitleStyle}
-        onPress={this.props.onPress}
-        hideChevron={this.props.hideChevron}
-        underlayColor={Colors.underlayColor}
-      >
-      </ListItem>
+        <View style={{flex:1, flexDirection:'row', borderBottomWidth:border, borderBottomColor:Colors.borderColor, paddingRight:8}}>
+          {this.renderTitleContainer()}
+          {this.renderRightContent()}
+          {this.renderChevron()}
+        </View>
+      </View>
     );
+    return this.wrap(component);
   }
 }

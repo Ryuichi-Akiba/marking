@@ -1,27 +1,46 @@
 import axios from 'axios'
-import buffer from 'buffer'
+import * as constants from '../constants'
+import * as auth from '../auth/auth'
 import Session from '../auth/Session'
 
-// TODO 環境依存設定なので、どこかに移動したい（動作環境に応じて設定を切り替えられるように）
-// export const SERVER = 'http://petical-api-develop.ap-northeast-1.elasticbeanstalk.com';
-// const CLIENT_ID = 'peticalconsole';
-// const CLIENT_SECRET = 'p3dWz5lKF7WaFeP4lQRy';
-export const SERVER = 'http://localhost:8080';
-const CLIENT_ID = 'majimenatestapp';
-const CLIENT_SECRET = 'mySecretOAuthSecret';
+// HTTP REQUEST [GET]
+export function get(uri, params) {
+  return getAuthorizationHeaders().then(headers => {
+    params = !!params ? params : {};
+    console.log(`call api [GET] ${constants.SERVER}${uri}`);
 
-export function getAccessToken(token) {
-  var auth = new buffer.Buffer(CLIENT_ID + ':' + CLIENT_SECRET);
-  return axios.post(`${SERVER}/oauth/token`, {}, {
-    headers: {'Authorization': 'Basic ' + auth.toString('base64'), 'Content-Type': 'application/json'},
-    params: {'grant_type': 'facebook', 'fb_token': token.accessToken}
-  })
-    .then(response => {
-      return {payload:response.data};
-    })
-    .catch(error => {
-      return {error};
-    });
+    return axios.get(`${constants.SERVER}${uri}`, {headers: headers, params: params})
+      .then(response => handleResponse(response))
+      .catch(error => handleAuthorizationError(error, () => get(uri, params)))
+      .catch(error => handleError(error));
+  });
+}
+
+// HTTP REQUEST [POST]
+export function post(uri, data, params) {
+  return getAuthorizationHeaders().then(headers => {
+    data = !!data ? data : {};
+    params = !!params ? params : {};
+    console.log(`call api [POST] ${constants.SERVER}${uri}`);
+
+    return axios.post(`${constants.SERVER}${uri}`, data, {headers: headers, params: params})
+      .then(response => handleResponse(response))
+      .catch(error => handleAuthorizationError(error, () => post(uri, data, params)))
+      .catch(error => handleError(error));
+  });
+}
+
+// HTTP REQUEST [DELETE]
+export function del(uri, params) {
+  return getAuthorizationHeaders().then(headers => {
+    params = !!params ? params : {};
+    console.log(`call api [DELETE] ${constants.SERVER}${uri}`);
+
+    return axios.delete(`${constants.SERVER}${uri}`, {headers: headers, params: params})
+      .then(response => handleResponse(response))
+      .catch(error => handleAuthorizationError(error, () => del(uri, params)))
+      .catch(error => handleError(error));
+  });
 }
 
 function getAuthorizationHeaders() {
@@ -33,54 +52,31 @@ function getAuthorizationHeaders() {
   })
 }
 
-// HTTP REQUEST [GET]
-export function get(uri, params) {
-  return getAuthorizationHeaders().then(headers => {
-    params = !!params ? params : {};
-    console.log(`call api [GET] ${SERVER}${uri}`);
+function handleAuthorizationError(error, callback) {
+  // 認証エラーの場合は、アクセストークンをもう一度取り直してみる（トークン期限切れなら再取得できるので）
+  if (error.response.status === 401) {
+    // TODO 他のログインを実装したら、フェイスブックでログインしているか否かの条件分岐が必要になるので注意すること
+    // フェイスブックのログインが切れていなければ、それを元にトークンを再取得する
+    return auth.loginWithFacebook().then(callback);
+  }
 
-    return axios.get(`${SERVER}${uri}`, {headers: headers, params: params})
-      .then(response => {
-        return {payload:response.data};
-      })
-      .catch(error => {
-        return {error};
-      });
-  });
+  // そうじゃない場合はリジェクトして他のエラー処理に回す
+  return Promise.reject(error);
 }
 
-// HTTP REQUEST [POST]
-export function post(uri, data, params) {
-  return getAuthorizationHeaders().then(headers => {
-    data = !!data ? data : {};
-    params = !!params ? params : {};
-    console.log(`call api [POST] ${SERVER}${uri}`);
-
-    return axios.post(`${SERVER}${uri}`, data, {headers: headers, params: params})
-      .then(response => {
-        if (!response.data || response.data === '') {
-          return {payload:{}};
-        }
-        return {payload:response.data};
-      })
-      .catch(error => {
-        return {error};
-      });
-  });
+function handleResponse(response) {
+  // 200系以外はエラーとして扱う
+  if (response.status < 200 && response.status > 299) {
+    return Promise.reject({error:response.data});
+  }
+  // レスポンスがない場合は空オブジェクトを成功状態で返す
+  if (!response.data || response.data === '') {
+    return Promise.resolve({payload:{}});
+  }
+  // 正常系なのでそのまま結果をpayloadとして返す
+  return Promise.resolve({payload:response.data});
 }
 
-// HTTP REQUEST [DELETE]
-export function del(uri, params) {
-  return getAuthorizationHeaders().then(headers => {
-    params = !!params ? params : {};
-    console.log(`call api [DELETE] ${SERVER}${uri}`);
-
-    return axios.delete(`${SERVER}${uri}`, {headers: headers, params: params})
-      .then(response => {
-        return {payload:response.data};
-      })
-      .catch(error => {
-        return {error};
-      });
-  });
+function handleError(error) {
+  return {error:error.response};
 }
