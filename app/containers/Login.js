@@ -20,12 +20,12 @@ class Login extends React.PureComponent {
     super(props);
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     // ログイン処理後、ログインステートの変更を検知し、ログインが成功していれば画面遷移する
-    if (nextProps.loginState !== this.props.loginState) {
+    if (this.props.loginState.isLoggedIn !== nextProps.loginState.isLoggedIn) {
       if (nextProps.loginState.isLoggedIn) {
-        this.props.navigator.replace({
-          name: 'PetFormScene'
+        nextProps.navigator.replace({
+          name: 'MenuScene'
         });
       }
     }

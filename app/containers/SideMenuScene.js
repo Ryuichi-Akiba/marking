@@ -44,6 +44,13 @@ class SideMenu extends React.PureComponent {
     }
   }
 
+  marking() {
+    this.props.onChange();
+    this.props.navigator.replace({
+      name: 'MenuScene',
+    });
+  }
+
   archives() {
     this.props.onChange();
     this.props.navigator.replace({
@@ -117,8 +124,12 @@ class SideMenu extends React.PureComponent {
                             renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)}>
           <View style={{flex:1, margin:0, padding:0, backgroundColor:Colors.white}}>
             <ListGroup margin={false} borderTop={false}>
-              <List icon="map" iconColor={Colors.deepOrange} title="散歩マップ" onPress={goMap} chevron={true}/>
-              {list}
+              <List icon="dashboard" iconColor={Colors.indigo} title="marking" onPress={this.marking.bind(this)} chevron={true}/>
+              <List icon="update" iconColor={Colors.red} title="ヘルスケア" onPress={this.marking.bind(this)} chevron={true}/>
+              <List icon="directions-walk" iconColor={Colors.lightGreen} title="お散歩" onPress={goMap} chevron={true}/>
+              <List icon="bubble-chart" iconColor={Colors.cyan} title="マーキング" onPress={this.marking.bind(this)} chevron={true}/>
+              <List icon="public" iconColor={Colors.blue} title="スポット" onPress={this.marking.bind(this)} chevron={true}/>
+              {/*{list}*/}
               <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" onPress={this.archives.bind(this)} chevron={true}/>
               <List icon="settings" iconColor={Colors.blueGray} title="設定" onPress={this.settings.bind(this)} chevron={true}/>
               <List icon="power-settings-new" iconColor={Colors.red} title="ログアウト" onPress={this.logout.bind(this)} border={false}/>

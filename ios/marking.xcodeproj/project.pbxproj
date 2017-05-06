@@ -19,7 +19,6 @@
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
@@ -44,6 +43,8 @@
 		326541CE1E9A632600AD3170 /* QBImagePicker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 326541C91E9A62DB00AD3170 /* QBImagePicker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		326541CF1E9A632600AD3170 /* RSKImageCropper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326541CA1E9A62DB00AD3170 /* RSKImageCropper.framework */; };
 		326541D01E9A632600AD3170 /* RSKImageCropper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 326541CA1E9A62DB00AD3170 /* RSKImageCropper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		329C39051EB9BE09004962EE /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 329C39041EB9BE09004962EE /* Launch Screen.storyboard */; };
+		329C39091EB9C5E4004962EE /* marking-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 329C39081EB9C5E4004962EE /* marking-logo.png */; };
 		32A92FD81E7A1EBB000D61D5 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32A92FD41E7A1EBB000D61D5 /* Bolts.framework */; };
 		32A92FD91E7A1EBB000D61D5 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32A92FD51E7A1EBB000D61D5 /* FBSDKCoreKit.framework */; };
 		32A92FDA1E7A1EBB000D61D5 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32A92FD61E7A1EBB000D61D5 /* FBSDKLoginKit.framework */; };
@@ -313,7 +314,6 @@
 		13B07F961A680F5B00A75B9A /* marking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = marking.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = marking/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = marking/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = marking/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = marking/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = marking/main.m; sourceTree = "<group>"; };
@@ -325,6 +325,8 @@
 		2ED4C3C0FFF746288B3405C6 /* imageCropPicker.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = imageCropPicker.xcodeproj; path = "../node_modules/react-native-image-crop-picker/ios/imageCropPicker.xcodeproj"; sourceTree = "<group>"; };
 		326541C91E9A62DB00AD3170 /* QBImagePicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QBImagePicker.framework; path = "../node_modules/react-native-image-crop-picker/ios/ImageCropPickerSDK/QBImagePicker.framework"; sourceTree = "<group>"; };
 		326541CA1E9A62DB00AD3170 /* RSKImageCropper.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RSKImageCropper.framework; path = "../node_modules/react-native-image-crop-picker/ios/ImageCropPickerSDK/RSKImageCropper.framework"; sourceTree = "<group>"; };
+		329C39041EB9BE09004962EE /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		329C39081EB9C5E4004962EE /* marking-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "marking-logo.png"; path = "marking/Images.xcassets/marking-logo.png"; sourceTree = "<group>"; };
 		32A92FD41E7A1EBB000D61D5 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = ../../../../../Documents/FacebookSDK/Bolts.framework; sourceTree = "<group>"; };
 		32A92FD51E7A1EBB000D61D5 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../../../../../Documents/FacebookSDK/FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		32A92FD61E7A1EBB000D61D5 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../../../../../Documents/FacebookSDK/FBSDKLoginKit.framework; sourceTree = "<group>"; };
@@ -496,9 +498,10 @@
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				329C39081EB9C5E4004962EE /* marking-logo.png */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				329C39041EB9BE09004962EE /* Launch Screen.storyboard */,
 			);
 			name = marking;
 			sourceTree = "<group>";
@@ -1059,13 +1062,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				3538F4B247D54D2884AB18E1 /* Entypo.ttf in Resources */,
 				1010EEDB51C54214AB6EEBAC /* EvilIcons.ttf in Resources */,
+				329C39051EB9BE09004962EE /* Launch Screen.storyboard in Resources */,
 				F7533DBA8E7842938D86C464 /* FontAwesome.ttf in Resources */,
 				A276D30C1D55402780C8B979 /* Foundation.ttf in Resources */,
 				ECCACD4DF7164E15B515F265 /* Ionicons.ttf in Resources */,
 				D0609337344441348A78D60E /* MaterialCommunityIcons.ttf in Resources */,
+				329C39091EB9C5E4004962EE /* marking-logo.png in Resources */,
 				33D8CCDFBA2048018512051B /* MaterialIcons.ttf in Resources */,
 				B4D45736BF0A40C3AACAD41B /* Octicons.ttf in Resources */,
 				4CE1C43C631649BC891984B1 /* SimpleLineIcons.ttf in Resources */,
@@ -1170,18 +1174,6 @@
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				13B07FB21A68108700A75B9A /* Base */,
-			);
-			name = LaunchScreen.xib;
-			path = marking;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {

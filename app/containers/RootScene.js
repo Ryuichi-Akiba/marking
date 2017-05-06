@@ -9,6 +9,7 @@ import * as commonActions from '../redux/reducers/common'
 import * as loginActions from '../redux/reducers/login'
 import LoadingScene from './LoadingScene'
 import Login from './Login'
+import MenuScene from './MenuScene'
 import MarkingMap from './MarkingMap'
 import PetFormScene from './PetFormScene'
 import PetDetailScene from './PetDetailScene'
@@ -112,6 +113,9 @@ class RootScene extends React.PureComponent {
     }
 
     var main;
+    if (route.name === 'MenuScene') {
+      main = this.wrap(<MenuScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
+    }
     if (route.name === 'Map') {
       main = this.wrap(<MarkingMap openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
