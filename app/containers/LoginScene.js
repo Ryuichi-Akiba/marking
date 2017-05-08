@@ -7,7 +7,7 @@ import {SocialIcon} from 'react-native-elements'
 import * as loginActions from '../redux/reducers/login';
 import * as rootActions from '../redux/reducers/root';
 
-class Login extends React.PureComponent {
+class LoginScene extends React.PureComponent {
   static propTypes = {
     // map from redux
     loginState: PropTypes.object,
@@ -24,9 +24,7 @@ class Login extends React.PureComponent {
     // ログイン処理後、ログインステートの変更を検知し、ログインが成功していれば画面遷移する
     if (this.props.loginState.isLoggedIn !== nextProps.loginState.isLoggedIn) {
       if (nextProps.loginState.isLoggedIn) {
-        nextProps.navigator.replace({
-          name: 'MenuScene'
-        });
+        nextProps.navigator.replace({name: 'HomeScene'});
       }
     }
   }
@@ -89,7 +87,7 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Login);
+)(LoginScene);
 
 var deviceWidth = Dimensions.get('window').width;
 let styles = StyleSheet.create({

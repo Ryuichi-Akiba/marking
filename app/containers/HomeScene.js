@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
 });
 
-class MenuScene extends React.PureComponent {
+class HomeScene extends React.PureComponent {
   static propTypes = {
     // map from route navigation
     navigator: React.PropTypes.object.isRequired,
@@ -48,7 +48,7 @@ class MenuScene extends React.PureComponent {
     var list = [];
     this.props.menuState.pets.forEach((pet, i) => {
       const handle = () => {
-        this.props.navigator.push({name:'PetDetailScene', props:{pet, isNewWindow:true}});
+        this.props.navigator.push({name:'DetailScene', props:{pet, isNewWindow:true}});
       };
       list.push(<List key={i} avatar={{uri:pet.image}} title={pet.name} chevron={true} onPress={handle}/>);
     });
@@ -57,8 +57,19 @@ class MenuScene extends React.PureComponent {
     return (
       <ListGroup title={title}>
         {list}
-        <List key={-1} icon="pets" iconColor={Colors.brown} title="ペットを登録" chevron={true} border={false}/>
+        <List key={-1} icon="pets" iconColor={Colors.brown} title="ペットを登録" chevron={true} border={false} onPress={() => this.props.navigator.push({name:'PetFormScene', props:{force:true, isNewWindow:true}})}/>
       </ListGroup>
+    );
+  }
+
+  renderPanel(icon: string, title: string, color: string, handler: any) {
+    return (
+      <TouchableOpacity style={[styles.square, {backgroundColor:color}]} onPress={handler}>
+        <Label color={Colors.white} bold={true}>{title}</Label>
+        <View style={{alignItems:'flex-end', justifyContent:'flex-end', marginTop:16}}>
+          <MAIcon name={icon} size={72} color={Colors.white}/>
+        </View>
+      </TouchableOpacity>
     );
   }
 
@@ -69,38 +80,18 @@ class MenuScene extends React.PureComponent {
         <ScrollViewContainer>
           <View style={{flex:0.5}}>
             <View style={{flex:1, flexDirection:'row', marginTop:8, marginLeft:4, marginRight:4}}>
-              <TouchableOpacity style={[styles.square, {backgroundColor:Colors.red}]}>
-                <Label color={Colors.white} bold={true}>ヘルスケア</Label>
-                <View style={{alignItems:'flex-end', justifyContent:'flex-end', marginTop:16}}>
-                  <MAIcon name="update" size={72} color={Colors.white}/>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.square, {backgroundColor:Colors.lightGreen}]}>
-                <Label color={Colors.white} bold={true}>お散歩</Label>
-                <View style={{alignItems:'flex-end', justifyContent:'flex-end', marginTop:16}}>
-                  <MAIcon name="directions-walk" size={72} color={Colors.white}/>
-                </View>
-              </TouchableOpacity>
+              {this.renderPanel('update', 'ヘルスケア', Colors.red, () => this.props.navigator.replace({name:'HealthScene'}))}
+              {this.renderPanel('directions-walk', 'お散歩', Colors.lightGreen, () => this.props.navigator.replace({name:'WalkingMap'}))}
             </View>
             <View style={{flex:1, flexDirection:'row', marginTop:8, marginLeft:4, marginRight:4}}>
-              <TouchableOpacity style={[styles.square, {backgroundColor:Colors.cyan}]}>
-                <Label color={Colors.white} bold={true}>マーキング</Label>
-                <View style={{alignItems:'flex-end', justifyContent:'flex-end', marginTop:16}}>
-                  <MAIcon name="bubble-chart" size={72} color={Colors.white}/>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.square, {backgroundColor:Colors.blue}]}>
-                <Label color={Colors.white} bold={true}>スポット</Label>
-                <View style={{alignItems:'flex-end', justifyContent:'flex-end', marginTop:16}}>
-                  <MAIcon name="public" size={72} color={Colors.white}/>
-                </View>
-              </TouchableOpacity>
+              {this.renderPanel('bubble-chart', 'マーキング', Colors.cyan, () => this.props.navigator.replace({name:'MarkingScene'}))}
+              {this.renderPanel('public', 'スポット', Colors.blue, () => this.props.navigator.replace({name:'SpotScene'}))}
             </View>
           </View>
           <View style={{flex:0.5}}>
             {this.renderPetList()}
             <ListGroup title="ペットたちとの思い出" style={{marginBottom:80}}>
-              <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" chevron={true} border={false}/>
+              <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" chevron={true} border={false} onPress={() => this.props.navigator.replace({name:'ArchivesScene'})}/>
             </ListGroup>
           </View>
         </ScrollViewContainer>
@@ -126,4 +117,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(MenuScene);
+)(HomeScene);

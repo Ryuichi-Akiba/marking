@@ -23,7 +23,7 @@ import {
 } from './addMyPetForm'
 import {
   handleInitializePetDetailScene,
-} from './petDetail'
+} from './detail'
 import {
   handleInitCurrentLocation,
   handleInitWatchId,

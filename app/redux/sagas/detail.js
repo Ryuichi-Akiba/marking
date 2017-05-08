@@ -4,7 +4,7 @@ import {failureCallApi} from '../../redux/reducers/common'
 import {
   INITIALIZE_PET_DETAIL_SCENE,
   successGetMarkings,
-} from '../../redux/reducers/petDetail'
+} from '../reducers/detail'
 
 // INITIALIZE_PET_DETAIL_SCENEをフックして、指定年月のペットのマーキング情報を取得する
 export function* handleInitializePetDetailScene() {

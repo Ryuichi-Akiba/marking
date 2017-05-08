@@ -8,11 +8,14 @@ import * as rootActions from '../redux/reducers/root'
 import * as commonActions from '../redux/reducers/common'
 import * as loginActions from '../redux/reducers/login'
 import LoadingScene from './LoadingScene'
-import Login from './Login'
-import MenuScene from './MenuScene'
+import LoginScene from './LoginScene'
+import HomeScene from './HomeScene'
+import HealthScene from './HealthScene'
 import MarkingMap from './MarkingMap'
+import MarkingScene from './MarkingScene'
+import SpotScene from './SpotScene'
 import PetFormScene from './PetFormScene'
-import PetDetailScene from './PetDetailScene'
+import DetailScene from './DetailScene'
 import SettingsScene from './SettingsScene'
 import ArchivesScene from './ArchivesScene'
 import SelectableListViewScene from '../components/forms/SelectableListViewScene'
@@ -71,7 +74,7 @@ class RootScene extends React.PureComponent {
   render() {
     return (
       <Navigator
-        initialRoute={{name:'Login'}}
+        initialRoute={{name:'LoginScene'}}
         renderScene={this.renderScene.bind(this)}
         configureScene={this.configureScene.bind(this)}
       />
@@ -102,8 +105,8 @@ class RootScene extends React.PureComponent {
   renderScene(route, navigator) {
     this.navigator = navigator;
 
-    if (route.name === 'Login') {
-      return this.wrap(<Login navigator={navigator} {...route.props}/>);
+    if (route.name === 'LoginScene') {
+      return this.wrap(<LoginScene navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'PetFormScene') {
       return this.wrap(<PetFormScene navigator={navigator} {...route.props}/>);
@@ -113,17 +116,26 @@ class RootScene extends React.PureComponent {
     }
 
     var main;
-    if (route.name === 'MenuScene') {
-      main = this.wrap(<MenuScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
+    if (route.name === 'HomeScene') {
+      main = this.wrap(<HomeScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
-    if (route.name === 'Map') {
+    if (route.name === 'HealthScene') {
+      main = this.wrap(<HealthScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
+    }
+    if (route.name === 'WalkingMap') {
       main = this.wrap(<MarkingMap openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
+    }
+    if (route.name === 'MarkingScene') {
+      main = this.wrap(<MarkingScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
+    }
+    if (route.name === 'SpotScene') {
+      main = this.wrap(<SpotScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'SettingsScene') {
       main = this.wrap(<SettingsScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
-    if (route.name === 'PetDetailScene') {
-      main = this.wrap(<PetDetailScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
+    if (route.name === 'DetailScene') {
+      main = this.wrap(<DetailScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'ArchivesScene') {
       main = this.wrap(<ArchivesScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);

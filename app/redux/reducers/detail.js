@@ -30,7 +30,7 @@ export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
 export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
 
 // -------------------- Immutable State Model の定義 --------------------
-export const PetDetailRecord = new Record({
+export const DetailRecord = new Record({
   // 日付をキーに取得できるようにマップ形式にする
   dates: Set(),
   markings: Map(),
@@ -52,7 +52,7 @@ function mergeMarkersMap(map, array) {
 }
 
 // -------------------- Reducer の定義 --------------------
-export function petDetailReducer(state = new PetDetailRecord(), action) {
+export function detailReducer(state = new DetailRecord(), action) {
   switch (action.type) {
     // 初期ロード時・年月変更時の年月を積み上げる
     case INITIALIZE_PET_DETAIL_SCENE:
