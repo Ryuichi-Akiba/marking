@@ -3,6 +3,7 @@ package com.marking;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.RNSvgPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.airbnb.android.react.maps.MapsPackage;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSvgPackage(),
             new PickerPackage(),
             new FBSDKPackage(),
             new MapsPackage(),

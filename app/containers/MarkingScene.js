@@ -34,7 +34,7 @@ class MarkingScene extends React.PureComponent {
   render() {
     return (
       <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="マーキング" left={{icon:'menu', handler:this.props.openMenu}}/>
+        <MarkingNavbar title="マーキング" left={{icon:'arrow-back', handler:() => this.props.navigator.replace({name:'HomeScene'})}}/>
         <View style={{flex:1}}>
           <MapView style={{...StyleSheet.absoluteFillObject}}/>
         </View>

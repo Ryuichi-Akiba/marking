@@ -10,6 +10,7 @@ export default class ListGroup extends React.PureComponent {
     borderTop: React.PropTypes.bool,
     borderBottom: React.PropTypes.bool,
     title: React.PropTypes.string,
+    backgroundColor: React.PropTypes.string,
     style: React.PropTypes.object,
   };
 
@@ -18,6 +19,7 @@ export default class ListGroup extends React.PureComponent {
     border: true,
     borderTop: true,
     borderBottom: true,
+    backgroundColor: Colors.backgroundColor,
   };
 
   constructor(props) {
@@ -28,7 +30,7 @@ export default class ListGroup extends React.PureComponent {
     const border = !this.props.border ? {borderTopWidth:0, borderBottomWidth:0} : !!this.props.title ? {borderTopWidth:0, borderBottomWidth:0.5} :  {borderTopWidth:0.5, borderBottomWidth:0.5};
     const borderTop = !this.props.borderTop ? {borderTopWidth:0} : {};
     const borderBottom = !this.props.borderBottom ? {borderBottomWidth:0} : {};
-    const title = <ListItem title={this.props.title} hideChevron={true} titleStyle={{fontSize:normalize(12), color:Colors.gray, marginLeft:5}} containerStyle={{backgroundColor:Colors.backgroundColor, borderBottomWidth:0.5, borderBottomColor:Colors.borderColor}}/>;
+    const title = <ListItem title={this.props.title} hideChevron={true} titleStyle={{fontSize:normalize(12), color:Colors.gray, marginLeft:5}} containerStyle={{backgroundColor:this.props.backgroundColor, borderBottomWidth:0.5, borderBottomColor:Colors.borderColor}}/>;
     const marginTop = !this.props.margin ? 0 : !!this.props.title ? 12 : 32;
 
     if (this.props.title) {

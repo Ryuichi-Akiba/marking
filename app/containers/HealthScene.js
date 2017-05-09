@@ -33,7 +33,7 @@ class HealthScene extends React.PureComponent {
   render() {
     return (
       <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="ヘルスケア" left={{icon:'menu', handler:this.props.openMenu}}/>
+        <MarkingNavbar title="ヘルスケア" left={{icon:'arrow-back', handler:() => this.props.navigator.replace({name:'HomeScene'})}}/>
         <ScrollViewContainer>
         </ScrollViewContainer>
       </View>

@@ -17,6 +17,7 @@ import MarkingNavbar from '../components/common/MarkingNavbar'
 import PetImage from '../components/pets/PetImage'
 import HealthView from './views/HealthView'
 import WalkingView from './views/WalkingView'
+import ChartView from './views/ChartView'
 import Colors from '../themes/Colors'
 
 const window = Dimensions.get('window');
@@ -146,7 +147,7 @@ class DetailScene extends React.PureComponent {
     if (!!this.props.isNewWindow) {
       const left = {icon:'arrow-back', handler:() => this.props.navigator.pop()};
       return (
-        <MarkingNavbar title={pet.name} left={left}/>
+        <MarkingNavbar left={left}/>
       );
     } else {
       const left = {icon:'menu', handler:this.props.openMenu};
@@ -178,7 +179,7 @@ class DetailScene extends React.PureComponent {
       };
       var element = (
         <View key={i} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-          <Label style={{marginBottom:8}} size="small">{days[d.day()]}</Label>
+          <Label style={{marginBottom:4}} size="small">{days[d.day()]}</Label>
           <Badge color={color} disabled={disabled} active={active} onPress={changeStateDate}>{d.date()}</Badge>
         </View>
       );
@@ -205,7 +206,7 @@ class DetailScene extends React.PureComponent {
           </TouchableHighlight>
         </View>
         <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center', marginTop:8}}>
-          <Label size="small">{this.state.date.format('YYYY年MM月DD日') + days[this.state.date.day()] + '曜日'}</Label>
+          <Label>{this.state.date.format('YYYY年MM月DD日') + days[this.state.date.day()] + '曜日'}</Label>
         </View>
       </View>
     );
@@ -259,30 +260,33 @@ class DetailScene extends React.PureComponent {
     this.setState({selected:selectedTab})
   }
 
+  renderTab(key: string, title: string, icon: string, component: object) {
+    return (
+      <Tab
+        titleStyle={{fontWeight: 'bold', fontSize: 10}}
+        selected={this.state.selected === key}
+        selectedTitleStyle={{marginTop: -1, marginBottom: 6}}
+        title={this.state.selected === key ? title : null}
+        renderIcon={() => <MAIcon style={{justifyContent: 'center', alignItems: 'center', marginTop: 12}} color={Colors.gray} name={icon} size={33} />}
+        renderSelectedIcon={() => <MAIcon color={Colors.blue} name={icon} size={30} />}
+        onPress={() => this.changeTab(key)}>
+        {component}
+      </Tab>
+    );
+  }
+
   render() {
     var title = 'マーキングスポット';
     if (this.state.empty) {
       title = 'お散歩情報がありません';
     }
 
+    const health = <HealthView navigator={this.props.navigator} date={this.state.date} pet={this.props.pet}/>;
+    const chart = <ChartView navigator={this.props.navigator} date={this.state.date} pet={this.props.pet}/>;
+
     return (
       <Tabs tabBarStyle={{backgroundColor:Colors.white}}>
-        <Tab
-          titleStyle={{fontWeight: 'bold', fontSize: 10}}
-          selected={this.state.selected === 'health'}
-          selectedTitleStyle={{marginTop: -1, marginBottom: 6}}
-          title={this.state.selected === 'health' ? 'ヘルスケア' : null}
-          renderIcon={() => <MAIcon style={{justifyContent: 'center', alignItems: 'center', marginTop: 12}} color={Colors.gray} name='update' size={33} />}
-          renderSelectedIcon={() => <MAIcon color={Colors.blue} name='update' size={30} />}
-          onPress={() => this.changeTab('health')}>
-          <View style={{flex:1, justifyContent:'flex-start'}}>
-            {this.renderFixedHeader()}
-            {this.renderWeeklyCalendar()}
-            <ScrollView style={{flex:1}}>
-              <HealthView pet={this.props.pet}/>
-            </ScrollView>
-          </View>
-        </Tab>
+        {this.renderTab('health', '記録', 'history', health)}
         <Tab
           titleStyle={{fontWeight: 'bold', fontSize: 10}}
           selected={this.state.selected === 'walking'}
@@ -296,19 +300,7 @@ class DetailScene extends React.PureComponent {
             <WalkingView/>
           </View>
         </Tab>
-        <Tab
-          titleStyle={{fontWeight: 'bold', fontSize: 10}}
-          selected={this.state.selected === 'activity'}
-          selectedTitleStyle={{marginTop: -1, marginBottom: 6}}
-          title={this.state.selected === 'activity' ? 'アクティビティ' : null}
-          renderIcon={() => <MAIcon style={{justifyContent: 'center', alignItems: 'center', marginTop: 12}} color={Colors.gray} name='view-headline' size={33} />}
-          renderSelectedIcon={() => <MAIcon color={Colors.blue} name='view-headline' size={30} />}
-          onPress={() => this.changeTab('activity')}>
-          <View>
-            {this.renderFixedHeader()}
-            <Label>FEED</Label>
-          </View>
-        </Tab>
+        {this.renderTab('chart', '分析', 'trending-up', chart)}
         <Tab
           titleStyle={{fontWeight: 'bold', fontSize: 10}}
           selected={this.state.selected === 'others'}

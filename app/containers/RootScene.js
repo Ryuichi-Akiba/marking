@@ -85,7 +85,7 @@ class RootScene extends React.PureComponent {
     if (route.name === 'SelectableListViewScene') {
       return Navigator.SceneConfigs.FloatFromBottom;
     }
-    return Navigator.SceneConfigs.FloatFromRight;
+    return Navigator.SceneConfigs.PushFromRight;
   }
 
   open() {
