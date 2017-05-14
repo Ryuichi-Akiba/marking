@@ -22,6 +22,12 @@ export const viewLoadingScene = createAction(VIEW_LOADING_SCENE);
 export const DESTROY_LOADING_SCENE = 'DESTROY_LOADING_SCENE';
 export const destroyLoadingScene = createAction(DESTROY_LOADING_SCENE);
 
+export const BLOCK_SCENE = 'App/Root/BLOCK_SCENE';
+export const blockScene = createAction(BLOCK_SCENE);
+export const UNBLOCK_SCENE = 'App/Root/UNBLOCK_SCENE';
+export const unblockScene = createAction(UNBLOCK_SCENE);
+
+
 // -------------------- Immutable State Model の定義 --------------------
 
 export const RootRecord = new Record({
@@ -29,6 +35,8 @@ export const RootRecord = new Record({
   isFacebookLogin: false,
   // 処理中であることを示すフラグ
   isLoading: false,
+  // 画面をブロック中であることを示すフラグ
+  isBlocking: false,
 });
 
 // -------------------- Reducer の定義 --------------------
@@ -45,6 +53,11 @@ export function rootReducer(state = new RootRecord(), action) {
     case SUCCESS_INITIALIZE_ROOT_SCENE:
     case DESTROY_LOADING_SCENE:
       return state.set('isLoading', false);
+
+    case BLOCK_SCENE:
+      return state.set('isBlocking', true);
+    case UNBLOCK_SCENE:
+      return state.set('isBlocking', false);
 
     default:
       return state;

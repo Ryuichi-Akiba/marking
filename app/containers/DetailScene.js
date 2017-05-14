@@ -39,21 +39,24 @@ class DetailScene extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {selected:'health', date:moment().startOf('date'), pet:props.pet, markers:[], distance:0, poo:0, pee:0};
+    this.state = {selected:'health', pet:props.pet, markers:[], distance:0, poo:0, pee:0};
   };
 
   // 初回ロード時に呼び出され、ペットのマーキング情報を取得する
   componentDidMount() {
-    const date = this.state.date.toDate();
-    this.props.detailActions.initialize({pet:this.props.pet, date, refresh:true});
+    // 初期表示のタブ（ヘルスケアのビュー）に表示するデータを取得する
+    const pet = this.props.pet;
+    const date = new Date();
+    this.props.detailActions.initialize({pet, date});
   }
 
   // Propsが変更になった時（データが更新された時）に呼び出され、地図にマーカーを描画する
   componentWillReceiveProps(nextProps) {
-    // if (nextProps.detailState.markings !== this.props.detailState.markings) {
-    //   const state = this.mapToState(this.state.date, nextProps.detailState.markings);
-    //   this.refreshMarkers(state);
-    // }
+    if (nextProps.detailState.markings !== this.props.detailState.markings) {
+      this.props.rootActions.unblockScene();
+      // const state = this.mapToState(this.state.date, nextProps.detailState.markings);
+      // this.refreshMarkers(state);
+    }
   }
 
   // Stateが変更になった時（日付が変わった時）に呼び出され、地図にマーカーを描画する
@@ -256,8 +259,9 @@ class DetailScene extends React.PureComponent {
   //     </MapView>
   //   );
   // }
-  changeTab (selectedTab) {
-    this.setState({selected:selectedTab})
+
+  changeTab (selected) {
+    this.setState({selected})
   }
 
   renderTab(key: string, title: string, icon: string, component: object) {
@@ -275,61 +279,32 @@ class DetailScene extends React.PureComponent {
     );
   }
 
-  render() {
-    var title = 'マーキングスポット';
-    if (this.state.empty) {
-      title = 'お散歩情報がありません';
-    }
+  reload(pet, date) {
+    this.props.rootActions.blockScene();
+    this.props.detailActions.initialize({pet, date});
+  }
 
-    const health = <HealthView navigator={this.props.navigator} date={this.state.date} pet={this.props.pet}/>;
-    const chart = <ChartView navigator={this.props.navigator} date={this.state.date} pet={this.props.pet}/>;
+  render() {
+    const {date, markings} = this.props.detailState;
+
+    const healthView = <HealthView navigator={this.props.navigator} date={date} pet={this.props.pet} markings={markings} onReload={this.reload.bind(this)}/>;
+    const chartView = <ChartView navigator={this.props.navigator} date={date} pet={this.props.pet}/>;
+    const walkingView = <WalkingView/>;
+    const otherView = (
+      <View>
+        {this.renderFixedHeader()}
+        <Label>FEED</Label>
+      </View>
+    );
 
     return (
       <Tabs tabBarStyle={{backgroundColor:Colors.white}}>
-        {this.renderTab('health', '記録', 'history', health)}
-        <Tab
-          titleStyle={{fontWeight: 'bold', fontSize: 10}}
-          selected={this.state.selected === 'walking'}
-          selectedTitleStyle={{marginTop: -1, marginBottom: 6}}
-          title={this.state.selected === 'walking' ? 'お散歩' : null}
-          renderIcon={() => <MAIcon style={{justifyContent: 'center', alignItems: 'center', marginTop: 12}} color={Colors.gray} name='directions-walk' size={33} />}
-          renderSelectedIcon={() => <MAIcon color={Colors.blue} name='directions-walk' size={30} />}
-          onPress={() => this.changeTab('walking')}>
-          <View style={{flex:1, flexDirection:'column'}}>
-            {this.renderFixedHeader()}
-            <WalkingView/>
-          </View>
-        </Tab>
-        {this.renderTab('chart', '分析', 'trending-up', chart)}
-        <Tab
-          titleStyle={{fontWeight: 'bold', fontSize: 10}}
-          selected={this.state.selected === 'others'}
-          selectedTitleStyle={{marginTop: -1, marginBottom: 6}}
-          title={this.state.selected === 'others' ? 'その他' : null}
-          renderIcon={() => <MAIcon style={{justifyContent: 'center', alignItems: 'center', marginTop: 12}} color={Colors.gray} name='more-horiz' size={33} />}
-          renderSelectedIcon={() => <MAIcon color={Colors.blue} name='more-horiz' size={30} />}
-          onPress={() => this.changeTab('others')}>
-          <View>
-            {this.renderFixedHeader()}
-            <Label>FEED</Label>
-          </View>
-        </Tab>
+        {this.renderTab('health', '記録', 'history', healthView)}
+        {this.renderTab('walking', 'お散歩', 'directions-walk', walkingView)}
+        {this.renderTab('chart', '分析', 'trending-up', chartView)}
+        {this.renderTab('others', 'その他', 'more-horiz', otherView)}
       </Tabs>
     );
-    // return (
-    //   <ParallaxScrollView backgroundColor={Colors.backgroundColor} parallaxHeaderHeight={this.getImageHeight()} stickyHeaderHeight={64} backgroundSpeed={3}
-    //                       renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderFixedHeader={this.renderFixedHeader.bind(this)}>
-    //     <ViewContainer>
-    //       <ListGroup margin={false} borderTop={false}>
-    //         {this.renderCalendar()}
-    //       </ListGroup>
-    //       <ListGroup title={title}>
-    //         {this.renderMap()}
-    //         {this.renderSummary()}
-    //       </ListGroup>
-    //     </ViewContainer>
-    //   </ParallaxScrollView>
-    // );
   }
 }
 

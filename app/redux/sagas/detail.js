@@ -6,13 +6,13 @@ import {
   successGetMarkings,
 } from '../reducers/detail'
 
-// INITIALIZE_PET_DETAIL_SCENEをフックして、指定年月のペットのマーキング情報を取得する
+// INITIALIZE_PET_DETAIL_SCENEをフックして、指定日付のペットのマーキング情報を取得する
 export function* handleInitializePetDetailScene() {
   while (true) {
-    const action = yield take(INITIALIZE_PET_DETAIL_SCENE);
-    const petId = action.payload.pet.id;
-    const date = action.payload.date;
-    const {payload, error} = yield call(getPetsMarkings, petId, date.getFullYear(), date.getMonth() + 1);
+    const action: object = yield take(INITIALIZE_PET_DETAIL_SCENE);
+    const petId: string = action.payload.pet.id;
+    const date: Date = action.payload.date;
+    const {payload, error} = yield call(getPetsMarkings, petId, date.getFullYear(), date.getMonth() + 1, date.getDate());
     if (payload && !error) {
       yield put(successGetMarkings(payload));
     } else {
