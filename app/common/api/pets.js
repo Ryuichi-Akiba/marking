@@ -4,3 +4,7 @@ import {get, del} from './api'
 export function getPetsMarkings(petId : string, year : number, month : number, date : number) {
   return get(`/api/v1/pets/${petId}/markings/${year}/${month}/${date}`);
 }
+
+export function getPetsMarkingsByMonth(petId : string, year : number, month : number) {
+  return get(`/api/v1/pets/${petId}/markings/${year}/${month}`);
+}

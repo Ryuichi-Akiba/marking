@@ -1,7 +1,6 @@
 import moment from 'moment'
 import React from 'react'
 import {Navigator, StyleSheet, Text, View, ScrollView, Button, Image, Dimensions, TouchableOpacity, Alert} from 'react-native'
-import {Bar} from 'react-native-pathjs-charts'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import MarkingNavbar from '../../components/common/MarkingNavbar'
 import PetImage from '../../components/pets/PetImage'
@@ -10,8 +9,6 @@ import List from '../../components/elements/List'
 import Label from '../../components/elements/Label'
 import Badge from '../../components/elements/Badge'
 import Colors from '../../themes/Colors'
-
-const window = Dimensions.get('window');
 
 export default class ChartView extends React.PureComponent {
   static propTypes = {
@@ -47,78 +44,13 @@ export default class ChartView extends React.PureComponent {
     );
   }
 
-  render() {
-    let data = [
-      [{
-        "v": 49,
-        "name": "apple"
-      }, {
-        "v": 42,
-        "name": "apple"
-      }],
-      [{
-        "v": 69,
-        "name": "banana"
-      }, {
-        "v": 62,
-        "name": "banana"
-      }],
-      [{
-        "v": 29,
-        "name": "grape"
-      }, {
-        "v": 15,
-        "name": "grape"
-      }]
-    ];
-
-    let options = {
-      width: window.width - 40,
-      height: 150,
-      margin: {
-        top: 20,
-        left: 25,
-        bottom: 50,
-        right: 20
-      },
-      color: '#2980B9',
-      gutter: 20,
-      animate: {
-        type: 'oneByOne',
-        duration: 200,
-        fillTransition: 3
-      },
-      axisX: {
-        showAxis: true,
-        showLines: true,
-        showLabels: true,
-        showTicks: true,
-        zeroAxis: false,
-        orient: 'bottom',
-        label: {
-          fontFamily: 'Arial',
-          fontSize: 8,
-          fontWeight: true,
-          fill: '#34495E'
-        }
-      },
-      axisY: {
-        showAxis: true,
-        showLines: true,
-        showLabels: true,
-        showTicks: true,
-        zeroAxis: false,
-        orient: 'left',
-        label: {
-          fontFamily: 'Arial',
-          fontSize: 8,
-          fontWeight: true,
-          fill: '#34495E'
-        }
-      }
+  handleGoGraphScene(props: object) {
+    return () => {
+      this.props.navigator.push({name:'BarGraphScene', props});
     };
+  }
 
-    // <Bar data={data} options={options} accessorKey='v'/>
+  render() {
     const left = {icon:'arrow-back', handler:() => this.props.navigator.pop()};
     return (
       <View style={{flex:1, backgroundColor:Colors.white}}>
@@ -129,7 +61,7 @@ export default class ChartView extends React.PureComponent {
             {this.renderInfo('Weight - 重さ', 4500, Colors.purple, 'g', moment())}
           </View>
           <ListGroup title="日常生活" backgroundColor={Colors.white}>
-            <List icon="directions-walk" iconColor={Colors.lightGreen} title="お散歩時間・距離" chevron={true}/>
+            <List icon="directions-walk" iconColor={Colors.lightGreen} title="お散歩時間・距離" chevron={true} onPress={this.handleGoGraphScene({type:'WalkingTime', pet:this.props.pet})}/>
             <List icon="opacity" iconColor={Colors.blue} title="おしっこ回数" chevron={true}/>
             <List icon="cloud" iconColor={Colors.orange} title="うんち回数" chevron={true}/>
             <List icon="restaurant-menu" iconColor={Colors.pink} title="お食事回数" chevron={true} border={false}/>

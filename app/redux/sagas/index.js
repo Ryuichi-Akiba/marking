@@ -25,6 +25,9 @@ import {
   handleInitializePetDetailScene,
 } from './detail'
 import {
+  handleGetPetsMarkingByMonth,
+} from './graph'
+import {
   handleInitCurrentLocation,
   handleInitWatchId,
   handleClearLocationWatch,
@@ -57,6 +60,7 @@ export default function* sagas() {
   yield fork(handleSuccessArchivePet);
   // PET DETAIL SCENE
   yield fork(handleInitializePetDetailScene);
+  yield fork(handleGetPetsMarkingByMonth);
   // MAP
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
