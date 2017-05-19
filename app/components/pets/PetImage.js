@@ -1,44 +1,71 @@
 import React from 'react'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import {View, Image, StyleSheet} from 'react-native'
+import {Pie} from 'react-native-pathjs-charts'
+import Avatar from '../../components/elements/Avatar'
 import Colors from '../../themes/Colors'
-
-var styles = StyleSheet.create({
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-  },
-});
 
 export default class PetImage extends React.PureComponent {
   static propTypes = {
     source: React.PropTypes.object,
+    name: React.PropTypes.string,
     style: React.PropTypes.object,
-    size: React.PropTypes.oneOf(['large','small','middle'])
+    denominator: React.PropTypes.number,
+    molecule: React.PropTypes.number,
   };
 
   static defaultProp = {
-    size: 'small',
   };
 
   constructor(props) {
     super(props);
   }
 
-  renderImage() {
-    const size = this.props.size === 'large' ? 128 : this.props.size === 'middle' ? 96 : 48;
-    const style = [styles.avatar, {width:size, height:size, borderRadius:size / 2}];
-
-    if (!!this.props.source && !!this.props.source.uri) {
+  renderChart() {
+    let data = [{
+      'name': 'total',
+      "population": this.props.molecule,
+      "color": {'r':3, 'g':169, 'b':244},
+    }, {
+      'name': 'minus',
+      "population": this.props.denominator - this.props.molecule,
+      "color": {'r':255, 'g':255, 'b':255},
+    }];
+    let options = {
+      legendPosition: 'topLeft',
+      animate: {
+        type: 'oneByOne',
+        duration: 200,
+        fillTransition: 3
+      },
+      height: 32 + 64 + 32,
+      label: {
+        fontFamily: 'Arial',
+        fontSize: 8,
+        fontWeight: true,
+        color: Colors.transparent
+      }
+    };
+    if (this.props.denominator && this.props.molecule) {
       return (
-        <View>
-          <Image style={style} source={this.props.source}/>
+        <View style={{position:'absolute', top:0}}>
+          <Pie data={data} options={options} accessorKey="population" r={60} R={64} legendPosition="topLeft"/>
+        </View>
+      );
+    }
+    return null;
+  }
+  renderImage() {
+    if (this.props.source || this.props.name) {
+      return (
+        <View style={{flex:1, flexDirection:'column', alignItems:'center'}}>
+          <Avatar source={this.props.source} name={this.props.name} size="large"/>
+          {this.renderChart()}
         </View>
       );
     } else {
       return (
-        <View style={[style, {alignItems:'center', justifyContent:'center', backgroundColor:'#FFFFFF'}]}>
+        <View style={{width:128, height:128, borderRadius:64, alignItems:'center', justifyContent:'center', backgroundColor:'#FFFFFF'}}>
           <MAIcon name="photo" size={size / 2} style={{color:Colors.inactiveIconColor}}/>
         </View>
       );

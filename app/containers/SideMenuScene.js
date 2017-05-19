@@ -44,20 +44,6 @@ class SideMenu extends React.PureComponent {
     }
   }
 
-  archives() {
-    this.props.onChange();
-    this.props.navigator.replace({
-      name: 'ArchivesScene',
-    });
-  }
-
-  settings() {
-    this.props.onChange();
-    this.props.navigator.replace({
-      name: 'SettingsScene',
-    });
-  }
-
   logout() {
     Alert.alert('ログアウトしますか？', '', [
       {text: 'Cancel', style: 'cancel'},
@@ -66,6 +52,10 @@ class SideMenu extends React.PureComponent {
         this.props.loginActions.logout();
       }},
     ]);
+  }
+
+  link(name: string) {
+    return () => this.props.navigator.replace({name});
   }
 
   renderBackground() {
@@ -89,20 +79,13 @@ class SideMenu extends React.PureComponent {
   }
 
   render() {
-    var goMap = () => {
-      this.props.onChange();
-      this.props.navigator.replace({
-        name: 'Map',
-      });
-    };
-
     // Create My Pet List
     var list = [];
     this.props.menuState.pets.forEach((pet, i) => {
       if (!pet.dead) {
         const handlePress = () => {
           this.props.onChange();
-          this.props.navigator.replace({name:'PetDetailScene', props:{pet:pet}});
+          this.props.navigator.replace({name:'DetailScene', props:{pet:pet}});
         };
         list.push(
           <List key={i} avatar={{uri: pet.image}} iconColor="#4CAF50" title={pet.name} onPress={handlePress} chevron={true}/>
@@ -117,10 +100,14 @@ class SideMenu extends React.PureComponent {
                             renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)}>
           <View style={{flex:1, margin:0, padding:0, backgroundColor:Colors.white}}>
             <ListGroup margin={false} borderTop={false}>
-              <List icon="map" iconColor={Colors.deepOrange} title="散歩マップ" onPress={goMap} chevron={true}/>
-              {list}
-              <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" onPress={this.archives.bind(this)} chevron={true}/>
-              <List icon="settings" iconColor={Colors.blueGray} title="設定" onPress={this.settings.bind(this)} chevron={true}/>
+              <List icon="dashboard" iconColor={Colors.indigo} title="marking" onPress={this.link('HomeScene')} chevron={true}/>
+              <List icon="update" iconColor={Colors.red} title="ヘルスケア" onPress={this.link('HealthScene')} chevron={true}/>
+              <List icon="directions-walk" iconColor={Colors.lightGreen} title="お散歩" onPress={this.link('WalkingMap')} chevron={true}/>
+              <List icon="bubble-chart" iconColor={Colors.cyan} title="マーキング" onPress={this.link('MarkingScene')} chevron={true}/>
+              <List icon="public" iconColor={Colors.blue} title="スポット" onPress={this.link('SpotScene')} chevron={true}/>
+              {/*{list}*/}
+              <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" onPress={this.link('ArchivesScene')} chevron={true}/>
+              <List icon="settings" iconColor={Colors.blueGray} title="設定" onPress={this.link('SettingsScene')} chevron={true}/>
               <List icon="power-settings-new" iconColor={Colors.red} title="ログアウト" onPress={this.logout.bind(this)} border={false}/>
             </ListGroup>
           </View>

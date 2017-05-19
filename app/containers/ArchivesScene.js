@@ -3,12 +3,15 @@ import React from 'react'
 import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import * as rootActions from '../redux/reducers/root'
 import * as archivesActions from '../redux/reducers/archives'
 import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
 import List from '../components/elements/List'
+import Label from '../components/elements/Label'
 import MarkingNavbar from '../components/common/MarkingNavbar'
+import Colors from '../themes/Colors'
 
 class ArchiveScene extends React.PureComponent {
   static propTypes = {
@@ -44,7 +47,13 @@ class ArchiveScene extends React.PureComponent {
     });
 
     if (list.length === 0) {
-      return null;
+      return (
+        <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'center', marginTop:32, marginLeft:16, marginRight:16, marginBottom:16}}>
+          <MAIcon name="account-balance" size={56} color={Colors.gray}/>
+          <Label color={Colors.gray} size="large" bold={true} style={{marginTop:16, marginBottom:8}}>まだ思い出はありません</Label>
+          <Label color={Colors.gray} style={{marginTop:4, marginBottom:4}}>ペットをアーカイブするとここで思い出を振り返ることができます。</Label>
+        </View>
+      );
     }
 
     return (

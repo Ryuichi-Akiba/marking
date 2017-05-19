@@ -50,7 +50,7 @@ export default class List extends React.PureComponent {
 
     // アイコンエリアを描画する
     return (
-      <View style={{width:48, paddingTop:8, paddingLeft:12, paddingRight:12, marginTop:margin}}>
+      <View style={{width:56, paddingTop:10, paddingLeft:16, paddingRight:16, marginTop:margin}}>
         {icon}
       </View>
     );
@@ -58,7 +58,7 @@ export default class List extends React.PureComponent {
 
   renderTitleContainer() {
     // コンテンツ部分の余白を条件によって動的に変更する
-    const padding = !!this.props.subtitle ? 10 : 12;
+    const padding = !!this.props.subtitle ? 10 : 14;
     const left = !!this.props.icon || !!this.props.avatar ? 0 : 8;
     const style = {flex:1, paddingTop:padding, paddingBottom:padding, paddingLeft:left};
 
@@ -91,7 +91,7 @@ export default class List extends React.PureComponent {
 
   renderChevron() {
     if (this.props.chevron) {
-      const padding = !!this.props.subtitle ? 16 : 8;
+      const padding = !!this.props.subtitle ? 16 : 10;
       return (
         <View style={{paddingTop:padding, paddingBottom:padding}}>
           <MAIcon name="chevron-right" size={24} color={Colors.borderColor}/>

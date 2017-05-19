@@ -61,7 +61,7 @@ export default class MarkingNavbar extends React.PureComponent {
   }
 
   render() {
-    const containerStyle = !!this.props.transparent ? {backgroundColor:'rgba(0,0,0,0)'} : {};
+    const containerStyle = !!this.props.transparent ? {backgroundColor:'rgba(0,0,0,0)'} : {backgroundColor:'rgba(255,255,255,0.8)'};
     return (
       <NavigationBar containerStyle={containerStyle} title={this.title()} leftButton={this.left()} rightButton={this.right()}/>
     );

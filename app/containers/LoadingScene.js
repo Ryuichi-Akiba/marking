@@ -1,8 +1,10 @@
 import React from 'react'
-import {StyleSheet, Text, View, Image} from 'react-native'
+import {StyleSheet, Text, View, Image, ActivityIndicator} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as rootActions from '../redux/reducers/root'
+import Label from '../components/elements/Label'
+import Colors from '../themes/Colors'
 
 // このコンポーネント内でのみ使用するスタイルシート定義
 const styles = StyleSheet.create({
@@ -32,18 +34,29 @@ class LoadingScene extends React.PureComponent {
   };
 
   render() {
+    if (this.props.rootState.isBlocking) {
+      return (
+        <View style={[styles.container, {backgroundColor:'rgba(255,255,255,0.5)'}]}>
+          <View style={{justifyContent:'center', alignItems:'center', backgroundColor:'rgba(0,0,0,0.5)', borderRadius:8, paddingTop:16, paddingBottom:16, paddingRight:24, paddingLeft:24}}>
+            <ActivityIndicator color={Colors.white} size="large"/>
+            <Label color={Colors.white} size="small" style={{marginTop:8}}>Loading..</Label>
+          </View>
+        </View>
+      );
+    }
+
+    // ローディング用のシーンを表示する
     if (this.props.rootState.isLoading) {
-      // ローディング用のシーンを表示する
       return (
         <View style={styles.container}>
           <Image source={require('./images/loading-icon.gif')}></Image>
           <Text style={styles.loadingText}>Now Loading...</Text>
         </View>
       );
-    } else {
-      // 他のシーンを表示したいので何もしない
-      return <View></View>;
     }
+
+    // 他のシーンを表示したいので何もしない
+    return null;
   }
 }
 

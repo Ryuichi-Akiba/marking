@@ -1,31 +1,35 @@
 import moment from 'moment'
 import React from 'react'
-import {Navigator, StyleSheet, View, Image, TouchableHighlight, Dimensions, Alert, Text} from 'react-native'
+import {Navigator, StyleSheet, View, ScrollView, Image, TouchableHighlight, Dimensions, Alert, Text} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
+import {Tabs, Tab} from 'react-native-elements'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import * as rootActions from '../redux/reducers/root'
-import * as petDetailActions from '../redux/reducers/petDetail'
+import * as petDetailActions from '../redux/reducers/detail'
 import ViewContainer from '../components/common/ViewContainer'
 import Label from '../components/elements/Label'
 import Badge from '../components/elements/Badge'
 import ListGroup from '../components/elements/ListGroup'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import PetImage from '../components/pets/PetImage'
+import HealthView from './views/HealthView'
+import WalkingView from './views/WalkingView'
+import ChartView from './views/ChartView'
 import Colors from '../themes/Colors'
 
 const window = Dimensions.get('window');
 
-class PetDetailScene extends React.PureComponent {
+class DetailScene extends React.PureComponent {
   static propTypes = {
     // map from route navigation
     navigator: React.PropTypes.object.isRequired,
     openMenu: React.PropTypes.func.isRequired,
     // map from other scene
     pet: React.PropTypes.object.isRequired,
-    isNewWindow: React.PropTypes.object,
+    isNewWindow: React.PropTypes.bool,
     // map from react-redux
     rootState: React.PropTypes.object,
     rootActions: React.PropTypes.object,
@@ -35,46 +39,48 @@ class PetDetailScene extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {date:moment().startOf('date'), pet:{}, markers:[], distance:0, poo:0, pee:0};
+    this.state = {selected:'health', pet:props.pet, markers:[], distance:0, poo:0, pee:0};
   };
 
   // 初回ロード時に呼び出され、ペットのマーキング情報を取得する
-  componentWillMount() {
-    const date = this.state.date.toDate();
-    this.setState({pet:this.props.pet});
-    this.props.detailActions.initialize({pet:this.props.pet, date, refresh:true});
+  componentDidMount() {
+    // 初期表示のタブ（ヘルスケアのビュー）に表示するデータを取得する
+    const pet = this.props.pet;
+    const date = new Date();
+    this.props.detailActions.initialize({pet, date});
   }
 
   // Propsが変更になった時（データが更新された時）に呼び出され、地図にマーカーを描画する
   componentWillReceiveProps(nextProps) {
     if (nextProps.detailState.markings !== this.props.detailState.markings) {
-      const state = this.mapToState(this.state.date, nextProps.detailState.markings);
-      this.refreshMarkers(state);
+      this.props.rootActions.unblockScene();
+      // const state = this.mapToState(this.state.date, nextProps.detailState.markings);
+      // this.refreshMarkers(state);
     }
   }
 
   // Stateが変更になった時（日付が変わった時）に呼び出され、地図にマーカーを描画する
   componentWillUpdate(nextProps, nextState) {
-    if (nextState.date !== this.state.date) {
-      // 地図にマーカーを描画する
-      const state = this.mapToState(nextState.date, nextProps.detailState.markings);
-      this.refreshMarkers(state);
-
-      // キャッシュに載せるためにAPIにアクセスしてマーキング情報を取得する
-      const start = nextState.date.clone().startOf('week');
-      const end = nextState.date.clone().endOf('week');
-      const startMonth = start.month();
-      const endMonth = end.month();
-      if (startMonth !== endMonth) {
-        const pet = this.props.pet;
-        const thisMonth = this.state.date.month();
-        if (thisMonth === startMonth) {
-          this.props.detailActions.findNewMarkings({pet, date:end.toDate(), refresh:false}, this.props.detailState.dates);
-        } else {
-          this.props.detailActions.findNewMarkings({pet, date:start.toDate(), refresh:false}, this.props.detailState.dates);
-        }
-      }
-    }
+    // if (nextState.date !== this.state.date) {
+    //   // 地図にマーカーを描画する
+    //   const state = this.mapToState(nextState.date, nextProps.detailState.markings);
+    //   this.refreshMarkers(state);
+    //
+    //   // キャッシュに載せるためにAPIにアクセスしてマーキング情報を取得する
+    //   const start = nextState.date.clone().startOf('week');
+    //   const end = nextState.date.clone().endOf('week');
+    //   const startMonth = start.month();
+    //   const endMonth = end.month();
+    //   if (startMonth !== endMonth) {
+    //     const pet = this.props.pet;
+    //     const thisMonth = this.state.date.month();
+    //     if (thisMonth === startMonth) {
+    //       this.props.detailActions.findNewMarkings({pet, date:end.toDate(), refresh:false}, this.props.detailState.dates);
+    //     } else {
+    //       this.props.detailActions.findNewMarkings({pet, date:start.toDate(), refresh:false}, this.props.detailState.dates);
+    //     }
+    //   }
+    // }
   }
 
   // マーキング情報をフィルタリングして必要情報をステートにマップする
@@ -127,15 +133,6 @@ class PetDetailScene extends React.PureComponent {
     );
   }
 
-  renderForeground() {
-    const pet = this.state.pet;
-    return (
-      <View style={{paddingTop:48}}>
-        <PetImage source={{uri:pet.image}} size="middle"/>
-      </View>
-    );
-  }
-
   handlePressEditButton() {
     this.props.navigator.push({
       name:'PetFormScene',
@@ -153,13 +150,13 @@ class PetDetailScene extends React.PureComponent {
     if (!!this.props.isNewWindow) {
       const left = {icon:'arrow-back', handler:() => this.props.navigator.pop()};
       return (
-        <MarkingNavbar title={pet.name} left={left} transparent={true}/>
+        <MarkingNavbar left={left}/>
       );
     } else {
       const left = {icon:'menu', handler:this.props.openMenu};
       const right = !!pet.dead ? null : {icon:'mode-edit', handler:this.handlePressEditButton.bind(this)};
       return (
-        <MarkingNavbar title={pet.name} left={left} right={right} transparent={true}/>
+        <MarkingNavbar title={pet.name} left={left} right={right}/>
       );
     }
   }
@@ -169,7 +166,7 @@ class PetDetailScene extends React.PureComponent {
     this.setState({date:next});
   }
 
-  renderCalendar() {
+  renderWeeklyCalendar() {
     const days = ['日', '月', '火', '水', '木', '金', '土'];
     var dateOfFirst = this.state.date.clone().startOf('week');
 
@@ -185,7 +182,7 @@ class PetDetailScene extends React.PureComponent {
       };
       var element = (
         <View key={i} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-          <Label style={{marginBottom:8}} size="small">{days[d.day()]}</Label>
+          <Label style={{marginBottom:4}} size="small">{days[d.day()]}</Label>
           <Badge color={color} disabled={disabled} active={active} onPress={changeStateDate}>{d.date()}</Badge>
         </View>
       );
@@ -195,7 +192,7 @@ class PetDetailScene extends React.PureComponent {
     const handleNext = () => this.handlePressNextWeek(7);
     const handleBefore = () => this.handlePressNextWeek(-7);
     return (
-      <View style={{padding:8}}>
+      <View style={{flex:0.2, padding:8}}>
         <View style={{flex:1, flexDirection:'row'}}>
           <TouchableHighlight onPress={handleBefore} underlayColor={Colors.white}>
             <View style={{flex:1, justifyContent:'center', alignItems:'center', marginLeft:-5, marginRight:-5}}>
@@ -212,7 +209,7 @@ class PetDetailScene extends React.PureComponent {
           </TouchableHighlight>
         </View>
         <View style={{flex:1, flexDirection:'row', justifyContent:'center', alignItems:'center', marginTop:8}}>
-          <Label size="small">{this.state.date.format('YYYY年MM月DD日') + days[this.state.date.day()] + '曜日'}</Label>
+          <Label>{this.state.date.format('YYYY年MM月DD日') + days[this.state.date.day()] + '曜日'}</Label>
         </View>
       </View>
     );
@@ -245,43 +242,68 @@ class PetDetailScene extends React.PureComponent {
     );
   }
 
-  createMarkers() {
-    var list = [];
-    this.state.markers.forEach((marker, index) => {
-      list.push(<MapView.Marker key={index} coordinate={marker} title={marker.title} description={marker.description}/>);
-    });
-    return list;
+  // createMarkers() {
+  //   var list = [];
+  //   this.state.markers.forEach((marker, index) => {
+  //     list.push(<MapView.Marker key={index} coordinate={marker} title={marker.title} description={marker.description}/>);
+  //   });
+  //   return list;
+  // }
+
+  // renderMap() {
+  //   const mapStyle = {flex:1, height:window.height / 2};
+  //   const region = {latitude:0, longitude:0, latitudeDelta:0, longitudeDelta:0};
+  //   return (
+  //     <MapView style={mapStyle} ref={(ref) => {this.map = ref;}} initialRegion={region}>
+  //       {this.createMarkers()}
+  //     </MapView>
+  //   );
+  // }
+
+  changeTab (selected) {
+    this.setState({selected})
   }
 
-  renderMap() {
-    const mapStyle = {flex:1, height:window.height / 2};
-    const region = {latitude:0, longitude:0, latitudeDelta:0, longitudeDelta:0};
+  renderTab(key: string, title: string, icon: string, component: object) {
     return (
-      <MapView style={mapStyle} ref={(ref) => {this.map = ref;}} initialRegion={region}>
-        {this.createMarkers()}
-      </MapView>
+      <Tab
+        titleStyle={{fontWeight: 'bold', fontSize: 10}}
+        selected={this.state.selected === key}
+        selectedTitleStyle={{marginTop: -1, marginBottom: 6}}
+        title={this.state.selected === key ? title : null}
+        renderIcon={() => <MAIcon style={{justifyContent: 'center', alignItems: 'center', marginTop: 12}} color={Colors.gray} name={icon} size={33} />}
+        renderSelectedIcon={() => <MAIcon color={Colors.blue} name={icon} size={30} />}
+        onPress={() => this.changeTab(key)}>
+        {component}
+      </Tab>
     );
   }
 
+  reload(pet, date) {
+    this.props.rootActions.blockScene();
+    this.props.detailActions.initialize({pet, date});
+  }
+
   render() {
-    var title = 'マーキングスポット';
-    if (this.state.empty) {
-      title = 'お散歩情報がありません';
-    }
+    const {date, markings} = this.props.detailState;
+
+    const healthView = <HealthView navigator={this.props.navigator} date={date} pet={this.props.pet} markings={markings} onReload={this.reload.bind(this)}/>;
+    const chartView = <ChartView navigator={this.props.navigator} date={date} pet={this.props.pet}/>;
+    const walkingView = <WalkingView/>;
+    const otherView = (
+      <View>
+        {this.renderFixedHeader()}
+        <Label>FEED</Label>
+      </View>
+    );
 
     return (
-      <ParallaxScrollView backgroundColor={Colors.backgroundColor} parallaxHeaderHeight={this.getImageHeight()} stickyHeaderHeight={64} backgroundSpeed={3}
-                          renderBackground={this.renderBackground.bind(this)} renderForeground={this.renderForeground.bind(this)} renderFixedHeader={this.renderFixedHeader.bind(this)}>
-        <ViewContainer>
-          <ListGroup margin={false} borderTop={false}>
-            {this.renderCalendar()}
-          </ListGroup>
-          <ListGroup title={title}>
-            {this.renderMap()}
-            {this.renderSummary()}
-          </ListGroup>
-        </ViewContainer>
-      </ParallaxScrollView>
+      <Tabs tabBarStyle={{backgroundColor:Colors.white}}>
+        {this.renderTab('health', '記録', 'history', healthView)}
+        {this.renderTab('walking', 'お散歩', 'directions-walk', walkingView)}
+        {this.renderTab('chart', '分析', 'trending-up', chartView)}
+        {this.renderTab('others', 'その他', 'more-horiz', otherView)}
+      </Tabs>
     );
   }
 }
@@ -289,7 +311,7 @@ class PetDetailScene extends React.PureComponent {
 function mapStateToProps(state) {
   return {
     rootState: state.root,
-    detailState: state.petDetail,
+    detailState: state.detail,
   };
 }
 
@@ -303,4 +325,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(PetDetailScene);
+)(DetailScene);
