@@ -81,7 +81,7 @@ class HomeScene extends React.PureComponent {
           <View style={{flex:0.5}}>
             <View style={{flex:1, flexDirection:'row', marginTop:8, marginLeft:4, marginRight:4}}>
               {this.renderPanel('update', 'ヘルスケア', Colors.red, () => this.props.navigator.replace({name:'HealthScene'}))}
-              {this.renderPanel('directions-walk', 'お散歩', Colors.lightGreen, () => this.props.navigator.replace({name:'WalkingMap'}))}
+              {this.renderPanel('directions-walk', 'お散歩', Colors.lightGreen, () => this.props.navigator.replace({name:'WalkingSelectScene'}))}
             </View>
             <View style={{flex:1, flexDirection:'row', marginTop:8, marginLeft:4, marginRight:4}}>
               {this.renderPanel('bubble-chart', 'マーキング', Colors.cyan, () => this.props.navigator.replace({name:'MarkingScene'}))}

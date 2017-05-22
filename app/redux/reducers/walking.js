@@ -1,5 +1,12 @@
 import {Record} from "immutable";
 import {Animated} from 'react-native';
+import {createAction} from 'redux-actions'
+
+// 一緒に散歩するペットを選択する
+export const REPLACE_PETS = 'App/Walking/REPLACE_PETS';
+export const replacePets = createAction(REPLACE_PETS, (payload) => payload);
+
+
 
 // 現在位置を取得するアクション
 export const GET_CURRENT_LOCATION = 'GET_CURRENT_LOCATION';
@@ -237,38 +244,9 @@ export function showPetsActions(visibility) {
   }
 }
 
-export const SHOW_MY_PETS = 'SHOW_MY_PETS';
-export function showMyPets() {
-  return {
-    type: SHOW_MY_PETS,
-    payload: {},
-    meta: {},
-    error: false
-  }
-}
-
-export const SUCCESS_SHOW_MY_PETS = 'SUCCESS_SHOW_MY_PETS';
-export function successShowMyPets(payload) {
-  return {
-    type: SUCCESS_SHOW_MY_PETS,
-    payload: payload,
-    meta: {},
-    error: false
-  }
-}
-
-export const FAILURE_SHOW_MY_PETS = 'FAILURE_SHOW_MY_PETS';
-export function failureShowMyPets(error) {
-  return {
-    type: FAILURE_SHOW_MY_PETS,
-    payload: {},
-    meta: {error},
-    error: true
-  }
-}
 
 // -------------------- Immutable State Model の定義 --------------------
-export const MarkingMapRecord = new Record({
+export const WalkingRecord = new Record({
   region: {},
   watchId: null,
   isStarted: false,
@@ -283,7 +261,7 @@ export const MarkingMapRecord = new Record({
 });
 
 // -------------------- Reducer の定義 --------------------
-export function markingMap(state = new MarkingMapRecord(), action) {
+export function walkingReducer(state = new WalkingRecord(), action) {
 
   switch (action.type) {
     case GET_CURRENT_LOCATION:
@@ -318,11 +296,14 @@ export function markingMap(state = new MarkingMapRecord(), action) {
       return state.set('markings', action.payload);
     case SHOW_PETS_ACTIONS:
       return state.set('visibility', action.payload);
-    case SHOW_MY_PETS:
-      return state;
-    case SUCCESS_SHOW_MY_PETS:
-      const pets = action.payload.filter((pet) => !pet.dead || pet.dead !== '1');
-      return state.set('pets', pets);
+    // case SUCCESS_SHOW_MY_PETS:
+    //   const pets = action.payload.filter((pet) => !pet.dead || pet.dead !== '1');
+    //   return state.set('pets', pets);
+
+    // 散歩に連れて行くペットをステートにセットする
+    case REPLACE_PETS:
+      return state.set('pets', action.payload);
+
     default:
       return state;
   }

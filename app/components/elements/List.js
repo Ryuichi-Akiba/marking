@@ -1,5 +1,5 @@
 import React from 'react'
-import {StyleSheet, View, Text, Image, TouchableHighlight} from 'react-native'
+import {StyleSheet, View, Text, Image, Switch, TouchableHighlight} from 'react-native'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import Label from './Label'
 import Avatar from './Avatar'
@@ -19,6 +19,9 @@ export default class List extends React.PureComponent {
     chevron: React.PropTypes.bool,
     rightTitle: React.PropTypes.string,
     style: React.PropTypes.object,
+    toggle: React.PropTypes.bool,
+    switcher: React.PropTypes.bool,
+    onChangeSwitch: React.PropTypes.func,
   };
 
   static defaultProps = {
@@ -32,6 +35,7 @@ export default class List extends React.PureComponent {
 
   constructor(props) {
     super(props);
+    this.state = {trueSwitchIsOn: !!this.props.toggle};
   }
 
   renderIconContainer() {
@@ -101,6 +105,19 @@ export default class List extends React.PureComponent {
     return null;
   }
 
+  renderSwitcher() {
+    if (!!this.props.switcher) {
+      const handler = (value) => {
+        this.setState({trueSwitchIsOn:value});
+        if (this.props.onChangeSwitch) {
+          this.props.onChangeSwitch(value);
+        }
+      };
+      return <Switch onValueChange={handler} value={this.state.trueSwitchIsOn} style={{marginTop:6, marginRight:8}} onTintColor={Colors.primary}/>;
+    }
+    return null;
+  }
+
   wrap(component) {
     if (this.props.onPress) {
       return (
@@ -122,6 +139,7 @@ export default class List extends React.PureComponent {
           {this.renderTitleContainer()}
           {this.renderRightContent()}
           {this.renderChevron()}
+          {this.renderSwitcher()}
         </View>
       </View>
     );

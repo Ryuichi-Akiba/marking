@@ -11,7 +11,8 @@ import LoadingScene from './LoadingScene'
 import LoginScene from './LoginScene'
 import HomeScene from './HomeScene'
 import HealthScene from './HealthScene'
-import MarkingMap from './MarkingMap'
+import WalkingScene from './WalkingScene'
+import WalkingSelectScene from './WalkingSelectScene'
 import MarkingScene from './MarkingScene'
 import SpotScene from './SpotScene'
 import PetFormScene from './PetFormScene'
@@ -118,6 +119,12 @@ class RootScene extends React.PureComponent {
     if (route.name === 'BarGraphScene') {
       return this.wrap(<BarGraphScene navigator={navigator} {...route.props}/>);
     }
+    if (route.name === 'WalkingScene') {
+      main = this.wrap(<WalkingScene navigator={navigator} {...route.props}/>);
+    }
+    if (route.name === 'WalkingSelectScene') {
+      main = this.wrap(<WalkingSelectScene navigator={navigator} {...route.props}/>);
+    }
 
     var main;
     if (route.name === 'HomeScene') {
@@ -125,9 +132,6 @@ class RootScene extends React.PureComponent {
     }
     if (route.name === 'HealthScene') {
       main = this.wrap(<HealthScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
-    }
-    if (route.name === 'WalkingMap') {
-      main = this.wrap(<MarkingMap openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'MarkingScene') {
       main = this.wrap(<MarkingScene openMenu={this.open.bind(this)} navigator={navigator} {...route.props}/>);

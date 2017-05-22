@@ -31,12 +31,11 @@ import {
   handleInitCurrentLocation,
   handleInitWatchId,
   handleClearLocationWatch,
-  handleShowMyPets,
   handleStartMarking,
   handleFinishMarking,
   handlePee,
   handlePoo,
-} from './markingMap'
+} from './walking'
 import * as archives from './archives'
 
 export default function* sagas() {
@@ -65,7 +64,6 @@ export default function* sagas() {
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
   yield fork(handleClearLocationWatch);
-  yield fork(handleShowMyPets);
   yield fork(handleStartMarking);
   yield fork(handleFinishMarking);
   yield fork(handlePee);

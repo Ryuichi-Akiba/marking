@@ -7,7 +7,7 @@ import {menuReducer} from './reducers/sidemenu'
 import {addMyPetForm} from './reducers/addMyPetForm'
 import {detailReducer} from './reducers/detail'
 import {graphReducer} from './reducers/graph'
-import {markingMap} from './reducers/markingMap'
+import {walkingReducer} from './reducers/walking'
 import {archivesReducer} from './reducers/archives'
 // ... other reducers
 
@@ -20,7 +20,7 @@ export default combineReducers({
   addMyPetForm,
   detail: detailReducer,
   graph: graphReducer,
-  markingMap,
+  walking: walkingReducer,
   archives: archivesReducer,
   // ... other reducers
 });
