@@ -28,13 +28,12 @@ class WalkingScene extends React.PureComponent {
 
   constructor(props) {
     super(props);
-
-    this.peeAnimatedValue = [];
-    this.pooAnimatedValue = [];
     this.state = {
+      markers: [], // 散歩中に配置するマーカー
       recording: false, // 散歩記録中はTRUEになる
       selectedIndex: 0, // 選択中のペットのインデックス番号
-      selected: {}, // 選択中のペットの情報
+      pooIcon: {}, // ImageSource形式のPOOアイコン
+      peeIcon: {}, // ImageSource形式のPEEアイコン
     };
   }
 
@@ -49,7 +48,10 @@ class WalkingScene extends React.PureComponent {
     actions.initWatchId();
 
     // 前の画面で選択したペットの１匹目を選択中の状態にする
-    this.setState({selected:this.props.walkingState.pets[0]});
+    this.setState({selectedIndex:0});
+    // 地図に描画するアイコンはImageSourceじゃないといけないので、後で使えるようにステートにロードしておく
+    MAIcon.getImageSource('cloud', 24, Colors.amber).then((source) => this.setState({pooIcon:source}));
+    MAIcon.getImageSource('opacity', 24, Colors.blue).then((source) => this.setState({peeIcon:source}));
   }
 
   componentWillUnmount() {
@@ -100,7 +102,14 @@ class WalkingScene extends React.PureComponent {
     const handlePoo = () => {
       // TODO マーカーを配置する処理を追加する
       const markings = this.props.walkingState.markings;
-      if (pet && pet.id) this.props.walkingActions.poo(markings, pet.id);
+      if (pet && pet.id) {
+        const latlng = this.props.walkingState.region;
+        console.log(latlng);
+        var markers = this.state.markers;
+        markers.push({latlng:latlng, pet:pet, type:'POO', title:pet.name + 'のPOO', description:''});
+        this.setState(markers);
+        this.props.walkingActions.poo(markings, pet.id);
+      }
     };
 
     return (
@@ -115,7 +124,14 @@ class WalkingScene extends React.PureComponent {
     const handlePee = () => {
       // TODO マーカーを配置する処理を追加する
       const markings = this.props.walkingState.markings;
-      if (pet && pet.id) this.props.walkingActions.pee(markings, pet.id);
+      if (pet && pet.id) {
+        const latlng = this.props.walkingState.region;
+        console.log(latlng);
+        var markers = this.state.markers;
+        markers.push({latlng:latlng, pet:pet, type:'PEE', title:pet.name + 'のPEE', description:''});
+        this.setState(markers);
+        this.props.walkingActions.pee(markings, pet.id);
+      }
     };
 
     return (
@@ -127,24 +143,23 @@ class WalkingScene extends React.PureComponent {
 
   // 選択中のペットの情報を表示するエリアをレンダリングする
   renderPetView() {
-    console.log(this.state.selected);
-    const pet = this.state.selected;
     const index = this.state.selectedIndex;
     const pets = this.props.walkingState.pets;
+    const pet = pets[index];
 
     let handleNext = (i) => {
       if (i < 0) i = pets.length - 1; // 無限ループにしたいので
       if (pets.length <= i) i = 0; // 無限ループにしたいので
-      this.setState({selected: pets[i], selectedIndex: i});
+      this.setState({selectedIndex: i});
     };
 
     // TODO スワイプで選択中のペットが変えられるようにすること
     return (
-      <View style={{alignItems:'center'}}>
-        <View>
+      <ScrollView style={{flex:1, paddingTop:24}}>
+        <View style={{alignItems:'center'}}>
           <Label size="large" bold={true} color={Colors.gray} numberOfLines={1}>{pet.name}</Label>
         </View>
-        <View style={{flex:1, flexDirection:'row', }}>
+        <View style={{flex:1, flexDirection:'row'}}>
           <TouchableOpacity style={{flex:1, justifyContent:'center', alignItems:'center'}} onPress={() => handleNext(index - 1)}>
             <MAIcon name="chevron-left" size={32} color={Colors.gray}/>
           </TouchableOpacity>
@@ -153,7 +168,39 @@ class WalkingScene extends React.PureComponent {
             <MAIcon name="chevron-right" size={32} color={Colors.gray}/>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
+    );
+  }
+
+  renderMapView() {
+    var markers = this.state.markers.map((marker, index) => {
+      var image = null;
+      if (marker.type === 'POO') {
+        image = this.state.pooIcon;
+      } else if (marker.type === 'PEE') {
+        image = this.state.peeIcon;
+      }
+      return (
+        <MapView.Marker
+          key={index}
+          image={image}
+          coordinate={marker.latlng}
+          title={marker.title}
+          description={marker.description}
+        />
+      );
+    });
+
+    return (
+      <MapView ref={(ref) => {this.map = ref;}}
+               style={{flex:1}}
+               showsUserLocation={true}
+               showsCompass={true}
+               followsUserLocation={true}
+               region={this.props.walkingState.region}
+               onRegionChange={this.props.walkingActions.updateCurrentLocation}>
+        {markers}
+      </MapView>
     );
   }
 
@@ -175,14 +222,12 @@ class WalkingScene extends React.PureComponent {
       right = {icon:'clear', handler:this.cancelRecording.bind(this)};
     }
 
-    const pet = this.state.selected;
+    const pet = this.props.walkingState.pets[this.state.selectedIndex];
     return (
         <View style={{flex:1, flexDirection:'column'}}>
           <MarkingNavbar title="お散歩" left={left} right={right}/>
-          <MapView style={{flex:1}} showsUserLocation={true} showsCompass={true} followsUserLocation={true} region={state.region} onRegionChange={actions.updateCurrentLocation}/>
-          <ScrollView style={{flex:1, paddingTop:24}}>
-            {this.renderPetView()}
-          </ScrollView>
+          {this.renderMapView()}
+          {this.renderPetView()}
           <View style={styles.buttonContainer}>
             {this.renderPooButton(pet)}
             {/*{this.renderStartButton()}*/}
