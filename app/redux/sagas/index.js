@@ -31,10 +31,7 @@ import {
   handleInitCurrentLocation,
   handleInitWatchId,
   handleClearLocationWatch,
-  handleStartMarking,
-  handleFinishMarking,
-  handlePee,
-  handlePoo,
+  handleSaveWalking,
 } from './walking'
 import * as archives from './archives'
 
@@ -60,14 +57,11 @@ export default function* sagas() {
   // PET DETAIL SCENE
   yield fork(handleInitializePetDetailScene);
   yield fork(handleGetPetsMarkingByMonth);
-  // MAP
+  // WALKING SCENE
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
   yield fork(handleClearLocationWatch);
-  yield fork(handleStartMarking);
-  yield fork(handleFinishMarking);
-  yield fork(handlePee);
-  yield fork(handlePoo);
+  yield fork(handleSaveWalking);
   // for ArchivesScene
   yield fork(archives.handleInitializeArchivesScene);
 }

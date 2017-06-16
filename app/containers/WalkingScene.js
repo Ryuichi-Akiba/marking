@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React from 'react'
 import {StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, Animated, Image, Platform} from 'react-native'
 import {bindActionCreators} from 'redux'
@@ -7,8 +8,6 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import MarkingNavbar from '../components/common/MarkingNavbar'
 import Icon from '../components/elements/Icon'
 import Label from '../components/elements/Label'
-import ListGroup from '../components/elements/ListGroup'
-import List from '../components/elements/List'
 import PetImage from '../components/pets/PetImage'
 import Stopwatch from '../components/elements/Stopwatch'
 import Colors from '../themes/Colors'
@@ -29,17 +28,12 @@ class WalkingScene extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      markers: [], // 散歩中に配置するマーカー
+      // markers: [], // 散歩中に配置するマーカー
       recording: false, // 散歩記録中はTRUEになる
       selectedIndex: 0, // 選択中のペットのインデックス番号
       pooIcon: {}, // ImageSource形式のPOOアイコン
       peeIcon: {}, // ImageSource形式のPEEアイコン
     };
-  }
-
-  componentDidMount() {
-    // どのページからも呼ばれるため、ルートにあるローディングを常時OFFにして始める
-    this.props.rootActions.destroyLoadingScene();
   }
 
   componentWillMount() {
@@ -75,40 +69,12 @@ class WalkingScene extends React.PureComponent {
     }
   }
 
-  cancelRecording() {
-    this.setState({recording:false});
-    // TODO キャンセルするActionを用意しないといけないが、どうすれば良いかわからない
-  }
-
-  // 散歩の開始終了ボタンを描画する
-  renderStartButton() {
-    var icon = null;
-    if (!this.state.recording) {
-      icon =  <Icon name="play-arrow" title="START" circle={true} color={Colors.white} backgroundColor={Colors.orange} size="large" onPress={() => this.handleMarking(!this.state.recording)}/>;
-    } else {
-      icon =  <Icon name="stop" title="FINISH" circle={true} color={Colors.orange} backgroundColor={Colors.backgroundColor} size="large" onPress={() => this.handleMarking(!this.state.recording)}/>;
-    }
-    var watch = <Stopwatch/>;
-
-    return (
-      <View style={{flex:1, alignItems:'center'}}>
-        {icon}
-      </View>
-    );
-  }
-
   // うんちボタンを描画する
   renderPooButton(pet) {
     const handlePoo = () => {
-      // TODO マーカーを配置する処理を追加する
-      const markings = this.props.walkingState.markings;
       if (pet && pet.id) {
         const latlng = this.props.walkingState.region;
-        console.log(latlng);
-        var markers = this.state.markers;
-        markers.push({latlng:latlng, pet:pet, type:'POO', title:pet.name + 'のPOO', description:''});
-        this.setState(markers);
-        this.props.walkingActions.poo(markings, pet.id);
+        this.props.walkingActions.addMarker({coordinate:latlng, pet:pet, time:moment(), type:'POO', title:pet.name + 'のPOO', description:''});
       }
     };
 
@@ -122,15 +88,9 @@ class WalkingScene extends React.PureComponent {
   // おしっこボタンを描画する
   renderPeeButton(pet) {
     const handlePee = () => {
-      // TODO マーカーを配置する処理を追加する
-      const markings = this.props.walkingState.markings;
       if (pet && pet.id) {
         const latlng = this.props.walkingState.region;
-        console.log(latlng);
-        var markers = this.state.markers;
-        markers.push({latlng:latlng, pet:pet, type:'PEE', title:pet.name + 'のPEE', description:''});
-        this.setState(markers);
-        this.props.walkingActions.pee(markings, pet.id);
+        this.props.walkingActions.addMarker({coordinate:latlng, pet:pet, time:moment(), type:'PEE', title:pet.name + 'のPEE', description:''});
       }
     };
 
@@ -173,7 +133,7 @@ class WalkingScene extends React.PureComponent {
   }
 
   renderMapView() {
-    var markers = this.state.markers.map((marker, index) => {
+    var markers = this.props.walkingState.markers.map((marker, index) => {
       var image = null;
       if (marker.type === 'POO') {
         image = this.state.pooIcon;
@@ -184,7 +144,7 @@ class WalkingScene extends React.PureComponent {
         <MapView.Marker
           key={index}
           image={image}
-          coordinate={marker.latlng}
+          coordinate={marker.coordinate}
           title={marker.title}
           description={marker.description}
         />
@@ -205,22 +165,23 @@ class WalkingScene extends React.PureComponent {
   }
 
   render() {
-    const {state, actions} = this.props;
-
-    const left = {icon:'clear', handler:() => {
+    // 左側ボタン
+    const left =  {icon:'clear', handler:() => {
       Alert.alert('お散歩をやめますか？', '記録しないでお散歩をやめます。お散歩をやめる場合は、OKを押します。', [
         {text: 'Cancel', style: 'cancel'},
         {text: 'OK', onPress: () => {
-          // TODO キャンセル処理をActionに記述してそれを呼び出す
+          this.props.walkingActions.cancelWalking();
           this.props.navigator.replace({name:'WalkingSelectScene'});
         }},
       ]);
     }};
-    // 記録中は右上にキャンセルボタンを表示して、記録を中断できるようにする
-    var right = null;
-    if (this.state.recording) {
-      right = {icon:'clear', handler:this.cancelRecording.bind(this)};
-    }
+
+    // 右側ボタン
+    const right = {title:'おわる', handler:() => {
+      // TODO 移動距離をどうやって算出するか？？
+      this.props.walkingActions.endWalking({endDateTime:moment(), distance:0});
+      this.props.navigator.replace({name:'WalkingCompleteScene'});
+    }};
 
     const pet = this.props.walkingState.pets[this.state.selectedIndex];
     return (

@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React from 'react'
 import {StyleSheet, View, ScrollView, TouchableOpacity, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
@@ -58,6 +59,9 @@ class WalkingSelectScene extends React.PureComponent {
   getStartHandler() {
     return () => {
       if (!!this.props.walkingState.pets && this.props.walkingState.pets.length > 0) {
+        // 散歩を開始するので開始日時を取得する
+        this.props.walkingActions.startWalking(moment());
+        // 散歩中の画面に遷移させる
         this.props.navigator.replace({name:'WalkingScene'});
       } else {
         Alert.alert('お散歩しないのですか？', '一緒にお散歩するペットを１匹以上選択して、お散歩に出かけましょう。', [

@@ -1,12 +1,65 @@
-import {Record} from "immutable";
-import {Animated} from 'react-native';
+import moment from 'moment'
+import {Record} from "immutable"
+import {Animated} from 'react-native'
 import {createAction} from 'redux-actions'
 
-// 一緒に散歩するペットを選択する
+// 散歩を開始する（payloadはmomentであること）
+export const START_WALKING = 'App/Walking/START_WALKING';
+export const startWalking = createAction(START_WALKING, (payload) => payload);
+
+// 散歩を終了する（payloadはmomentであること）
+export const END_WALKING = 'App/Walking/END_WALKING';
+export const endWalking = createAction(END_WALKING, (payload) => payload);
+
+// 一緒に散歩するペットを選択し直す
 export const REPLACE_PETS = 'App/Walking/REPLACE_PETS';
 export const replacePets = createAction(REPLACE_PETS, (payload) => payload);
 
+// 散歩をキャンセルする
+export const CANCEL_WALKING = 'App/Walking/CANCEL_WALKING';
+export const cancelWalking = createAction(CANCEL_WALKING, (payload) => payload);
 
+// マーキングした場所をマークするために、マーカー情報を追加する
+export const ADD_MARKER = 'App/Walking/ADD_MARKER';
+export const addMarker = createAction(ADD_MARKER, (payload) => payload);
+
+// 散歩情報を記録するアクション
+export const SAVE = 'App/Walking/SAVE';
+export const save = createAction(SAVE, (payload) => convert(payload));
+
+// APIに渡して保存できるようにコンバートする
+function convert(state) {
+  // redux stateから必要な値を取り出す
+  const {pets, markers, startDateTime, endDateTime, distance} = state;
+
+  // 複数ペットを散歩に連れ出しているので、それぞれマーキングイベントを作成
+  var list = new Array();
+  pets.forEach((p) => {
+    console.log(p);
+    // [{petId, dateTime, eventType, geometry}]の形に変換
+    var events = new Array();
+    markers.forEach(m => {
+      if (m.pet.id === p.id) {
+        events.push({petId:p.id, dateTime:m.time.toDate(), eventType:m.type, geometry:m.geometry});
+      }
+    });
+    console.log(events);
+
+    // [{petId, startDateTime, endDateTime, distance, memo, events}]の形に変換
+    list.push({petId:p.id, startDateTime:startDateTime.toDate(), endDateTime:endDateTime.toDate(), distance, memo:null, events});
+  });
+
+  console.log(list);
+  return list;
+}
+
+
+// 散歩情報の記録に成功した場合のアクション
+export const SUCCESS_SAVE = 'App/Walking/SUCCESS_SAVE';
+export const successSave = createAction(SUCCESS_SAVE, (payload) => payload);
+
+
+// -- 以下、保留
 
 // 現在位置を取得するアクション
 export const GET_CURRENT_LOCATION = 'GET_CURRENT_LOCATION';
@@ -112,6 +165,8 @@ export function failureClearLocationWatch(error) {
   }
 }
 
+// -- 以下、不要な気がする
+
 // 散歩の開始時に呼び出すアクション
 export const START_MARKING = 'START_MARKING';
 export function startMarking(payload) {
@@ -174,66 +229,6 @@ export function failureFinishMarking(error) {
   }
 }
 
-export const PEE = 'PEE';
-export function pee(payload, petId) {
-  return {
-    type: PEE,
-    payload: payload,
-    meta: petId,
-    error: false
-  }
-}
-
-export const SUCCESS_PEE = 'SUCCESS_PEE';
-export function successPee(payload) {
-  return {
-    type: SUCCESS_PEE,
-    payload: payload,
-    meta: {},
-    error: false
-  }
-}
-
-export const FAILURE_PEE = 'FAILURE_PEE';
-export function failurePee(error) {
-  return {
-    type: FAILURE_PEE,
-    payload: {},
-    meta: {error},
-    error: true
-  }
-}
-
-export const POO = 'POO';
-export function poo(payload, petId) {
-  return {
-    type: POO,
-    payload: payload,
-    meta: petId,
-    error: false
-  }
-}
-
-export const SUCCESS_POO = 'SUCCESS_POO';
-export function successPoo(payload) {
-  return {
-    type: SUCCESS_POO,
-    payload: payload,
-    meta: {},
-    error: false
-  }
-}
-
-export const FAILURE_POO = 'FAILURE_POO';
-export function failurePoo(error) {
-  return {
-    type: FAILURE_POO,
-    payload: {},
-    meta: {error},
-    error: true
-  }
-}
-
 export const SHOW_PETS_ACTIONS = 'SHOW_PETS_ACTIONS';
 export function showPetsActions(visibility) {
   return {
@@ -247,13 +242,19 @@ export function showPetsActions(visibility) {
 
 // -------------------- Immutable State Model の定義 --------------------
 export const WalkingRecord = new Record({
+  startDateTime: null, // 散歩開始イベント（開始ボタンをクリックした時にmomentを作成）
+  endDateTime: null, // 散歩終了イベント（終了ボタンをクリックした時にmomentを作成）
+  pets: [], // 散歩に連れて行ったペット
+  markers: [], // 散歩中にマーキングしたマーカー
+  distance: 0, // 散歩終了時に算出した移動距離
+  completed: false, // 散歩情報の記録に成功したか否かのフラグ
+
   region: {},
   watchId: null,
   isStarted: false,
   visibility: new Animated.Value(0),
   peeAnim: new Animated.Value(0),
   pooAnim: new Animated.Value(0),
-  pets: [],
   markings: {
     distance: 0,
     events: [],
@@ -262,8 +263,31 @@ export const WalkingRecord = new Record({
 
 // -------------------- Reducer の定義 --------------------
 export function walkingReducer(state = new WalkingRecord(), action) {
-
   switch (action.type) {
+    // 散歩に連れて行くペットをステートにセットする
+    case REPLACE_PETS:
+      return state.set('pets', action.payload);
+
+    // 散歩を開始する（開始時の情報をステートにセットする）
+    case START_WALKING:
+      return state.set('startDateTime', action.payload);
+    // 散歩を終了する（終了時の情報をステートにセットする）
+    case END_WALKING:
+      return state.set('endDateTime', action.payload.endDateTime).set('distance', action.payload.distance);
+    // 散歩をキャンセルする
+    case CANCEL_WALKING:
+      return state.set('markers', []);
+
+    // マーカーを追加する
+    case ADD_MARKER:
+      var markers = [].concat(state.get('markers'));
+      markers.push(action.payload);
+      return state.set('markers', markers);
+
+    // 散歩情報の記録に成功した場合に、ステートを変更する
+    case SUCCESS_SAVE:
+      return state.set('completed', true);
+
     case GET_CURRENT_LOCATION:
       return state;
     case SUCCESS_GET_CURRENT_LOCATION:
@@ -286,23 +310,11 @@ export function walkingReducer(state = new WalkingRecord(), action) {
       return state.set('isStarted', false);
     case SUCCESS_FINISH_MARKING:
       return state.set('markings', action.payload);
-    case PEE:
-      return state;
-    case SUCCESS_PEE:
-      return state.set('markings', action.payload);
-    case POO:
-      return state;
-    case SUCCESS_POO:
-      return state.set('markings', action.payload);
     case SHOW_PETS_ACTIONS:
       return state.set('visibility', action.payload);
     // case SUCCESS_SHOW_MY_PETS:
     //   const pets = action.payload.filter((pet) => !pet.dead || pet.dead !== '1');
     //   return state.set('pets', pets);
-
-    // 散歩に連れて行くペットをステートにセットする
-    case REPLACE_PETS:
-      return state.set('pets', action.payload);
 
     default:
       return state;

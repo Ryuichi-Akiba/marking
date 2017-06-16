@@ -1,5 +1,10 @@
 import {call, put, fork, take, takeEvery, takeLatest} from 'redux-saga/effects'
 import {failureCallApi} from '../reducers/common'
+import {postWalking} from '../../common/api/walkings';
+import {
+  SAVE,
+  successSave,
+} from '../reducers/walking'
 import {
     GET_CURRENT_LOCATION,
     successGetCurrentLocation,
@@ -16,12 +21,6 @@ import {
     FINISH_MARKING,
     successFinishMarking,
     failureFinishMarking,
-    PEE,
-    successPee,
-    failurePee,
-    POO,
-    successPoo,
-    failurePoo,
 } from '../reducers/walking'
 import {
     getCurrentRegion,
@@ -72,55 +71,16 @@ export function* handleClearLocationWatch() {
     }
 }
 
-export function* handleStartMarking() {
-    while (true) {
-        const action = yield take(START_MARKING);
-        const markings = {distance: 0, events: []};
-        const {payload, error} = yield call(startMarking, markings, null, 'START');
-
-        if (payload && !error) {
-            yield put(successStartMarking(payload));
-        } else {
-            yield put(failureStartMarking(error));
-        }
-    }
-}
-
-export function* handleFinishMarking() {
+//
+export function* handleSaveWalking() {
   while (true) {
-    const action = yield take(FINISH_MARKING);
-    const {payload, error} = yield call(startMarking, action.payload, null, 'END');
+    const action = yield take(SAVE);
+    const {payload, error} = yield call(postWalking, action.payload);
 
     if (payload && !error) {
-      yield put(successFinishMarking(payload));
+      yield put(successSave(payload));
     } else {
       yield put(failureCallApi(error));
-    }
-  }
-}
-
-export function* handlePee() {
-    while (true) {
-        const action = yield take(PEE);
-        const {payload, error} = yield call(startMarking, action.payload, action.meta, 'PEE');
-
-        if (payload && !error) {
-            yield put(successPee(payload));
-        } else {
-            yield put(failurePee(error));
-        }
-    }
-}
-
-export function* handlePoo() {
-  while (true) {
-    const action = yield take(POO);
-    const {payload, error} = yield call(startMarking, action.payload, action.meta, 'POO');
-
-    if (payload && !error) {
-      yield put(successPoo(payload));
-    } else {
-      yield put(failurePoo(error));
     }
   }
 }

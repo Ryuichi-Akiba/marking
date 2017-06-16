@@ -13,6 +13,7 @@ import HomeScene from './HomeScene'
 import HealthScene from './HealthScene'
 import WalkingScene from './WalkingScene'
 import WalkingSelectScene from './WalkingSelectScene'
+import WalkingCompleteScene from './WalkingCompleteScene'
 import MarkingScene from './MarkingScene'
 import SpotScene from './SpotScene'
 import PetFormScene from './PetFormScene'
@@ -124,6 +125,9 @@ class RootScene extends React.PureComponent {
     }
     if (route.name === 'WalkingSelectScene') {
       main = this.wrap(<WalkingSelectScene navigator={navigator} {...route.props}/>);
+    }
+    if (route.name === 'WalkingCompleteScene') {
+      main = this.wrap(<WalkingCompleteScene navigator={navigator} {...route.props}/>);
     }
 
     var main;
