@@ -1,7 +1,7 @@
 import {call, put, take} from 'redux-saga/effects'
 import {
   failureCallApi
-} from '../reducers/common'
+} from '../reducers/root'
 import {
   INITIALIZE_MENU_CONTAINER,
   successGetMyPets,

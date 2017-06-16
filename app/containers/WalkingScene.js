@@ -28,7 +28,6 @@ class WalkingScene extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      // markers: [], // 散歩中に配置するマーカー
       recording: false, // 散歩記録中はTRUEになる
       selectedIndex: 0, // 選択中のペットのインデックス番号
       pooIcon: {}, // ImageSource形式のPOOアイコン
@@ -37,9 +36,8 @@ class WalkingScene extends React.PureComponent {
   }
 
   componentWillMount() {
-    const {state, actions} = this.props;
-    actions.getCurrentLocation();
-    actions.initWatchId();
+    this.props.walkingActions.getCurrentLocation();
+    this.props.walkingActions.initWatchId();
 
     // 前の画面で選択したペットの１匹目を選択中の状態にする
     this.setState({selectedIndex:0});
@@ -49,32 +47,15 @@ class WalkingScene extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    const {state, actions} = this.props;
-    actions.clearLocationWatch({watchId: state.watchId})
-  }
-
-  // 散歩の開始/終了のコントロール
-  handleMarking(isStarted) {
-    const {actions, state} = this.props;
-    this.setState({recording:true}); // このシーンのステートを記録中にする
-
-    const value = isStarted ? 1 : 0;
-    Animated.spring(state.visibility, {toValue: value}).start();
-
-    if (isStarted) {
-      actions.startMarking(state.markings);
-    } else {
-      this.setState({visiblePee:false, visiblePoo:false, recording:false});
-      actions.finishMarking(state.markings);
-    }
+    this.props.walkingActions.clearLocationWatch({watchId: this.props.walkingState.watchId})
   }
 
   // うんちボタンを描画する
   renderPooButton(pet) {
     const handlePoo = () => {
       if (pet && pet.id) {
-        const latlng = this.props.walkingState.region;
-        this.props.walkingActions.addMarker({coordinate:latlng, pet:pet, time:moment(), type:'POO', title:pet.name + 'のPOO', description:''});
+        // 現在地情報（coordinates）はAddMarkerした時に入るようになっている
+        this.props.walkingActions.addMarker({pet:pet, time:moment(), type:'POO', title:pet.name + '\'s POO'});
       }
     };
 
@@ -89,8 +70,8 @@ class WalkingScene extends React.PureComponent {
   renderPeeButton(pet) {
     const handlePee = () => {
       if (pet && pet.id) {
-        const latlng = this.props.walkingState.region;
-        this.props.walkingActions.addMarker({coordinate:latlng, pet:pet, time:moment(), type:'PEE', title:pet.name + 'のPEE', description:''});
+        // 現在地情報（coordinates）はAddMarkerした時に入るようになっている
+        this.props.walkingActions.addMarker({pet:pet, time:moment(), type:'PEE', title:pet.name + '\'s PEE'});
       }
     };
 
@@ -144,7 +125,7 @@ class WalkingScene extends React.PureComponent {
         <MapView.Marker
           key={index}
           image={image}
-          coordinate={marker.coordinate}
+          coordinate={marker.coordinates}
           title={marker.title}
           description={marker.description}
         />
@@ -189,7 +170,7 @@ class WalkingScene extends React.PureComponent {
           <MarkingNavbar title="お散歩" left={left} right={right}/>
           {this.renderMapView()}
           {this.renderPetView()}
-          <View style={styles.buttonContainer}>
+          <View style={{position:'absolute', bottom:16, flexDirection:'row', backgroundColor:'transparent'}}>
             {this.renderPooButton(pet)}
             {/*{this.renderStartButton()}*/}
             {this.renderPeeButton(pet)}
@@ -199,63 +180,8 @@ class WalkingScene extends React.PureComponent {
   }
 }
 
-const SIZE = 50;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
-    // backgroundColor: '#FFFFFF',
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  // メインのボタン定義（スタート、終了ボタン）
-  mainCircleButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent:'center',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom:16,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-  },
-  button: {
-    // width: 100,
-    paddingHorizontal: 15,
-    alignItems: 'center',
-    marginHorizontal: 25,
-  },
-  picture: {
-    width: SIZE,
-    height: SIZE,
-    borderRadius: SIZE / 2,
-    marginHorizontal: 5,
-    backgroundColor: 'skyblue',
-  },
-  raised: {
-    ...Platform.select({
-      ios: {
-        shadowColor: 'rgba(0,0,0, .4)',
-        shadowOffset: {height: 1, width: 1},
-        shadowOpacity: 1,
-        shadowRadius: 1
-      },
-      android: {
-        elevation: 2
-      }
-    })
-  },
-});
-
 function mapStateToProps(state) {
   return {
-    state: state.walking,
     walkingState: state.walking,
     rootState: state.root,
   };
@@ -263,7 +189,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(Object.assign({}, markingMapActions), dispatch),
     walkingActions: bindActionCreators(Object.assign({}, markingMapActions), dispatch),
     rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
   };

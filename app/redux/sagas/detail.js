@@ -1,6 +1,6 @@
 import {call, put, take} from 'redux-saga/effects'
 import {getPetsMarkings} from '../../common/api/pets'
-import {failureCallApi} from '../../redux/reducers/common'
+import {failureCallApi} from '../../redux/reducers/root'
 import {
   INITIALIZE_PET_DETAIL_SCENE,
   successGetMarkings,

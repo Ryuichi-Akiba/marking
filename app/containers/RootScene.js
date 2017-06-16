@@ -5,7 +5,6 @@ import {connect} from "react-redux"
 import Drawer from 'react-native-drawer'
 import DropdownAlert from 'react-native-dropdownalert'
 import * as rootActions from '../redux/reducers/root'
-import * as commonActions from '../redux/reducers/common'
 import * as loginActions from '../redux/reducers/login'
 import LoadingScene from './LoadingScene'
 import LoginScene from './LoginScene'
@@ -30,8 +29,6 @@ class RootScene extends React.PureComponent {
     // map from redux
     rootState: React.PropTypes.object,
     rootActions: React.PropTypes.object,
-    commonState: React.PropTypes.object,
-    commonActions: React.PropTypes.object,
   };
 
   constructor(props) {
@@ -45,9 +42,9 @@ class RootScene extends React.PureComponent {
 
   componentWillReceiveProps(nextProps) {
     // 共通ステートにエラー情報が積み上げられたことを検知して、メッセージを表示する
-    if (this.props.commonState.errors !== nextProps.commonState.errors) {
-      if (nextProps.commonState.errors.length !== 0) {
-        const errors = nextProps.commonState.errors;
+    if (this.props.rootState.errors !== nextProps.rootState.errors) {
+      if (nextProps.rootState.errors.length !== 0) {
+        const errors = nextProps.rootState.errors;
         var messages = '';
         errors.forEach((error, i) => {
           messages = messages + error.detail;
@@ -59,9 +56,9 @@ class RootScene extends React.PureComponent {
     }
 
     // 共通ステートに処理成功情報が積み上げられたことを検知して、メッセージを表示する
-    if (this.props.commonState.message !== nextProps.commonState.message) {
-      if (nextProps.commonState.message) {
-        const item = {type:'success', title:'', message:nextProps.commonState.message};
+    if (this.props.rootState.message !== nextProps.rootState.message) {
+      if (nextProps.rootState.message) {
+        const item = {type:'success', title:'', message:nextProps.rootState.message};
         this.showAlert(item);
       }
     }
@@ -189,21 +186,19 @@ class RootScene extends React.PureComponent {
 
   onClose() {
     // エラーをクリアする
-    this.props.commonActions.clearErrors();
+    this.props.rootActions.clearErrors();
   }
 }
 
 function mapStateToProps(state) {
   return {
     rootState: state.root,
-    commonState: state.common,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
-    commonActions: bindActionCreators(Object.assign({}, commonActions), dispatch),
     loginActions: bindActionCreators(Object.assign({}, loginActions), dispatch),
   };
 }

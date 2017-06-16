@@ -31,6 +31,7 @@ import {
   handleInitCurrentLocation,
   handleInitWatchId,
   handleClearLocationWatch,
+  handleAddMarker,
   handleSaveWalking,
 } from './walking'
 import * as archives from './archives'
@@ -61,6 +62,7 @@ export default function* sagas() {
   yield fork(handleInitCurrentLocation);
   yield fork(handleInitWatchId);
   yield fork(handleClearLocationWatch);
+  yield fork(handleAddMarker);
   yield fork(handleSaveWalking);
   // for ArchivesScene
   yield fork(archives.handleInitializeArchivesScene);

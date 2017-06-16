@@ -7,7 +7,6 @@ import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import * as addMyPetFormActions from '../redux/reducers/addMyPetForm'
 import * as rootActions from '../redux/reducers/root'
-import * as commonActions from '../redux/reducers/common'
 import InputField from '../components/forms/InputField'
 import DatePickerField from '../components/forms/DatePickerField'
 import SelectableListViewField from '../components/forms/SelectableListViewField'
@@ -80,7 +79,6 @@ class PetFormScene extends React.Component {
     petFormActions: PropTypes.object,
     rootState: PropTypes.object,
     rootActions: PropTypes.object,
-    commonActions: React.PropTypes.object,
     // map from redux-form
     initialize: React.PropTypes.func,
     reduxFormState: PropTypes.object,
@@ -204,7 +202,7 @@ class PetFormScene extends React.Component {
           errors.push({detail:values[key]});
         });
         console.log(errors);
-        this.props.commonActions.showErrors(errors);
+        this.props.rootActions.showErrors(errors);
       }
     }
   }
@@ -315,7 +313,6 @@ function mapDispatchToProps(dispatch) {
   return {
     petFormActions: bindActionCreators(Object.assign({}, addMyPetFormActions), dispatch),
     rootActions:  bindActionCreators(Object.assign({}, rootActions), dispatch),
-    commonActions:  bindActionCreators(Object.assign({}, commonActions), dispatch),
   };
 }
 

@@ -3,7 +3,7 @@ import {postMePets, uploadMePetsImage, deleleMePets} from '../../common/api/me'
 import {loadMyPets} from '../../logic/pet'
 import {loadColors} from '../../logic/color'
 import {loadBreeds} from '../../logic/breed'
-import {failureCallApi} from '../reducers/common'
+import {failureCallApi} from '../reducers/root'
 import {
   INITIALIZE_PET_FORM,
   successGetColors,

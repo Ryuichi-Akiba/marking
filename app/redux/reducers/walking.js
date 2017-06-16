@@ -1,5 +1,4 @@
-import moment from 'moment'
-import {Record} from "immutable"
+import {Record} from 'immutable'
 import {Animated} from 'react-native'
 import {createAction} from 'redux-actions'
 
@@ -22,10 +21,18 @@ export const cancelWalking = createAction(CANCEL_WALKING, (payload) => payload);
 // マーキングした場所をマークするために、マーカー情報を追加する
 export const ADD_MARKER = 'App/Walking/ADD_MARKER';
 export const addMarker = createAction(ADD_MARKER, (payload) => payload);
+// マーキングした場所を取得して、payloadに追加したものをステートに保存するアクション
+export const SUCCESS_ADD_MARKER = 'App/Walking/SUCCESS_ADD_MARKER';
+export const successAddMarker = createAction(SUCCESS_ADD_MARKER, (payload) => payload);
 
 // 散歩情報を記録するアクション
 export const SAVE = 'App/Walking/SAVE';
 export const save = createAction(SAVE, (payload) => convert(payload));
+
+// 現在地の取得ができなかった場合に実行するアクション
+export const FAILURE_GET_CURRENT_LOCATION = 'App/Walking/FAILURE_GET_CURRENT_LOCATION';
+export const failureGetCurrentLocation = createAction(FAILURE_GET_CURRENT_LOCATION, (payload) => payload);
+
 
 // APIに渡して保存できるようにコンバートする
 function convert(state) {
@@ -35,15 +42,16 @@ function convert(state) {
   // 複数ペットを散歩に連れ出しているので、それぞれマーキングイベントを作成
   var list = new Array();
   pets.forEach((p) => {
-    console.log(p);
     // [{petId, dateTime, eventType, geometry}]の形に変換
     var events = new Array();
     markers.forEach(m => {
       if (m.pet.id === p.id) {
-        events.push({petId:p.id, dateTime:m.time.toDate(), eventType:m.type, geometry:m.geometry});
+        // GEO JSON形式に変換
+        const coordinates = [m.coordinates.longitude, m.coordinates.latitude];
+        const geometry = {type:'Point', coordinates};
+        events.push({petId:p.id, dateTime:m.time.toDate(), eventType:m.type, geometry});
       }
     });
-    console.log(events);
 
     // [{petId, startDateTime, endDateTime, distance, memo, events}]の形に変換
     list.push({petId:p.id, startDateTime:startDateTime.toDate(), endDateTime:endDateTime.toDate(), distance, memo:null, events});
@@ -79,16 +87,6 @@ export function successGetCurrentLocation(payload) {
     payload: payload,
     meta: {},
     error: false
-  }
-}
-
-export const FAILURE_GET_CURRENT_LOCATION = 'FAILURE_GET_CURRENT_LOCATION';
-export function failureGetCurrentLocation(error) {
-  return {
-    type: FAILURE_GET_CURRENT_LOCATION,
-    payload: {},
-    meta: {error},
-    error: true
   }
 }
 
@@ -247,7 +245,11 @@ export const WalkingRecord = new Record({
   pets: [], // 散歩に連れて行ったペット
   markers: [], // 散歩中にマーキングしたマーカー
   distance: 0, // 散歩終了時に算出した移動距離
+
+  // トースターを出すために必要なフラグ類
   completed: false, // 散歩情報の記録に成功したか否かのフラグ
+  successAddMarker: false, // マーカーの追加に成功したか否かのフラグ
+  failureGetCurrentLocation: false, // 現在地の取得に失敗したか否かのフラグ
 
   region: {},
   watchId: null,
@@ -279,10 +281,14 @@ export function walkingReducer(state = new WalkingRecord(), action) {
       return state.set('markers', []);
 
     // マーカーを追加する
-    case ADD_MARKER:
+    case SUCCESS_ADD_MARKER:
       var markers = [].concat(state.get('markers'));
       markers.push(action.payload);
       return state.set('markers', markers);
+
+    // 現在地の取得に失敗した場合はフラグを立てる
+    case FAILURE_GET_CURRENT_LOCATION:
+      return state.set('failureGetCurrentLocation', true);
 
     // 散歩情報の記録に成功した場合に、ステートを変更する
     case SUCCESS_SAVE:

@@ -11,7 +11,6 @@ import Label from '../components/elements/Label'
 import Colors from '../themes/Colors'
 import * as walkingActions from '../redux/reducers/walking'
 import * as rootActions from '../redux/reducers/root'
-import * as commonActions from '../redux/reducers/common'
 
 class WalkingCompleteScene extends React.PureComponent {
   static propTypes = {
@@ -22,8 +21,6 @@ class WalkingCompleteScene extends React.PureComponent {
     walkingActions: React.PropTypes.object,
     rootState: React.PropTypes.object,
     rootActions: React.PropTypes.object,
-    commonState: React.PropTypes.object,
-    commonActions: React.PropTypes.object,
   };
 
   constructor(props) {
@@ -102,7 +99,6 @@ function mapStateToProps(state) {
   return {
     walkingState: state.walking,
     rootState: state.root,
-    commonState: state.common,
   };
 }
 
@@ -110,7 +106,6 @@ function mapDispatchToProps(dispatch) {
   return {
     walkingActions: bindActionCreators(Object.assign({}, walkingActions), dispatch),
     rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
-    commonActions: bindActionCreators(Object.assign({}, commonActions), dispatch),
   };
 }
 

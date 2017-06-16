@@ -1,6 +1,6 @@
 import {call, put, take} from 'redux-saga/effects'
 import {getPetsMarkingsByMonth} from '../../common/api/pets'
-import {failureCallApi} from '../../redux/reducers/common'
+import {failureCallApi} from '../../redux/reducers/root'
 import {
   GET_WALKING_TIMES,
   successGetWalkingTimes,
