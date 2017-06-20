@@ -28,7 +28,8 @@ class WalkingScene extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      recording: false, // 散歩記録中はTRUEになる
+      region: null, // 表示中のマップのリージョンを保持する
+      message: null, // 画面に表示するメッセージ
       selectedIndex: 0, // 選択中のペットのインデックス番号
       pooIcon: {}, // ImageSource形式のPOOアイコン
       peeIcon: {}, // ImageSource形式のPEEアイコン
@@ -36,50 +37,19 @@ class WalkingScene extends React.PureComponent {
   }
 
   componentWillMount() {
-    this.props.walkingActions.getCurrentLocation();
-    this.props.walkingActions.initWatchId();
-
     // 前の画面で選択したペットの１匹目を選択中の状態にする
     this.setState({selectedIndex:0});
+
     // 地図に描画するアイコンはImageSourceじゃないといけないので、後で使えるようにステートにロードしておく
     MAIcon.getImageSource('cloud', 24, Colors.amber).then((source) => this.setState({pooIcon:source}));
     MAIcon.getImageSource('opacity', 24, Colors.blue).then((source) => this.setState({peeIcon:source}));
   }
 
-  componentWillUnmount() {
-    this.props.walkingActions.clearLocationWatch({watchId: this.props.walkingState.watchId})
-  }
-
-  // うんちボタンを描画する
-  renderPooButton(pet) {
-    const handlePoo = () => {
-      if (pet && pet.id) {
-        // 現在地情報（coordinates）はAddMarkerした時に入るようになっている
-        this.props.walkingActions.addMarker({pet:pet, time:moment(), type:'POO', title:pet.name + '\'s POO'});
-      }
-    };
-
-    return (
-      <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
-        <Icon name="cloud" title="Poo" color={Colors.white} circle={true} backgroundColor={Colors.amber} onPress={handlePoo}/>
-      </View>
-    );
-  }
-
-  // おしっこボタンを描画する
-  renderPeeButton(pet) {
-    const handlePee = () => {
-      if (pet && pet.id) {
-        // 現在地情報（coordinates）はAddMarkerした時に入るようになっている
-        this.props.walkingActions.addMarker({pet:pet, time:moment(), type:'PEE', title:pet.name + '\'s PEE'});
-      }
-    };
-
-    return (
-      <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
-        <Icon name="opacity" title="Pee" color={Colors.white} circle={true} backgroundColor={Colors.lightBlue} onPress={handlePee}/>
-      </View>
-    );
+  componentWillReceiveProps(newProps) {
+    if (this.props.walkingState.successAddMarker !== newProps.walkingState.successAddMarker && !!newProps.walkingState.successAddMarker) {
+      this.props.rootActions.showMessage(this.state.message);
+      this.props.walkingActions.clear();
+    }
   }
 
   // 選択中のペットの情報を表示するエリアをレンダリングする
@@ -113,6 +83,7 @@ class WalkingScene extends React.PureComponent {
     );
   }
 
+  // 散歩用の地図を描画する
   renderMapView() {
     var markers = this.props.walkingState.markers.map((marker, index) => {
       var image = null;
@@ -138,10 +109,44 @@ class WalkingScene extends React.PureComponent {
                showsUserLocation={true}
                showsCompass={true}
                followsUserLocation={true}
-               region={this.props.walkingState.region}
-               onRegionChange={this.props.walkingActions.updateCurrentLocation}>
+               region={this.state.region}
+               onRegionChange={(region) => {this.setState({region});}}>
         {markers}
       </MapView>
+    );
+  }
+
+  // うんちボタンを描画する
+  renderPooButton(pet) {
+    const handlePoo = () => {
+      if (pet && pet.id) {
+        // 現在地情報（coordinates）はAddMarkerした時に入るようになっている
+        this.setState({message: pet.name + 'がうんちした場所をマーキングしました。'});
+        this.props.walkingActions.addMarker({pet:pet, time:moment(), type:'POO', title:pet.name + '\'s POO'});
+      }
+    };
+
+    return (
+      <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
+        <Icon name="cloud" title="Poo" color={Colors.white} circle={true} backgroundColor={Colors.amber} onPress={handlePoo}/>
+      </View>
+    );
+  }
+
+  // おしっこボタンを描画する
+  renderPeeButton(pet) {
+    const handlePee = () => {
+      if (pet && pet.id) {
+        // 現在地情報（coordinates）はAddMarkerした時に入るようになっている
+        this.setState({message: pet.name + 'がおしっこした場所をマーキングしました。'});
+        this.props.walkingActions.addMarker({pet:pet, time:moment(), type:'PEE', title:pet.name + '\'s PEE'});
+      }
+    };
+
+    return (
+      <View style={{flex:1, flexDirection:'column', alignItems:'center', justifyContent:'flex-end'}}>
+        <Icon name="opacity" title="Pee" color={Colors.white} circle={true} backgroundColor={Colors.lightBlue} onPress={handlePee}/>
+      </View>
     );
   }
 
@@ -172,7 +177,6 @@ class WalkingScene extends React.PureComponent {
           {this.renderPetView()}
           <View style={{position:'absolute', bottom:16, flexDirection:'row', backgroundColor:'transparent'}}>
             {this.renderPooButton(pet)}
-            {/*{this.renderStartButton()}*/}
             {this.renderPeeButton(pet)}
           </View>
         </View>

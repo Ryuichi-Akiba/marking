@@ -39,16 +39,17 @@ export function failureCallApi(error) {
 }
 
 // メッセージを表示するアクション
-export const SHOW_MESSAGE = 'App/Common/SHOW_MESSAGE';
+// @Deprecated
+export const SHOW_MESSAGE = 'App/Root/SHOW_MESSAGE';
 export const showMessage = createAction(SHOW_MESSAGE, (payload) => payload);
 
 // エラーメッセージを表示するアクション
-export const SHOW_ERRORS = 'App/Common/SHOW_ERRORS';
+export const SHOW_ERRORS = 'App/Root/SHOW_ERRORS';
 export const showErrors = createAction(SHOW_ERRORS, (payload) => payload);
 
 // エラーメッセージ等を全てクリアするアクション
-export const CLEAR_ERRORS = 'App/Common/CLEAR_ERRORS';
-export const clearErrors = createAction(CLEAR_ERRORS);
+export const CLEAR = 'App/Root/CLEAR';
+export const clear = createAction(CLEAR);
 
 
 // -------------------- Immutable State Model の定義 --------------------
@@ -96,7 +97,7 @@ export function rootReducer(state = new RootRecord(), action) {
       return state.set('errors', action.payload);
 
     // ストアが保持しているエラーをクリアする
-    case CLEAR_ERRORS:
+    case CLEAR:
       return state.set('errors', []).set('message', null);
 
     // エラーをステートに保存して他から使えるようにしておく

@@ -57,7 +57,7 @@ class RootScene extends React.PureComponent {
 
     // 共通ステートに処理成功情報が積み上げられたことを検知して、メッセージを表示する
     if (this.props.rootState.message !== nextProps.rootState.message) {
-      if (nextProps.rootState.message) {
+      if (!!nextProps.rootState.message) {
         const item = {type:'success', title:'', message:nextProps.rootState.message};
         this.showAlert(item);
       }
@@ -176,9 +176,10 @@ class RootScene extends React.PureComponent {
     );
   }
 
-  showAlert(item) {
+  showAlert(item, callback) {
     if (item.type == 'dismiss') {
       this.dropdown.onClose();
+      if (!!callback) callback();
     } else {
       this.dropdown.alertWithType(item.type, item.title, item.message);
     }
@@ -186,7 +187,7 @@ class RootScene extends React.PureComponent {
 
   onClose() {
     // エラーをクリアする
-    this.props.rootActions.clearErrors();
+    this.props.rootActions.clear();
   }
 }
 

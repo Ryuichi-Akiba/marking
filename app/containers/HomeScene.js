@@ -33,6 +33,8 @@ class HomeScene extends React.PureComponent {
     rootActions: React.PropTypes.object,
     menuState: React.PropTypes.object,
     menuActions: React.PropTypes.object,
+    // map from other route
+    message: React.PropTypes.object,
   };
 
   constructor(props) {
@@ -42,6 +44,11 @@ class HomeScene extends React.PureComponent {
   componentWillMount() {
     // 最初に必ず来るシーンのため、ルートにあるローディングを常時OFFにして始める
     this.props.rootActions.destroyLoadingScene();
+
+    // メッセージがセットされているのであれば、最初にそれを表示する
+    if (!!this.props.message) {
+      this.props.rootActions.showMessage(this.props.message.message);
+    }
   }
 
   renderPetList() {
