@@ -2,7 +2,7 @@ import moment from 'moment'
 import React from 'react'
 import {StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, Animated, Image, Platform} from 'react-native'
 import {bindActionCreators} from 'redux'
-import {connect} from "react-redux"
+import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import MarkingNavbar from '../components/common/MarkingNavbar'

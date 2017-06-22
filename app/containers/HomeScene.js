@@ -57,7 +57,7 @@ class HomeScene extends React.PureComponent {
       const handle = () => {
         this.props.navigator.push({name:'DetailScene', props:{pet, isNewWindow:true}});
       };
-      list.push(<List key={i} avatar={{uri:pet.image}} title={pet.name} chevron={true} onPress={handle}/>);
+      list.push(<List key={i} avatar={{uri:pet.image}} title={pet.name} subtitle={pet.type} chevron={true} onPress={handle}/>);
     });
     const title = list.length === 0 ? 'さあ、ペットを登録しましょう' : '飼育中のペット';
 

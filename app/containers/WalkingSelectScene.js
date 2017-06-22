@@ -76,7 +76,7 @@ class WalkingSelectScene extends React.PureComponent {
     const pets = this.state.pets;
     var list = [];
     pets.forEach((p, i) => {
-      list.push(<List key={i} avatar={{uri: p.image}} title={p.name} border={pets.length !== i + 1} switcher={true} onChangeSwitch={(v) => this.selectPet(v, p)} toggle={true}/>);
+      list.push(<List key={i} avatar={{uri: p.image}} title={p.name} subtitle={p.type} border={pets.length !== i + 1} switcher={true} onChangeSwitch={(v) => this.selectPet(v, p)} toggle={true}/>);
     });
 
     return (

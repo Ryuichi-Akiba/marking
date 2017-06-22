@@ -18,6 +18,7 @@ export default class List extends React.PureComponent {
     border: React.PropTypes.bool,
     chevron: React.PropTypes.bool,
     rightTitle: React.PropTypes.string,
+    bold: React.PropTypes.bool,
     style: React.PropTypes.object,
     toggle: React.PropTypes.bool,
     switcher: React.PropTypes.bool,
@@ -68,12 +69,12 @@ export default class List extends React.PureComponent {
 
     var sub = null;
     if (this.props.subtitle) {
-      sub = <Label color={Colors.gray} size="small" numberOfLines={this.props.titleLines} style={{marginTop:2}}>{this.props.subtitle}</Label>
+      sub = <Label color={Colors.gray} size="small" numberOfLines={this.props.titleLines} style={{marginTop:4}}>{this.props.subtitle}</Label>
     }
 
     return (
       <View style={style}>
-        <Label numberOfLines={this.props.titleLines}>{this.props.title}</Label>
+        <Label numberOfLines={this.props.titleLines} bold={this.props.bold}>{this.props.title}</Label>
         {sub}
       </View>
     );
@@ -113,7 +114,8 @@ export default class List extends React.PureComponent {
           this.props.onChangeSwitch(value);
         }
       };
-      return <Switch onValueChange={handler} value={this.state.trueSwitchIsOn} style={{marginTop:6, marginRight:8}} onTintColor={Colors.primary}/>;
+      const margin = !!this.props.subtitle ? 12 : 6;
+      return <Switch onValueChange={handler} value={this.state.trueSwitchIsOn} style={{marginTop:margin, marginRight:margin}} onTintColor={Colors.primary}/>;
     }
     return null;
   }
@@ -131,10 +133,10 @@ export default class List extends React.PureComponent {
 
   render() {
     const border = !!this.props.border ? 0.5 : 0;
+    const icon = !!this.props.icon || !!this.props.avatar ? this.renderIconContainer() : null;
     const component = (
       <View style={[{flex:1, flexDirection:'row'}, this.props.style]}>
-        {this.renderIconContainer()}
-
+        {icon}
         <View style={{flex:1, flexDirection:'row', borderBottomWidth:border, borderBottomColor:Colors.borderColor, paddingRight:8}}>
           {this.renderTitleContainer()}
           {this.renderRightContent()}

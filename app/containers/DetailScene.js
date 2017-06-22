@@ -300,9 +300,9 @@ class DetailScene extends React.PureComponent {
     return (
       <Tabs tabBarStyle={{backgroundColor:Colors.white}}>
         {this.renderTab('health', '記録', 'history', healthView)}
-        {this.renderTab('walking', 'お散歩', 'directions-walk', walkingView)}
+        {/*{this.renderTab('walking', 'お散歩', 'directions-walk', walkingView)}*/}
         {this.renderTab('chart', '分析', 'trending-up', chartView)}
-        {this.renderTab('others', 'その他', 'more-horiz', otherView)}
+        {/*{this.renderTab('others', 'その他', 'more-horiz', otherView)}*/}
       </Tabs>
     );
   }
