@@ -10,7 +10,7 @@ import Colors from '../../themes/Colors'
 // FIXME 全体の共通定数にしたほうが良いかも
 const days = ['日', '月', '火', '水', '木', '金', '土'];
 
-export default class HealthView extends React.PureComponent {
+export default class DetailHistoryView extends React.PureComponent {
   static propTypes = {
     navigator: React.PropTypes.object.isRequired,
     pet:       React.PropTypes.object.isRequired,
@@ -80,7 +80,7 @@ export default class HealthView extends React.PureComponent {
 
     return (
       <View style={{backgroundColor:Colors.white}}>
-        <MarkingNavbar left={left}/>
+        <MarkingNavbar title={this.props.pet.name} left={left}/>
         <ScrollView style={{paddingLeft:16, paddingRight:16}}>
           <View style={{alignItems:'center'}}>
             <Label size="large" bold={true} color={Colors.gray} numberOfLines={1}>{this.props.pet.name}</Label>

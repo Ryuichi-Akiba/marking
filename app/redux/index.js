@@ -3,7 +3,7 @@ import {reducer as formReducer} from 'redux-form'
 import {rootReducer} from './reducers/root'
 import {loginReducer} from './reducers/login'
 import {menuReducer} from './reducers/sidemenu'
-import {addMyPetForm} from './reducers/addMyPetForm'
+import {petForm} from './reducers/form'
 import {detailReducer} from './reducers/detail'
 import {graphReducer} from './reducers/graph'
 import {walkingReducer} from './reducers/walking'
@@ -15,7 +15,7 @@ export default combineReducers({
   root: rootReducer,
   login: loginReducer,
   menu: menuReducer,
-  addMyPetForm,
+  petForm: petForm,
   detail: detailReducer,
   graph: graphReducer,
   walking: walkingReducer,

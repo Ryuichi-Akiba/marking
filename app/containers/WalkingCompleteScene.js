@@ -33,7 +33,7 @@ class WalkingCompleteScene extends React.PureComponent {
       if (!!newProps.walkingState.completed) {
         // 画面ブロックを解除して画面遷移する
         this.props.rootActions.unblockScene();
-        this.props.navigator.replace({name:'HomeScene', props:{message:{type:'info', message:'今日の散歩情報を保存しました。'}}});
+        this.props.navigator.replace({name:'HomeScene', props:{message:'今日の散歩情報を保存しました。'}});
       }
     }
   }

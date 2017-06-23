@@ -9,7 +9,7 @@ import {
 } from './login'
 import {
   handleInitializeMenuContainer,
-  handleSuccessReloadMyPets,
+  // handleSuccessReloadMyPets,
 } from './sidemenu'
 import {
   handleInitializePetFormForColors,
@@ -18,11 +18,11 @@ import {
   handleAddMyPet,
   handleSuccessUploadMyPet,
   handleSuccessPostMyPet,
-  handleArchivePet,
-  handleSuccessArchivePet,
-} from './addMyPetForm'
+} from './form'
 import {
   handleInitializePetDetailScene,
+  handleArchivePet,
+  handleSuccessArchivePet,
 } from './detail'
 import {
   handleGetPetsMarkingByMonth,
@@ -42,7 +42,7 @@ export default function* sagas() {
   yield fork(handleLogout);
   // SIDE MENU SCENE
   yield fork(handleInitializeMenuContainer);
-  yield fork(handleSuccessReloadMyPets);
+  // yield fork(handleSuccessReloadMyPets);
   // PET FORM SCENE
   yield fork(handleInitializePetFormForColors);
   yield fork(handleInitializePetFormForBreeds);
@@ -50,10 +50,10 @@ export default function* sagas() {
   yield fork(handleAddMyPet);
   yield fork(handleSuccessUploadMyPet);
   yield fork(handleSuccessPostMyPet);
-  yield fork(handleArchivePet);
-  yield fork(handleSuccessArchivePet);
   // PET DETAIL SCENE
   yield fork(handleInitializePetDetailScene);
+  yield fork(handleArchivePet);
+  yield fork(handleSuccessArchivePet);
   yield fork(handleGetPetsMarkingByMonth);
   // WALKING SCENE
   yield fork(handleAddMarker);

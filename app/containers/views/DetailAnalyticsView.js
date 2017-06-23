@@ -10,7 +10,7 @@ import Label from '../../components/elements/Label'
 import Badge from '../../components/elements/Badge'
 import Colors from '../../themes/Colors'
 
-export default class ChartView extends React.PureComponent {
+export default class DetailAnalyticsView extends React.PureComponent {
   static propTypes = {
     navigator: React.PropTypes.object.isRequired,
     pet: React.PropTypes.object.isRequired,

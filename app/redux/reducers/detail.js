@@ -29,11 +29,31 @@ export function findNewMarkings(params, dates) {
 export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
 export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
 
+// ========== アーカイブに使用する一連のアクション
+// ペットをアーカイブするアクション
+export const ARCHIVE_PET = 'App/PetDetail/ARCHIVE_PET';
+export const archivePet = createAction(ARCHIVE_PET, (payload) => payload);
+// ペットのアーカイブに成功した場合のアクション
+export const SUCCESS_ARCHIVE_PET = 'App/PetDetail/SUCCESS_ARCHIVE_PET';
+export const successArchivePet = createAction(SUCCESS_ARCHIVE_PET);
+// キャッシュをクリアするために、データの変更があった時にペットの情報のリロードに成功した時のアクション
+export const SUCCESS_RELOAD_MY_PETS = 'App/PetDetail/SUCCESS_RELOAD_MY_PETS';
+export const successReloadMyPets = createAction(SUCCESS_RELOAD_MY_PETS, (payload) => payload);
+
+// ========== 横断的に使用する一連のアクション
+// ペット詳細のステートを元の状態に戻すアクション
+export const CLEAR = 'App/PetDetail/CLEAR';
+export const clear = createAction(CLEAR, (payload) => payload);
+
+
 // -------------------- Immutable State Model の定義 --------------------
 export const DetailRecord = new Record({
   // 日付をキーに取得できるようにマップ形式にする
   date: new Date(), // 初期値設定しておく
   markings: [], // 初期値設定しておく
+
+  // ペットのアーカイブ処理に成功したかを示すフラグ
+  archived: false,
 });
 
 // マーキングマップに取得したデータを積み上げる
@@ -50,6 +70,7 @@ function mergeMarkersMap(map, array) {
   return map;
 }
 
+
 // -------------------- Reducer の定義 --------------------
 export function detailReducer(state = new DetailRecord(), action) {
   switch (action.type) {
@@ -60,6 +81,14 @@ export function detailReducer(state = new DetailRecord(), action) {
     // 取得した日付のマーキング情報を取得してステートにセットする
     case SUCCESS_GET_MARKINGS:
       return state.set('markings', action.payload);
+
+    // ペットのアーカイブに成功した場合にフラグを変更する（最新リロードまでが完了してからフラグを更新する）
+    case SUCCESS_RELOAD_MY_PETS:
+      return state.set('archived', true);
+
+    // ステートをクリアして元の状態に戻す
+    case CLEAR:
+      return state.set('archived', false);
 
     default:
       return state;

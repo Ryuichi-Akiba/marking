@@ -34,7 +34,7 @@ class HomeScene extends React.PureComponent {
     menuState: React.PropTypes.object,
     menuActions: React.PropTypes.object,
     // map from other route
-    message: React.PropTypes.object,
+    message: React.PropTypes.string,
   };
 
   constructor(props) {
@@ -47,19 +47,20 @@ class HomeScene extends React.PureComponent {
 
     // メッセージがセットされているのであれば、最初にそれを表示する
     if (!!this.props.message) {
-      this.props.rootActions.showMessage(this.props.message.message);
+      this.props.rootActions.showMessage(this.props.message);
     }
   }
 
   renderPetList() {
-    var list = [];
-    this.props.menuState.pets.forEach((pet, i) => {
-      const handle = () => {
-        this.props.navigator.push({name:'DetailScene', props:{pet, isNewWindow:true}});
-      };
-      list.push(<List key={i} avatar={{uri:pet.image}} title={pet.name} subtitle={pet.type} chevron={true} onPress={handle}/>);
-    });
-    const title = list.length === 0 ? 'さあ、ペットを登録しましょう' : '飼育中のペット';
+    const list = this.props.menuState.pets
+      .filter((pet) => pet.dead !== '1') // 死亡していないペットのみを表示する
+      .map((pet, i) => {
+        const handle = () => {
+          this.props.navigator.push({name:'DetailScene', props:{pet, isNewWindow:true}});
+        };
+        return <List key={i} avatar={{uri:pet.image}} title={pet.name} subtitle={pet.type} chevron={true} onPress={handle}/>;
+      });
+    const title = list.length === 0 ? 'さあ、ペットを登録しよう！' : '飼育中のペット';
 
     return (
       <ListGroup title={title}>
@@ -95,11 +96,11 @@ class HomeScene extends React.PureComponent {
               {this.renderPanel('public', 'スポット', Colors.blue, () => this.props.navigator.replace({name:'SpotScene'}))}
             </View>
           </View>
-          <View style={{flex:0.5}}>
+          <View style={{flex:0.5, marginBottom:40}}>
             {this.renderPetList()}
-            <ListGroup title="ペットたちとの思い出" style={{marginBottom:80}}>
-              <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" chevron={true} border={false} onPress={() => this.props.navigator.replace({name:'ArchivesScene'})}/>
-            </ListGroup>
+            {/*<ListGroup title="ペットたちとの思い出" style={{marginBottom:80}}>*/}
+              {/*<List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" chevron={true} border={false} onPress={() => this.props.navigator.replace({name:'ArchivesScene'})}/>*/}
+            {/*</ListGroup>*/}
           </View>
         </ScrollViewContainer>
       </View>
