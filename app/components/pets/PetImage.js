@@ -14,9 +14,6 @@ export default class PetImage extends React.PureComponent {
     molecule: React.PropTypes.number,
   };
 
-  static defaultProp = {
-  };
-
   constructor(props) {
     super(props);
   }
@@ -25,7 +22,7 @@ export default class PetImage extends React.PureComponent {
     let data = [{
       'name': 'total',
       "population": this.props.molecule,
-      "color": {'r':3, 'g':169, 'b':244},
+      "color": {'r':240, 'g':98, 'b':146},
     }, {
       'name': 'minus',
       "population": this.props.denominator - this.props.molecule,
@@ -55,6 +52,7 @@ export default class PetImage extends React.PureComponent {
     }
     return null;
   }
+
   renderImage() {
     if (this.props.source || this.props.name) {
       return (
@@ -74,7 +72,7 @@ export default class PetImage extends React.PureComponent {
 
   render() {
     return (
-      <View style={[{alignItems:'center', justifyContent:'center', paddingTop:32, paddingBottom:32}, this.props.style]}>
+      <View style={[{alignItems:'center', justifyContent:'center', paddingTop:24, paddingBottom:24}, this.props.style]}>
         {this.renderImage()}
       </View>
     );

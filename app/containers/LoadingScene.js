@@ -36,10 +36,10 @@ class LoadingScene extends React.PureComponent {
   render() {
     if (this.props.rootState.isBlocking) {
       return (
-        <View style={[styles.container, {backgroundColor:'rgba(255,255,255,0.5)'}]}>
-          <View style={{justifyContent:'center', alignItems:'center', backgroundColor:'rgba(0,0,0,0.5)', borderRadius:8, paddingTop:16, paddingBottom:16, paddingRight:24, paddingLeft:24}}>
-            <ActivityIndicator color={Colors.white} size="large"/>
-            <Label color={Colors.white} size="small" style={{marginTop:8}}>Loading..</Label>
+        <View style={[styles.container, {backgroundColor:'rgba(255,255,255,0.75)'}]}>
+          <View style={{justifyContent:'center', alignItems:'center'}}>
+            <ActivityIndicator color={Colors.primary}/>
+            <Label color={Colors.primary} size="small" style={{marginTop:16}}>Loading...</Label>
           </View>
         </View>
       );

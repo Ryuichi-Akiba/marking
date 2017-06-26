@@ -1,26 +1,28 @@
 import {call, put, take} from 'redux-saga/effects'
 import {deleleMePets} from '../../common/api/me'
-import {getPetsMarkings} from '../../common/api/pets'
+import {getPetsWalkings} from '../../common/api/pets'
 import {loadMyPets} from '../../logic/pet'
 import {failureCallApi} from '../../redux/reducers/root'
 import {
   INITIALIZE_PET_DETAIL_SCENE,
-  successGetMarkings,
+  successGetWalkings,
   ARCHIVE_PET,
   SUCCESS_ARCHIVE_PET,
   successArchivePet,
   successReloadMyPets,
 } from '../reducers/detail'
 
-// INITIALIZE_PET_DETAIL_SCENEをフックして、指定日付のペットのマーキング情報を取得する
+/**
+ * ペット詳細情報を表示する際（PetDetail#INITIALIZE_PET_DETAIL_SCENE）、指定された日のペットの散歩情報を取得する.
+ */
 export function* handleInitializePetDetailScene() {
   while (true) {
     const action: object = yield take(INITIALIZE_PET_DETAIL_SCENE);
     const petId: string = action.payload.pet.id;
     const date: Date = action.payload.date;
-    const {payload, error} = yield call(getPetsMarkings, petId, date.getFullYear(), date.getMonth() + 1, date.getDate());
+    const {payload, error} = yield call(getPetsWalkings, petId, date.getFullYear(), date.getMonth() + 1, date.getDate());
     if (payload && !error) {
-      yield put(successGetMarkings(payload));
+      yield put(successGetWalkings(payload));
     } else {
       yield put(failureCallApi(error));
     }

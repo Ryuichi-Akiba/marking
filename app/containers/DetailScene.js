@@ -1,4 +1,3 @@
-import moment from 'moment'
 import React from 'react'
 import {Navigator, StyleSheet, View, ScrollView, Image, TouchableHighlight, Dimensions, Alert, Text} from 'react-native'
 import {bindActionCreators} from 'redux'
@@ -17,18 +16,19 @@ const window = Dimensions.get('window');
 class DetailScene extends React.PureComponent {
   static propTypes = {
     // map from route navigation
-    navigator: React.PropTypes.object.isRequired,
+    navigator:     React.PropTypes.object.isRequired,
     // map from other scene
-    pet: React.PropTypes.object.isRequired,
-    initial: React.PropTypes.string, // 初期表示するビュー名
+    pet:           React.PropTypes.object.isRequired,
+    initial:       React.PropTypes.string, // 初期表示するビュー名
     // map from react-redux
-    rootState: React.PropTypes.object,
-    rootActions: React.PropTypes.object,
-    detailState: React.PropTypes.object,
+    rootState:     React.PropTypes.object,
+    rootActions:   React.PropTypes.object,
+    detailState:   React.PropTypes.object,
     detailActions: React.PropTypes.object,
   };
 
   static defaultProps = {
+    // 初期表示ビューは履歴画面にしておく
     initial: 'history',
   };
 
@@ -37,12 +37,12 @@ class DetailScene extends React.PureComponent {
     this.state = {selected:this.props.initial, pet:props.pet, markers:[], distance:0, poo:0, pee:0};
   };
 
-  // 初回ロード時に呼び出され、ペットのマーキング情報を取得する
+  /**
+   * 初回ロード時に呼び出され、ペットのマーキング情報を取得する
+   */
   componentDidMount() {
     // 初期表示のタブ（ヘルスケアのビュー）に表示するデータを取得する
-    const pet = this.props.pet;
-    const date = new Date();
-    this.props.detailActions.initialize({pet, date});
+    this.reload(this.props.pet, new Date());
   }
 
   /**
@@ -53,10 +53,23 @@ class DetailScene extends React.PureComponent {
     // アーカイブ処理された場合にトースターを表示する待ち受け処理
     if (this.props.detailState.archived !== newProps.detailState.archived) {
       if (newProps.detailState.archived) {
-        newProps.detailActions.clear(); // ステートを元の状態に戻す
-        newProps.navigator.replace({name:'HomeScene', props:{message: newProps.pet.name + 'をアーカイブしました。'}});
+        this.props.detailActions.clear(); // ステートを元の状態に戻す
+        this.props.navigator.replace({name:'HomeScene', props:{message: newProps.pet.name + 'をアーカイブしました。'}});
       }
     }
+
+    // 散歩情報の取得に成功した時にブロックを解除する待ち受け処理
+    if (this.props.detailState.successGetWalkings !== newProps.detailState.successGetWalkings) {
+      if (newProps.detailState.successGetWalkings) {
+        this.props.detailActions.clear(); // ステートを元の状態に戻す
+        this.props.rootActions.unblockScene();
+      }
+    }
+  }
+
+  reload(pet, date) {
+    this.props.rootActions.blockScene();
+    this.props.detailActions.initialize({pet, date});
   }
 
   changeTab (selected) {
@@ -78,20 +91,15 @@ class DetailScene extends React.PureComponent {
     );
   }
 
-  reload(pet, date) {
-    this.props.rootActions.blockScene();
-    this.props.detailActions.initialize({pet, date});
-  }
-
   render() {
-    const {date, markings} = this.props.detailState;
+    const {date, walkings} = this.props.detailState;
     return (
       <Tabs tabBarStyle={{backgroundColor:Colors.white}}>
         {this.renderTab(
           'history',
           '記録',
           'history',
-          <DetailHistoryView navigator={this.props.navigator} date={date} pet={this.props.pet} markings={markings} onReload={this.reload.bind(this)}/>
+          <DetailHistoryView navigator={this.props.navigator} date={date} pet={this.props.pet} walkings={walkings} onReload={this.reload.bind(this)}/>
         )}
         {this.renderTab(
           'analytics',
