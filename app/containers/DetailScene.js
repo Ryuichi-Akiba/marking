@@ -93,6 +93,7 @@ class DetailScene extends React.PureComponent {
 
   render() {
     const {date, walkings} = this.props.detailState;
+    console.log(JSON.stringify(walkings));
     return (
       <Tabs tabBarStyle={{backgroundColor:Colors.white}}>
         {this.renderTab(

@@ -13,6 +13,7 @@ export const SUCCESS_GET_WALKINGS = 'App/PetDetail/SUCCESS_GET_WALKINGS';
 export const successGetWalkings = createAction(SUCCESS_GET_WALKINGS);
 
 // マーキング情報を取得するアクション（既に読み込み済みの場合は読み込まない）
+//@deprecated
 export function findNewMarkings(params, dates) {
   if (params.refresh || !dates)
     return initialize(params);
@@ -28,6 +29,13 @@ export function findNewMarkings(params, dates) {
 // 既に該当するマーキング情報がある場合のアクション
 export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
 export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
+
+//
+export const GET_MONTHLY_WALKINGS = 'App/PetDetail/GET_MONTHLY_WALKINGS';
+export const getMonthlyWalkings = createAction(GET_MONTHLY_WALKINGS);
+//
+export const SUCCESS_GET_MONTHLY_WALKINGS = 'App/PetDetail/SUCCESS_GET_MONTHLY_WALKINGS';
+export const successGetMonthlyWalkings = createAction(SUCCESS_GET_MONTHLY_WALKINGS);
 
 // ========== アーカイブに使用する一連のアクション
 // ペットをアーカイブするアクション
@@ -53,8 +61,10 @@ export const DetailRecord = new Record({
 
   // 散歩情報
   walkings: [],
+  monthly: [],
   // 散歩情報の取得に成功した場合のフラグ
   successGetWalkings: false,
+  successGetMonthlyWalkings: false,
 
   // ペットのアーカイブ処理に成功したかを示すフラグ
   archived: false,
@@ -85,6 +95,9 @@ export function detailReducer(state = new DetailRecord(), action) {
     // 指定日の散歩情報をステートに保存する
     case SUCCESS_GET_WALKINGS:
       return state.set('walkings', action.payload).set('successGetWalkings', true);
+    // 指定月の散歩情報をステートに保存する
+    case SUCCESS_GET_MONTHLY_WALKINGS:
+      return state.set('monthly', action.payload).set('successGetMonthlyWalkings', true);
 
     // ペットのアーカイブに成功した場合にフラグを変更する（最新リロードまでが完了してからフラグを更新する）
     case SUCCESS_RELOAD_MY_PETS:
@@ -92,7 +105,7 @@ export function detailReducer(state = new DetailRecord(), action) {
 
     // ステートをクリアして元の状態に戻す
     case CLEAR:
-      return state.set('archived', false).set('successGetWalkings', false);
+      return state.set('archived', false).set('successGetWalkings', false).set('successGetMonthlyWalkings', false);
 
     default:
       return state;

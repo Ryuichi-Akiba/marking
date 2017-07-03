@@ -21,12 +21,10 @@ import {
 } from './form'
 import {
   handleInitializePetDetailScene,
+  handleGetMonthlyWalkings,
   handleArchivePet,
   handleSuccessArchivePet,
 } from './detail'
-import {
-  handleGetPetsMarkingByMonth,
-} from './graph'
 import {
   handleAddMarker,
   handleSaveWalking,
@@ -52,9 +50,9 @@ export default function* sagas() {
   yield fork(handleSuccessPostMyPet);
   // PET DETAIL SCENE
   yield fork(handleInitializePetDetailScene);
+  yield fork(handleGetMonthlyWalkings);
   yield fork(handleArchivePet);
   yield fork(handleSuccessArchivePet);
-  yield fork(handleGetPetsMarkingByMonth);
   // WALKING SCENE
   yield fork(handleAddMarker);
   yield fork(handleSaveWalking);

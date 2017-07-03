@@ -1,11 +1,13 @@
 import {call, put, take} from 'redux-saga/effects'
 import {deleleMePets} from '../../common/api/me'
-import {getPetsWalkings} from '../../common/api/pets'
+import {getPetsWalkings, getPetsWalkingsByMonth} from '../../common/api/pets'
 import {loadMyPets} from '../../logic/pet'
 import {failureCallApi} from '../../redux/reducers/root'
 import {
   INITIALIZE_PET_DETAIL_SCENE,
   successGetWalkings,
+  GET_MONTHLY_WALKINGS,
+  successGetMonthlyWalkings,
   ARCHIVE_PET,
   SUCCESS_ARCHIVE_PET,
   successArchivePet,
@@ -23,6 +25,20 @@ export function* handleInitializePetDetailScene() {
     const {payload, error} = yield call(getPetsWalkings, petId, date.getFullYear(), date.getMonth() + 1, date.getDate());
     if (payload && !error) {
       yield put(successGetWalkings(payload));
+    } else {
+      yield put(failureCallApi(error));
+    }
+  }
+}
+
+export function* handleGetMonthlyWalkings() {
+  while (true) {
+    const action: object = yield take(GET_MONTHLY_WALKINGS);
+    const petId: string = action.payload.pet.id;
+    const date: Date = action.payload.date;
+    const {payload, error} = yield call(getPetsWalkingsByMonth, petId, date.getFullYear(), date.getMonth() + 1);
+    if (payload && !error) {
+      yield put(successGetMonthlyWalkings(payload));
     } else {
       yield put(failureCallApi(error));
     }

@@ -39,7 +39,7 @@ export default class Avatar extends React.PureComponent {
   }
 
   render() {
-    const size = this.props.size === 'large' ? 128 : this.props.size === 'small' ? 24 : 48;
+    const size = this.props.size === 'large' ? 96 : this.props.size === 'small' ? 24 : 48;
     const minus = this.props.size === 'large' ? 8 : this.props.size === 'small' ? 2 : 4;
 
     var component = null;

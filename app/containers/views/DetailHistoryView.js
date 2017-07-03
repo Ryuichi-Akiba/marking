@@ -33,11 +33,11 @@ export default class DetailHistoryView extends React.PureComponent {
     return (
       <View style={{flex:1, flexDirection:'row', padding:16, borderRadius:32, marginBottom:8, borderWidth:1, borderColor:Colors.borderColor}}>
         <View style={{flex:1}}>
-          <Label color={Colors.gray} bold={true}>{title}</Label>
+          <Label color={Colors.text} bold={true}>{title}</Label>
         </View>
         <View style={{flex:1, flexDirection:'row', alignItems:'flex-end', justifyContent:'flex-end'}}>
           <Label color={Colors.gray} bold={true} size="xl" style={{marginRight:8}}>{value}</Label>
-          <Label color={Colors.gray}>{unit}</Label>
+          <Label color={Colors.text}>{unit}</Label>
         </View>
       </View>
     );

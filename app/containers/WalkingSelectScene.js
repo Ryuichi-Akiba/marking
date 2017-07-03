@@ -33,7 +33,8 @@ class WalkingSelectScene extends React.PureComponent {
 
   // 既に共通的に取得していたペットを自分のステートにセットする（散歩開始時にReducerのステートに移される）
   componentWillMount() {
-    const pets = this.props.menuState.pets;
+    const pets = this.props.menuState.pets
+        .filter((p) => p.dead !== '1'); // 死亡していないペットのみを表示する
     this.setState({pets:pets});
     this.props.walkingActions.replacePets(pets);
   }
@@ -74,10 +75,11 @@ class WalkingSelectScene extends React.PureComponent {
   // 散歩に連れて行くペットの一覧を描画する
   renderPetList() {
     const pets = this.state.pets;
-    var list = [];
-    pets.forEach((p, i) => {
-      list.push(<List key={i} avatar={{uri: p.image}} title={p.name} subtitle={p.type} border={pets.length !== i + 1} switcher={true} onChangeSwitch={(v) => this.selectPet(v, p)} toggle={true}/>);
-    });
+    const list = this.state.pets
+      .filter((p) => p.dead !== '1') // 死亡していないペットのみを表示する
+      .map((p, i) => {
+        return <List key={i} avatar={{uri: p.image}} title={p.name} subtitle={p.type} border={pets.length !== i + 1} switcher={true} onChangeSwitch={(v) => this.selectPet(v, p)} toggle={true}/>;
+      });
 
     return (
       <ListGroup title="一緒にお散歩するペット">

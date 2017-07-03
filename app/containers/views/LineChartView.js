@@ -1,52 +1,80 @@
 import moment from 'moment'
 import React from "react"
 import {StyleSheet, Text, View, ScrollView, Button, Image, Dimensions, TouchableOpacity, Linking} from "react-native"
-import {bindActionCreators} from 'redux'
-import {connect} from "react-redux"
 import Chart from 'react-native-chart'
-import {Bar} from 'react-native-pathjs-charts'
-import MarkingNavbar from '../components/common/MarkingNavbar'
-import * as rootActions from '../redux/reducers/root'
-import * as graphActions from '../redux/reducers/graph'
-import Colors from '../themes/Colors'
+import {Bar, SmoothLine} from 'react-native-pathjs-charts'
+import Colors from '../../themes/Colors'
 
-const window = Dimensions.get('window');
-class BarGraphScene extends React.PureComponent {
+const {height, width} = Dimensions.get('window');
+
+export default class LineChartView extends React.PureComponent {
   static propTypes = {
     // map from root scene
-    navigator: React.PropTypes.object.isRequired,
     type: React.PropTypes.string.isRequired,
     pet: React.PropTypes.object.isRequired,
-    // map from redux
-    rootState: React.PropTypes.object,
-    rootActions: React.PropTypes.object,
-    graphState: React.PropTypes.object,
-    graphActions: React.PropTypes.object,
+    data: React.PropTypes.array.isRequired,
   };
 
   constructor(props) {
     super(props);
   }
 
-  shouldComponentUpdate() {
-    return false;
-  }
-
-  componentDidMount() {
-    this.props.graphActions.getWalkingTimes({pet:this.props.pet, date:new Date()});
-  }
-
-  renderLeftButton() {
-    return {icon:'arrow-back', handler:() => this.props.navigator.pop()};
-  }
-
   render() {
-    switch (this.props.type) {
-      case 'WalkingTime':
-        return this.renderWalkingTimeGraph();
-      default:
-        return <View></View>;
-    }
+    const data = this.props.data;
+    console.log(data);
+
+    const options = {
+      color: Colors.primary,
+      width: width - 48,
+      height: height / 2,
+      margin: {
+        top: 16,
+        left: 32,
+        bottom: 16,
+        right: 16,
+      },
+      animate: {
+        type: 'delayed',
+        duration: 200
+      },
+      axisX: {
+        color: Colors.gray,
+        gridColor: Colors.backgroundColor,
+        showAxis: true,
+        showLines: true,
+        showLabels: true,
+        showTicks: true,
+        zeroAxis: false,
+        orient: 'bottom',
+        label: {
+          fontFamily: 'Arial',
+          fontSize: 10,
+          fontWeight: true,
+          fill: Colors.gray
+        }
+      },
+      axisY: {
+        color: Colors.gray,
+        gridColor: Colors.backgroundColor,
+        showAxis: true,
+        showLines: true,
+        showLabels: true,
+        showTicks: true,
+        zeroAxis: false,
+        orient: 'left',
+        label: {
+          fontFamily: 'Arial',
+          fontSize: 10,
+          fill: Colors.gray
+        }
+      },
+    };
+
+    return (
+      <View style={{flex:1}}>
+        <SmoothLine data={data} options={options} xKey="x" yKey="y"/>
+      </View>
+    )
   }
 
   getWalkingTimeGraphData() {
@@ -84,6 +112,12 @@ class BarGraphScene extends React.PureComponent {
       timeData.push([key.format('MM/DD'), 0]);
     }
 
+    var timeData2 = new Array();
+    for (var i = 1; i <= moment().daysInMonth(); i++) {
+      var key = moment().date(i);
+      timeData2.push([key.format('MM/DD'), 2]);
+    }
+
     // timeMap.keySeq().toArray().forEach((key) => {
     //   timeData.push({'name':key, 'v':timeMap.get(key)});
     // });
@@ -98,8 +132,9 @@ class BarGraphScene extends React.PureComponent {
     // graph.push({"v": 22, "name":"apple"});
     // graph.push({"v": 30, "name":"apple"});
     data.push(timeData);
+    data.push(timeData2);
     console.log(data);
-    return timeData;
+    return data;
   }
 
   getWalkingTimeGraphData2() {
@@ -129,9 +164,10 @@ class BarGraphScene extends React.PureComponent {
   }
 
   transformXAxis(x) {
-    var v = x.replace('/', '');
-    const i = parseInt(v, 10);
-    return i % 5 === 0 ? x : '';
+    // var v = x.replace('/', '');
+    // const i = parseInt(v, 10);
+    // return i % 5 === 0 ? x : '';
+    return x;
   }
 
   renderWalkingTimeGraph() {
@@ -197,48 +233,22 @@ class BarGraphScene extends React.PureComponent {
     ];
     return (
       <View style={{flex:1}}>
-        <MarkingNavbar title="お散歩時間・距離" left={this.renderLeftButton()}/>
-        <ScrollView style={{flex:1, backgroundColor:Colors.white}}>
-          <View style={{flex:1}}>
-            <Chart
-              style={{width:window.width - 32, height:200}}
-              xAxisHeight={32}
-              xAxisTransform={(axis) => this.transformXAxis(axis)}
-              yAxisWidth={32}
-              yAxisShortLabel={true}
-              yAxisUseDecimal={true}
-              showGrid={false}
-              data={this.getWalkingTimeGraphData1()}
-              type="bar"
-              showDataPoint={true}
-              color={Colors.lightGreen}
-              axisColor={Colors.gray}
-              axisLabelColor={Colors.gray}
-            />
-          </View>
-          <View style={{flex:1}}>
-          </View>
-        </ScrollView>
+        <Chart
+          style={{width:window.width - 32, height:200}}
+          xAxisHeight={32}
+          xAxisTransform={(axis) => this.transformXAxis(axis)}
+          yAxisWidth={32}
+          yAxisShortLabel={true}
+          yAxisUseDecimal={true}
+          showGrid={false}
+          data={this.getWalkingTimeGraphData1()}
+          type="line"
+          showDataPoint={true}
+          color={Colors.lightGreen}
+          axisColor={Colors.gray}
+          axisLabelColor={Colors.gray}
+        />
       </View>
     );
   }
 }
-
-function mapStateToProps(state) {
-  return {
-    rootState: state.root,
-    graphState: state.graph,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
-    graphActions: bindActionCreators(Object.assign({}, graphActions), dispatch),
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BarGraphScene);
