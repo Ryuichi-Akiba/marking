@@ -17,7 +17,6 @@ import MarkingScene from './MarkingScene'
 import SpotScene from './SpotScene'
 import PetFormScene from './PetFormScene'
 import DetailScene from './DetailScene'
-import BarGraphScene from './BarGraphScene'
 import SettingsScene from './SettingsScene'
 import ArchivesScene from './ArchivesScene'
 import SelectableListViewScene from '../components/forms/SelectableListViewScene'
@@ -113,9 +112,6 @@ class RootScene extends React.PureComponent {
     }
     if (route.name === 'SelectableListViewScene') {
       return <SelectableListViewScene navigator={navigator} {...route.props}/>;
-    }
-    if (route.name === 'BarGraphScene') {
-      return this.wrap(<BarGraphScene navigator={navigator} {...route.props}/>);
     }
     if (route.name === 'WalkingScene') {
       main = this.wrap(<WalkingScene navigator={navigator} {...route.props}/>);

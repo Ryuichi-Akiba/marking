@@ -3,6 +3,7 @@ import React from 'react'
 import {Navigator, StyleSheet, Text, View, ScrollView, Button, Image, Dimensions, TouchableOpacity, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import Carousel from 'react-native-looped-carousel'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import * as rootActions from '../../redux/reducers/root'
 import * as detailActions from '../../redux/reducers/detail'
@@ -12,9 +13,10 @@ import ListGroup from '../../components/elements/ListGroup'
 import List from '../../components/elements/List'
 import Label from '../../components/elements/Label'
 import Badge from '../../components/elements/Badge'
-import LineChartView from '../views/LineChartView'
+import ChartView from './ChartView'
 import Colors from '../../themes/Colors'
 
+const { width, height } = Dimensions.get('window');
 class DetailAnalyticsView extends React.PureComponent {
   static propTypes = {
     navigator: React.PropTypes.object.isRequired,
@@ -29,7 +31,8 @@ class DetailAnalyticsView extends React.PureComponent {
   constructor(props) {
     super(props);
     const date = moment();
-    this.state = {date, data:this.createEmptyChartData(date)};
+    const axis = this.createAxisData(date);
+    this.state = {date, axis, chart:{times:new Array(axis), pee:new Array(axis), poo:new Array(axis), food:new Array(axis)}};
   }
 
   componentWillMount() {
@@ -40,73 +43,82 @@ class DetailAnalyticsView extends React.PureComponent {
     // 指定月の散歩情報を取得できた場合に、グラフを描画するためにデータ変換する
     if (this.props.detailState.successGetMonthlyWalkings !== newProps.detailState.successGetMonthlyWalkings) {
       if (newProps.detailState.successGetMonthlyWalkings) {
-        console.log('change monthly data');
         // APIから取得したデータをグラフ描画するために変換する
         const monthly = newProps.detailState.monthly;
-        console.log(monthly);
-        const data = this.toChartData(monthly);
-        this.setState({data});
+        const base = this.toBaseChartData(monthly);
+        this.createAndOverwriteChartData(base);
         this.props.detailActions.clear(); // 情報が取れたのでステートを一旦クリアする
       }
     }
   }
 
   handleReload(date: moment) {
-    const data = this.createEmptyChartData(date);
-    this.setState({date, data});
+    const axis = this.createAxisData(date);
+    this.setState({date, axis});
     this.props.detailActions.getMonthlyWalkings({pet:this.props.pet, date:date.toDate()});
   }
 
-  createEmptyChartData(date: moment) {
-    // X軸になる今月分の日付データを作成する
-    const month = date.month();
+  createAxisData(date: moment) {
+    // グラフ側が動的にX軸を変更してくれないので、毎月31日固定で初期データを作成する
     const axis = new Array();
-    for (var i = 1; i <= date.daysInMonth(); i++) {
-      axis.push(moment().month(month).date(i).format('YYYYMMDD'));
+    for (var i = 1; i <= 31; i++) {
+      axis.push({x:i, y:0});
     }
-    console.log(axis);
-
-    const data = axis
-      .map((x) => {
-        return {"x":parseInt(x) , "y":0};
-      });
-    console.log(data);
-
-    return new Array(data);
+    return axis;
   }
 
-  toChartData(monthly: Array) {
-    // 事前に作成されているX軸になる今月分の日付データを取得する
-    var axis = this.state.data[0];
-
+  toBaseChartData(monthly: Array) {
     // 事前に同じ日付のデータをマージしておく
     const map = new Object();
     monthly.forEach((item) => {
-      const date = moment(item.startDateTime).format('YYYYMMDD');
-      const values = map[date] ? map[date] : new Array();
+      const date = moment(item.startDateTime).format('DD');
+      const x = parseInt(date);
+      const values = map[x] ? map[x] : new Array();
       values.push(item);
-      map[date] = values;
+      map[x] = values;
     });
-    console.log(map);
+    return map;
+  }
+
+  createAndOverwriteChartData(map: Object) {
+    // 事前に作成されているX軸になる今月分の日付データを取得する
+    var axis = this.state.axis;
 
     // チャート表示するための形式に変換する
-    const chart = axis
-      .map((axis) => {
-        // TODO とりあえずPOOだけ取得
-        const x = axis.x;
+    var times = [];
+    var pee = [];
+    var poo = [];
+    var food = [];
+    axis
+      .forEach((xy) => {
+        const x = xy.x;
         const values = map[x] ? map[x] : new Array();
-        var count = 0;
+        // 散歩回数だけ取得
+        times.push({"x":x, "y":values.length});
+
+        // POOだけ取得
+        var pooCounter = 0;
         values.forEach((item) => {
           const events = item.events ? item.events : new Array();
           events.forEach((e) => {
-            if (e.eventType === 'POO') count++;
+            if (e.eventType === 'POO') pooCounter++;
           });
         });
-        return {"x":x, "y":count};
-      });
-    console.log(chart);
+        poo.push({"x":x, "y":pooCounter});
 
-    return new Array(chart);
+        // PEEだけ取得
+        var peeCounter = 0;
+        values.forEach((item) => {
+          const events = item.events ? item.events : new Array();
+          events.forEach((e) => {
+            if (e.eventType === 'PEE') peeCounter++;
+          });
+        });
+        pee.push({"x":x, "y":peeCounter});
+      });
+
+    // チャート用データを全て上書きする
+    this.setState({chart: {times:new Array(times), pee:new Array(pee), poo:new Array(poo), food:new Array(axis)}});
   }
 
   render() {
@@ -118,31 +130,37 @@ class DetailAnalyticsView extends React.PureComponent {
       <View style={{flex:1, backgroundColor:Colors.white}}>
         <MarkingNavbar title="分析" left={left}/>
         <ScrollView style={{flex:1}}>
-          <View style={{flex:1, flexDirection:'column', backgroundColor:Colors.backgroundColor, alignItems:'center', justifyContent:'center'}}>
-            <PetImage source={{uri:this.props.pet.image}} name={this.props.pet.name} style={{flex:1}} />
-            <Label size="large" color={Colors.gray} numberOfLines={1} style={{flex:1, paddingBottom:24}}>{this.props.pet.name}</Label>
+          <View style={{flexDirection:'row', alignItems:'center', backgroundColor:Colors.transparent, paddingTop:8, paddingBottom:8, paddingLeft:16, paddingRight:16}}>
+            <TouchableOpacity style={{flex:1, alignItems:'flex-start', justifyContent:'flex-start'}} onPress={() => this.handleReload(date.add(-1, 'month'))}>
+              <MAIcon name="chevron-left" size={16} color={Colors.gray}/>
+            </TouchableOpacity>
+            <Label>{date.format('YYYY年 MM月')}</Label>
+            <TouchableOpacity style={{flex:1, alignItems:'flex-end', justifyContent:'flex-end'}} onPress={() => this.handleReload(date.add(+1, 'month'))}>
+              <MAIcon name="chevron-right" size={16} color={Colors.gray}/>
+            </TouchableOpacity>
           </View>
-          <View style={{flex:1, flexDirection:'row', paddingTop:16, paddingBottom:12}}>
-            <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-              <Label color={Colors.gray} size="large" bold={true} style={{marginRight:4}}>75</Label>
-              <Label color={Colors.gray} size="small">cm</Label>
-            </View>
-            <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-              <Label color={Colors.gray} size="large" bold={true} style={{marginRight:4}}>4500</Label>
-              <Label color={Colors.gray} size="small">g</Label>
+          <View style={{flex:1, flexDirection:'row', backgroundColor:Colors.backgroundColor, alignItems:'center', justifyContent:'center', paddingLeft:16, paddingRight:16}}>
+            <PetImage source={{uri:this.props.pet.image}} name={this.props.pet.name} style={{flex:0.3}} />
+            <View style={{flex:0.7, flexDirection:'column'}}>
+              <Label size="large" color={Colors.gray} bold={true} numberOfLines={1}>{this.props.pet.name}</Label>
+              <Label size="small" color={Colors.gray} numberOfLines={1} style={{marginTop:8}}>{this.props.pet.type}</Label>
             </View>
           </View>
-          <View style={{paddingBottom:16}}>
-            <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent:'space-between', borderBottomWidth:3, borderColor:Colors.backgroundColor, paddingBottom:8, marginLeft:16, marginRight:16, marginTop:16, marginBottom:16}}>
-              <TouchableOpacity style={{flex:1, alignItems:'flex-start', justifyContent:'flex-start'}} onPress={() => this.handleReload(date.add(-1, 'month'))}>
-                <MAIcon name="chevron-left" size={16} color={Colors.gray}/>
-              </TouchableOpacity>
-              <Label size="large" color={Colors.gray}>{date.format('MMM YYYY')}</Label>
-              <TouchableOpacity style={{flex:1, alignItems:'flex-end', justifyContent:'flex-end'}} onPress={() => this.handleReload(date.add(+1, 'month'))}>
-                <MAIcon name="chevron-right" size={16} color={Colors.gray}/>
-              </TouchableOpacity>
-            </View>
-            <LineChartView type="WalkingTime" pet={this.props.pet} data={data}/>
+          <View style={{flex:1, paddingTop:16}}>
+            <Carousel bullets={true} autoplay={false} bulletStyle={{backgroundColor:Colors.gray}} chosenBulletStyle={{backgroundColor:Colors.primary}} style={{width:width, height:height - 310}}>
+              <View>
+                <ChartView title="散歩回数" color={Colors.green} pet={this.props.pet} data={this.state.chart.times}/>
+              </View>
+              <View>
+                <ChartView title="おしっこ" color={Colors.blue} pet={this.props.pet} data={this.state.chart.pee}/>
+              </View>
+              <View>
+                <ChartView title="うんち" color={Colors.orange} pet={this.props.pet} data={this.state.chart.poo}/>
+              </View>
+              <View>
+                <ChartView title="食事" color={Colors.primary} pet={this.props.pet} data={this.state.chart.food}/>
+              </View>
+            </Carousel>
           </View>
         </ScrollView>
       </View>

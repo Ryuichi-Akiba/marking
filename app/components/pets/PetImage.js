@@ -72,7 +72,7 @@ export default class PetImage extends React.PureComponent {
 
   render() {
     return (
-      <View style={[{alignItems:'center', justifyContent:'center', paddingTop:24, paddingBottom:24}, this.props.style]}>
+      <View style={[{alignItems:'center', justifyContent:'center', padding:24}, this.props.style]}>
         {this.renderImage()}
       </View>
     );
