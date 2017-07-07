@@ -29,7 +29,8 @@
     "redux-actions": "^2.0.1",
     "redux-form": "^6.5.0",
     "redux-logger": "^2.7.4",
-    "redux-saga": "^0.14.3"
+    "redux-saga": "^0.14.3",
+    "supercluster": "git://github.com/mapbox/supercluster.git"
   },
   "devDependencies": {
     "babel-jest": "19.0.0",

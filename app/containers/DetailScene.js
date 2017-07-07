@@ -8,6 +8,7 @@ import * as rootActions from '../redux/reducers/root'
 import * as petDetailActions from '../redux/reducers/detail'
 import DetailHistoryView from './views/DetailHistoryView'
 import DetailAnalyticsView from './views/DetailAnalyticsView'
+import DetailMarkingView from './views/DetailMarkingView'
 import DetailOtherView from './views/DetailOtherView'
 import Colors from '../themes/Colors'
 
@@ -107,6 +108,12 @@ class DetailScene extends React.PureComponent {
           '分析',
           'trending-up',
           <DetailAnalyticsView navigator={this.props.navigator} date={date} pet={this.props.pet}/>
+        )}
+        {this.renderTab(
+          'marking',
+          'マーキング',
+          'bubble-chart',
+          <DetailMarkingView navigator={this.props.navigator} pet={this.props.pet}/>
         )}
         {this.renderTab(
           'others',

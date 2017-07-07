@@ -30,12 +30,20 @@ export function findNewMarkings(params, dates) {
 export const FIND_NEW_MARKINGS = 'FIND_NEW_MARKINGS';
 export const innerFindNewMarkings = createAction(FIND_NEW_MARKINGS);
 
-//
+// ========== 散歩情報の取得に使用する一連のアクション
+// 指定月の散歩情報を取得するアクション
 export const GET_MONTHLY_WALKINGS = 'App/PetDetail/GET_MONTHLY_WALKINGS';
 export const getMonthlyWalkings = createAction(GET_MONTHLY_WALKINGS);
-//
+// 指定月の散歩情報の取得に成功した場合のアクション
 export const SUCCESS_GET_MONTHLY_WALKINGS = 'App/PetDetail/SUCCESS_GET_MONTHLY_WALKINGS';
 export const successGetMonthlyWalkings = createAction(SUCCESS_GET_MONTHLY_WALKINGS);
+
+// マーキングエリア描画のための散歩情報を取得するアクション
+export const GET_MARKING_WALKINGS = 'App/PetDetail/GET_MARKING_WALKINGS';
+export const getMarkingWalkings = createAction(GET_MARKING_WALKINGS);
+// マーキングエリア描画のための散歩情報の取得に成功した場合のアクション
+export const SUCCESS_GET_MARKING_WALKINGS = 'App/PetDetail/SUCCESS_GET_MARKING_WALKINGS';
+export const successGetMarkingWalkings = createAction(SUCCESS_GET_MARKING_WALKINGS);
 
 // ========== アーカイブに使用する一連のアクション
 // ペットをアーカイブするアクション
@@ -61,10 +69,13 @@ export const DetailRecord = new Record({
 
   // 散歩情報
   walkings: [],
-  monthly: [],
+  monthly:  [], // 月間の散歩情報を保持する
+  markings: [], // マーキングエリアを描画するための散歩情報を保持する
+
   // 散歩情報の取得に成功した場合のフラグ
   successGetWalkings: false,
   successGetMonthlyWalkings: false,
+  successGetMarkingWalkings: false,
 
   // ペットのアーカイブ処理に成功したかを示すフラグ
   archived: false,
@@ -98,6 +109,9 @@ export function detailReducer(state = new DetailRecord(), action) {
     // 指定月の散歩情報をステートに保存する
     case SUCCESS_GET_MONTHLY_WALKINGS:
       return state.set('monthly', action.payload).set('successGetMonthlyWalkings', true);
+    // マーキング情報描画のための散歩情報をステートに保存する
+    case SUCCESS_GET_MARKING_WALKINGS:
+      return state.set('markings', action.payload).set('successGetMarkingWalkings', true);
 
     // ペットのアーカイブに成功した場合にフラグを変更する（最新リロードまでが完了してからフラグを更新する）
     case SUCCESS_RELOAD_MY_PETS:
@@ -105,7 +119,11 @@ export function detailReducer(state = new DetailRecord(), action) {
 
     // ステートをクリアして元の状態に戻す
     case CLEAR:
-      return state.set('archived', false).set('successGetWalkings', false).set('successGetMonthlyWalkings', false);
+      return state
+        .set('archived', false)
+        .set('successGetWalkings', false)
+        .set('successGetMonthlyWalkings', false)
+        .set('successGetMarkingWalkings', false);
 
     default:
       return state;

@@ -1,6 +1,6 @@
 import {call, put, take} from 'redux-saga/effects'
 import {deleleMePets} from '../../common/api/me'
-import {getPetsWalkings, getPetsWalkingsByMonth} from '../../common/api/pets'
+import {getPetsWalkings, getPetsWalkingsByMonth, getPetsRecentlyWalkings} from '../../common/api/pets'
 import {loadMyPets} from '../../logic/pet'
 import {failureCallApi} from '../../redux/reducers/root'
 import {
@@ -8,6 +8,8 @@ import {
   successGetWalkings,
   GET_MONTHLY_WALKINGS,
   successGetMonthlyWalkings,
+  GET_MARKING_WALKINGS,
+  successGetMarkingWalkings,
   ARCHIVE_PET,
   SUCCESS_ARCHIVE_PET,
   successArchivePet,
@@ -31,6 +33,9 @@ export function* handleInitializePetDetailScene() {
   }
 }
 
+/**
+ * 指定月の散歩情報を取得するアクションが実行された時に（PetDetail#GET_MONTHLY_WALKINGS）、APIをコールして散歩情報を取得してくる.
+ */
 export function* handleGetMonthlyWalkings() {
   while (true) {
     const action: object = yield take(GET_MONTHLY_WALKINGS);
@@ -39,6 +44,21 @@ export function* handleGetMonthlyWalkings() {
     const {payload, error} = yield call(getPetsWalkingsByMonth, petId, date.getFullYear(), date.getMonth() + 1);
     if (payload && !error) {
       yield put(successGetMonthlyWalkings(payload));
+    } else {
+      yield put(failureCallApi(error));
+    }
+  }
+}
+/**
+ * マーキングエリア描画時に散歩情報を取得するアクションが実行された時に（PetDetail#GET_MARKING_WALKINGS）、APIをコールして散歩情報を取得してくる.
+ */
+export function* handleGetMarkingWalkings() {
+  while (true) {
+    const action: object = yield take(GET_MARKING_WALKINGS);
+    const petId: string = action.payload.pet.id;
+    const {payload, error} = yield call(getPetsRecentlyWalkings, petId);
+    if (payload && !error) {
+      yield put(successGetMarkingWalkings(payload));
     } else {
       yield put(failureCallApi(error));
     }

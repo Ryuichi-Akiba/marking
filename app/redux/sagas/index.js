@@ -22,6 +22,7 @@ import {
 import {
   handleInitializePetDetailScene,
   handleGetMonthlyWalkings,
+  handleGetMarkingWalkings,
   handleArchivePet,
   handleSuccessArchivePet,
 } from './detail'
@@ -51,6 +52,7 @@ export default function* sagas() {
   // PET DETAIL SCENE
   yield fork(handleInitializePetDetailScene);
   yield fork(handleGetMonthlyWalkings);
+  yield fork(handleGetMarkingWalkings);
   yield fork(handleArchivePet);
   yield fork(handleSuccessArchivePet);
   // WALKING SCENE
