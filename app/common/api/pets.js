@@ -10,7 +10,7 @@ export function getPetsWalkingsByMonth(petId : string, year : number, month : nu
   return get(`/v1/pets/${petId}/walkings/${year}/${month}`);
 }
 
-// ペットの直近の散歩情報を取得する
-export function getPetsRecentlyWalkings(petId : string) {
-  return get(`/v1/pets/${petId}/walkings`);
+// ペットの直近のイベント情報を取得する
+export function getPetsRecentlyWalkingEvents(petId : string) {
+  return get(`/v1/pets/${petId}/events`);
 }

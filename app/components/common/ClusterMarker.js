@@ -1,92 +1,44 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import {StyleSheet, View, Image} from 'react-native'
 import MapView from 'react-native-maps'
-
-const offset_map_small = 0.0001
+import Label from '../../components/elements/Label'
+import Colors from '../../themes/Colors'
 import ImageMarker from '../../assets/marker.png'
 
 export default class ClusterMarker extends React.PureComponent {
 
-  state = {
-    colorByCategory: {
-      A: "violet",
-      B: "yellow",
-      C: "blue",
-      D: "pink",
-      E: "green",
-      "Cluster": "red"
-    }
+  static propTypes = {
+    region:   React.PropTypes.object.isRequired, // リージョン
+    geometry: React.PropTypes.object.isRequired, // マーカー表示位置
+    icon:     React.PropTypes.object,
+    type:     React.PropTypes.string,
+    label:    React.PropTypes.string,
+    color:    React.PropTypes.string, // マーカーの表示色（ペット毎にテーマカラーを決めてその色でマーカー表示）
+  };
+
+  static defaultProps = {
+    color:    Colors.primary,
   };
 
   constructor(props) {
     super(props);
+    this.state = {colorByCategory: {
+      'PEE': Colors.blue,
+      'POO': Colors.amber,
+      'Cluster': Colors.primary
+    }};
   }
-
-  onPress() {
-    if (!this.props.feature.properties.featureclass) {
-      //  Calculer l'angle
-      const { region } = this.props;
-      const category = this.props.feature.properties.featureclass || "Cluster";
-      const angle = region.longitudeDelta || 0.0421/1.2;
-      const result =  Math.round(Math.log(360 / angle) / Math.LN2);
-      //  Chercher les enfants
-      const markers = this.props.clusters["places"].getChildren(this.props.feature.properties.cluster_id, result);
-      const newRegion = [];
-      const smallZoom = 0.05;
-      //  Remap
-      markers.map(function (element) {
-        newRegion.push({
-          latitude: offset_map_small + element.geometry.coordinates[1] - region.latitudeDelta * smallZoom,
-          longitude: offset_map_small + element.geometry.coordinates[0] - region.longitudeDelta * smallZoom,
-        });
-
-        newRegion.push({
-          latitude: offset_map_small + element.geometry.coordinates[1],
-          longitude: offset_map_small + element.geometry.coordinates[0],
-        });
-
-        newRegion.push({
-          latitude: offset_map_small + element.geometry.coordinates[1] + region.latitudeDelta * smallZoom,
-          longitude: offset_map_small + element.geometry.coordinates[0] + region.longitudeDelta * smallZoom,
-        });
-      });
-      //  Préparer the retour
-      const options = {
-        isCluster: true,
-        region: newRegion,
-      };
-      //  Ensuite envoyer l'événement
-      if (this.props.onPress) {
-        this.props.onPress({
-          type: category,
-          feature: this.props.feature,
-          options: options,
-        });
-      }
-    }
-  }
-
 
   render() {
-    const latitude = this.props.feature.geometry.coordinates[1];
-    const longitude = this.props.feature.geometry.coordinates[0];
-    const category = this.props.feature.properties.featureclass || "Cluster";
-    const text = (category  == "Cluster" ? this.props.feature.properties.point_count : category);
-    const size = 37;
+    const latitude = this.props.geometry.coordinates[1];
+    const longitude = this.props.geometry.coordinates[0];
+    const type = this.props.type;
+    const text = this.props.label;
+    const size = this.props.type === 'Cluster' ? 'small' : 'xs';
+
     return (
-      <MapView.Marker
-        coordinate={{
-          latitude,
-          longitude,
-        }}
-        onPress={this.onPress.bind(this)}
-      >
-        <Image
-          style={{
-            tintColor: this.state.colorByCategory[category],
-          }}
-          source={ImageMarker}
-        />
+      <MapView.Marker coordinate={{latitude, longitude}}>
+        {this.renderImage(type)}
         <View
           style={{
             position: "absolute",
@@ -99,19 +51,17 @@ export default class ClusterMarker extends React.PureComponent {
             alignItems: 'center',
           }}
         >
-          <Text
-            style={{
-              fontSize: 10,
-              color: "white",
-              textAlign: "center",
-            }}
-          >
-            {
-              text
-            }
-          </Text>
+          <Label size={size} color={Colors.white} style={{textAlign:'center'}}>{text}</Label>
         </View>
       </MapView.Marker>
     );
+  }
+
+  renderImage(type:string) {
+    if (type !== 'Cluster' && this.props.icon) {
+      return this.props.icon;
+    } else {
+      return <Image style={{tintColor: this.state.colorByCategory[type]}} source={ImageMarker}/>;
+    }
   }
 }

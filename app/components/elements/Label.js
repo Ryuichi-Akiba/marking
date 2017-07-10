@@ -11,7 +11,7 @@ export default class Label extends React.PureComponent {
     small: React.PropTypes.bool,
     color: React.PropTypes.string,
     bold: React.PropTypes.bool,
-    size: React.PropTypes.oneOf(['xl', 'large', 'middle', 'small']),
+    size: React.PropTypes.oneOf(['xl', 'large', 'middle', 'small', 'xs']),
     style: React.PropTypes.object,
     numberOfLines: React.PropTypes.number,
   };
@@ -21,7 +21,7 @@ export default class Label extends React.PureComponent {
   }
 
   render() {
-    const fontSize = this.props.size === 'small' ? normalize(12) : this.props.size === 'large' ? normalize(16) : this.props.size === 'xl' ? normalize(24) : normalize(14);
+    const fontSize = this.props.size === 'small' ? normalize(12) : this.props.size === 'large' ? normalize(16) : this.props.size === 'xl' ? normalize(24) : this.props.size === 'xs' ? normalize(10) : normalize(14);
 
     const color = !!this.props.placeholder ? '#9E9E9E' : !!this.props.color ? this.props.color : Colors.text;
     const weight = !!this.props.bold ? 'bold' : 'normal';

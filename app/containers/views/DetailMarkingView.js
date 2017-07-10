@@ -3,6 +3,7 @@ import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableO
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
+import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import supercluster from 'supercluster'
 import * as rootActions from '../../redux/reducers/root'
 import * as detailActions from '../../redux/reducers/detail'
@@ -31,53 +32,47 @@ class DetailMarkingView extends React.PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {moving: false, region:{}, clusters:[]};
+    this.state = {region:{latitude: 43.2931047, longitude: 5.38509780000004, latitudeDelta: 0.0922/1.2, longitudeDelta: 0.0421/1.2}, cluster:null, poo:null, pee:null};
   }
 
   componentWillMount() {
-    this.props.detailActions.getMarkingWalkings({pet:this.props.pet});
+    this.props.detailActions.getWalkingEvents({pet:this.props.pet});
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.detailState.successGetMarkingWalkings !== nextProps.detailState.successGetMarkingWalkings) {
+    if (this.props.detailState.successGetWalkingEvents !== nextProps.detailState.successGetWalkingEvents) {
       // マーキングエリア表示のための散歩情報の取得に成功した場合は、地図にマーカーを描画する
-      if (nextProps.detailState.successGetMarkingWalkings) {
-        const walkings = nextProps.detailState.markings;
-        console.log(walkings);
+      if (nextProps.detailState.successGetWalkingEvents) {
+        const events = nextProps.detailState.events;
+        console.log(events);
+
+        if (!!events && events.length > 0) {
+          this.setRegion({latitude:events[0].geometry.coordinates[1], longitude:events[0].geometry.coordinates[0], latitudeDelta: 0.0922/1.2, longitudeDelta: 0.0421/1.2});
+        }
+
+        // FIXME マップポイントはマーカーする場所っぽい（一時的に、関係ない場所の情報を使う）
+        const data = events;
+        if (data) {
+          // this.setState({
+          //   mapLock: true
+          // });
+
+          // SuperClusterを使って、マーカーの場所を集約する
+          const cluster = supercluster({
+            radius: 60,
+            maxZoom: 16,
+          });
+          cluster.load(data);
+
+          this.setState({
+            cluster,
+            // mapLock: false
+          });
+        }
+
         this.props.detailActions.clear();
       }
     }
-
-    const markers = this.createMarkersForLocations(nextProps);
-    console.log(markers);
-    if (markers && Object.keys(markers)) {
-      const clusters = {};
-      this.setState({
-        mapLock: true
-      });
-      Object.keys(markers).forEach(categoryKey => {
-        // Recalculate cluster trees
-        const cluster = supercluster({
-          radius: 60,
-          maxZoom: 16,
-        });
-
-        cluster.load(markers[categoryKey]);
-
-        clusters[categoryKey] = cluster;
-      });
-
-      this.setState({
-        clusters,
-        mapLock: false
-      });
-    }
-  }
-  createMarkersForLocations(props) {
-    // FIXME マップポイントはマーカーする場所っぽい
-    return {
-      places: Points
-    };
   }
 
   setRegion(region) {
@@ -100,70 +95,64 @@ class DetailMarkingView extends React.PureComponent {
 
   onChangeRegionComplete(region) {
     this.setRegion(region);
-    this.setState({
-      moving: false,
-    });
+    // this.setState({
+    //   moving: false,
+    // });
   }
 
   onChangeRegion(region) {
-    this.setState({
-      moving: true,
-    });
+    // this.setState({
+    //   moving: true,
+    // });
   }
 
   render() {
+    const {region, cluster} = this.state;
+
     return (
       <View style={{flex:1}}>
         <MapView style={{...StyleSheet.absoluteFillObject}}
                  ref={ref => { this.map = ref; }}
-                 initialRegion={Marseille}
+                 region={this.state.region}
                  onRegionChange={this.onChangeRegion.bind(this)}
                  onRegionChangeComplete={this.onChangeRegionComplete.bind(this)}>
-          {this.createMarkersForRegion_Places()}
+          {this.createClusterableMarkers(region, cluster)}
         </MapView>
       </View>
     );
   }
 
-  createMarkersForRegion_Places() {
-    const padding = 0.25;
-    if (this.state.clusters && this.state.clusters["places"]) {
-      const markers = this.state.clusters["places"].getClusters([
-        this.state.region.longitude - (this.state.region.longitudeDelta * (0.5 + padding)),
-        this.state.region.latitude - (this.state.region.latitudeDelta * (0.5 + padding)),
-        this.state.region.longitude + (this.state.region.longitudeDelta * (0.5 + padding)),
-        this.state.region.latitude + (this.state.region.latitudeDelta * (0.5 + padding)),
+  // FIXME 他の画面でも使いそうなので、後でロジック処理に移動させる
+  createClusterableMarkers(region, cluster) {
+    if (cluster) {
+      // クラスターに集約したマーカー対象のデータを取得する
+      const padding = 0.25;
+      const markers = cluster.getClusters([
+        region.longitude - (region.longitudeDelta * (0.5 + padding)),
+        region.latitude - (region.latitudeDelta * (0.5 + padding)),
+        region.longitude + (region.longitudeDelta * (0.5 + padding)),
+        region.latitude + (region.latitudeDelta * (0.5 + padding)),
       ], this.getZoomLevel());
-      const returnArray = [];
-      const { clusters, region } = this.state;
-      const onPressMaker = this.onPressMaker.bind(this);
-      markers.map(function(element ) {
-        returnArray.push(
-          <ClusterMarker
-            key={element.properties._id || element.properties.cluster_id}
-            onPress={onPressMaker}
-            feature={element}
-            clusters={clusters}
-            region={region}
-          />
-        );
+
+      // eventTypeとgeometry(GEO JSON)を持つオブジェクト配列を元に、Markerを作成する
+      return markers.map(function(item, index) {
+        const type = item.eventType || 'Cluster';
+        return <ClusterMarker
+          key={item.petId + '_' + index}
+          region={region}
+          geometry={item.geometry}
+          type={type}
+          label={type === 'Cluster' ? item.properties.point_count.toString() : type}
+        />;
       });
-      return returnArray;
     }
+
     return [];
   }
+
   getZoomLevel(region = this.state.region) {
     const angle = region.longitudeDelta;
     return Math.round(Math.log(360 / angle) / Math.LN2);
-  }
-  onPressMaker(data) {
-    if (data.options.isCluster) {
-      if (data.options.region.length > 0) {
-        this.goToRegion(data.options.region, 100)
-      } else {
-        console.log("We can't move to an empty region");
-      }
-    }
   }
 }
 

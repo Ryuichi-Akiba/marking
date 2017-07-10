@@ -1,6 +1,6 @@
 import {call, put, take} from 'redux-saga/effects'
 import {deleleMePets} from '../../common/api/me'
-import {getPetsWalkings, getPetsWalkingsByMonth, getPetsRecentlyWalkings} from '../../common/api/pets'
+import {getPetsWalkings, getPetsWalkingsByMonth, getPetsRecentlyWalkingEvents} from '../../common/api/pets'
 import {loadMyPets} from '../../logic/pet'
 import {failureCallApi} from '../../redux/reducers/root'
 import {
@@ -8,8 +8,8 @@ import {
   successGetWalkings,
   GET_MONTHLY_WALKINGS,
   successGetMonthlyWalkings,
-  GET_MARKING_WALKINGS,
-  successGetMarkingWalkings,
+  GET_WALKING_EVENTS,
+  successGetWalkingEvents,
   ARCHIVE_PET,
   SUCCESS_ARCHIVE_PET,
   successArchivePet,
@@ -50,15 +50,15 @@ export function* handleGetMonthlyWalkings() {
   }
 }
 /**
- * マーキングエリア描画時に散歩情報を取得するアクションが実行された時に（PetDetail#GET_MARKING_WALKINGS）、APIをコールして散歩情報を取得してくる.
+ * マーキングエリア描画時に散歩情報を取得するアクションが実行された時に（PetDetail#GET_WALKING_EVENTS）、APIをコールして散歩イベント情報を取得してくる.
  */
-export function* handleGetMarkingWalkings() {
+export function* handleGetWalkingEvents() {
   while (true) {
-    const action: object = yield take(GET_MARKING_WALKINGS);
+    const action: object = yield take(GET_WALKING_EVENTS);
     const petId: string = action.payload.pet.id;
-    const {payload, error} = yield call(getPetsRecentlyWalkings, petId);
+    const {payload, error} = yield call(getPetsRecentlyWalkingEvents, petId);
     if (payload && !error) {
-      yield put(successGetMarkingWalkings(payload));
+      yield put(successGetWalkingEvents(payload));
     } else {
       yield put(failureCallApi(error));
     }
