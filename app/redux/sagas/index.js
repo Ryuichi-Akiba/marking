@@ -30,6 +30,9 @@ import {
   handleAddMarker,
   handleSaveWalking,
 } from './walking'
+import {
+  handleSuccessGetUserWalkingEvents,
+} from './marking'
 import * as archives from './archives'
 
 export default function* sagas() {
@@ -58,6 +61,8 @@ export default function* sagas() {
   // WALKING SCENE
   yield fork(handleAddMarker);
   yield fork(handleSaveWalking);
+  // MARKING SCENE
+  yield fork(handleSuccessGetUserWalkingEvents);
   // for ArchivesScene
   yield fork(archives.handleInitializeArchivesScene);
 }

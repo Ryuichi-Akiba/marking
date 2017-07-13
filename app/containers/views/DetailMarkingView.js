@@ -3,20 +3,10 @@ import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableO
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
-import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import supercluster from 'supercluster'
+import ClusterMarker from '../../components/common/ClusterMarker'
 import * as rootActions from '../../redux/reducers/root'
 import * as detailActions from '../../redux/reducers/detail'
-import MarkingNavbar from '../../components/common/MarkingNavbar'
-import Colors from '../../themes/Colors'
-import ClusterMarker from '../../components/common/ClusterMarker'
-import Points from '../../assets/Points.json'
-const Marseille = {
-  latitude: 43.2931047,
-  longitude: 5.38509780000004,
-  latitudeDelta: 0.0922/1.2,
-  longitudeDelta: 0.0421/1.2,
-}
 
 class DetailMarkingView extends React.PureComponent {
   static propTypes = {

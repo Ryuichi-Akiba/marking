@@ -5,9 +5,9 @@ import {loginReducer} from './reducers/login'
 import {menuReducer} from './reducers/sidemenu'
 import {petForm} from './reducers/form'
 import {detailReducer} from './reducers/detail'
-import {graphReducer} from './reducers/graph'
 import {walkingReducer} from './reducers/walking'
 import {archivesReducer} from './reducers/archives'
+import {markingReducer} from './reducers/marking'
 // ... other reducers
 
 export default combineReducers({
@@ -17,8 +17,8 @@ export default combineReducers({
   menu: menuReducer,
   petForm: petForm,
   detail: detailReducer,
-  graph: graphReducer,
   walking: walkingReducer,
   archives: archivesReducer,
+  marking: markingReducer,
   // ... other reducers
 });
