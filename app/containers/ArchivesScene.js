@@ -39,7 +39,7 @@ class ArchiveScene extends React.PureComponent {
     var list = [];
     this.props.archivesState.pets.forEach((pet, i) => {
       const handle = () => {
-        this.props.navigator.push({name:'PetDetailScene', props:{pet, isNewWindow:true}});
+        this.props.navigator.push({name:'DetailScene', props:{pet}});
       };
       const subtitle = moment(pet.lastModifiedDate).format('YYYY年MM月DD日没') + '  ' + pet.type;
       const border = size - 1 === i ? false : true;

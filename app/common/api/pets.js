@@ -1,10 +1,16 @@
-import {get, del} from './api'
+import {get} from './api'
 
-// ペットのマーキング情報を取得する（年月日指定）
-export function getPetsMarkings(petId : string, year : number, month : number, date : number) {
-  return get(`/api/v1/pets/${petId}/markings/${year}/${month}/${date}`);
+// ペットの散歩情報を取得する（年月日指定）
+export function getPetsWalkings(petId : string, year : number, month : number, date : number) {
+  return get(`/v1/pets/${petId}/walkings/${year}/${month}/${date}`);
 }
 
-export function getPetsMarkingsByMonth(petId : string, year : number, month : number) {
-  return get(`/api/v1/pets/${petId}/markings/${year}/${month}`);
+// ペットの散歩情報を取得する（年月指定）
+export function getPetsWalkingsByMonth(petId : string, year : number, month : number) {
+  return get(`/v1/pets/${petId}/walkings/${year}/${month}`);
+}
+
+// ペットの直近のイベント情報を取得する
+export function getPetsRecentlyWalkingEvents(petId : string) {
+  return get(`/v1/pets/${petId}/events`);
 }

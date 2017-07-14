@@ -1,26 +1,24 @@
 import {combineReducers} from 'redux'
 import {reducer as formReducer} from 'redux-form'
 import {rootReducer} from './reducers/root'
-import {commonReducer} from './reducers/common'
 import {loginReducer} from './reducers/login'
 import {menuReducer} from './reducers/sidemenu'
-import {addMyPetForm} from './reducers/addMyPetForm'
+import {petForm} from './reducers/form'
 import {detailReducer} from './reducers/detail'
-import {graphReducer} from './reducers/graph'
-import {markingMap} from './reducers/markingMap'
+import {walkingReducer} from './reducers/walking'
 import {archivesReducer} from './reducers/archives'
+import {markingReducer} from './reducers/marking'
 // ... other reducers
 
 export default combineReducers({
   form: formReducer,
   root: rootReducer,
-  common: commonReducer,
   login: loginReducer,
   menu: menuReducer,
-  addMyPetForm,
+  petForm: petForm,
   detail: detailReducer,
-  graph: graphReducer,
-  markingMap,
+  walking: walkingReducer,
   archives: archivesReducer,
+  marking: markingReducer,
   // ... other reducers
 });

@@ -10,21 +10,18 @@ import Colors from '../../themes/Colors'
 // FIXME 全体の共通定数にしたほうが良いかも
 const days = ['日', '月', '火', '水', '木', '金', '土'];
 
-export default class HealthView extends React.PureComponent {
+export default class DetailHistoryView extends React.PureComponent {
   static propTypes = {
     navigator: React.PropTypes.object.isRequired,
     pet:       React.PropTypes.object.isRequired,
+    // 表示している情報の日付
     date:      React.PropTypes.object.isRequired,
-    markings:  React.PropTypes.array.isRequired,
+    walkings:  React.PropTypes.array.isRequired,
     onReload:  React.PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
-  }
-
-  shouldComponentUpdate() {
-    return true;
   }
 
   handleReload(date) {
@@ -34,57 +31,46 @@ export default class HealthView extends React.PureComponent {
 
   renderInfo(title: string, value: object, color: string, unit: string) {
     return (
-      <View style={{flex:1, flexDirection:'row', paddingTop:12, paddingBottom:12, paddingLeft:16, paddingRight:16, borderRadius:8, marginTop:8, backgroundColor:color}}>
+      <View style={{flex:1, flexDirection:'row', padding:16, borderRadius:32, marginBottom:8, borderWidth:1, borderColor:Colors.borderColor}}>
         <View style={{flex:1}}>
-          <Label color={Colors.white} bold={true}>{title}</Label>
+          <Label color={Colors.text} bold={true}>{title}</Label>
         </View>
         <View style={{flex:1, flexDirection:'row', alignItems:'flex-end', justifyContent:'flex-end'}}>
-          <Label color={Colors.white} bold={true} size="xl" style={{marginRight:8}}>{value}</Label>
-          <Label color={Colors.white}>{unit}</Label>
+          <Label color={Colors.gray} bold={true} size="xl" style={{marginRight:8}}>{value}</Label>
+          <Label color={Colors.text}>{unit}</Label>
         </View>
       </View>
     );
   }
 
-  sum(markings: array) {
-    var walks = 0;
+  sum(walkings: array) {
+    var walks = walkings.length;
     var pees = 0;
     var poos = 0;
-    var foods = 0;
     var distances = 0;
     var times = 0;
-    markings.forEach((item) => {
-      var start;
-      var end;
+    walkings.forEach((item) => {
+      const start = moment(item.startDateTime);
+      const end = moment(item.endDateTime);
+      times += end.diff(start, 'minutes', true);
+      distances += item.distance;
       item.events.forEach((event) => {
-        if (event.eventType === 'START') walks++; // 散歩の回数を数える
         if (event.eventType === 'PEE') pees++;    // おしっこの回数を数える
         if (event.eventType === 'POO') poos++;    // うんちの回数を数える
-        if (event.eventType === 'FOOD') foods++;  // 食事の回数を数える
-        if (event.eventType === 'START') start = moment(event.eventDateTime);
-        if (event.eventType === 'END') end = moment(event.eventDateTime);
       });
-
-      if (!!start && !!end) {
-        times += end.diff(start, 'minutes', true);
-      }
-      distances += item.distance;
     });
-    return {walks, distances, times:Math.ceil(times), pees, poos, foods};
+    return {walks, distances, times:Math.ceil(times), pees, poos};
   }
 
   render() {
     const date = moment(this.props.date);
-    const sum = this.sum(this.props.markings);
+    const sum = this.sum(this.props.walkings);
     const left = {icon:'arrow-back', handler:() => this.props.navigator.pop()};
 
     return (
       <View style={{backgroundColor:Colors.white}}>
-        <MarkingNavbar left={left}/>
-        <ScrollView style={{paddingLeft:16, paddingRight:16}}>
-          <View style={{alignItems:'center'}}>
-            <Label size="large" bold={true} color={Colors.gray} numberOfLines={1}>{this.props.pet.name}</Label>
-          </View>
+        <MarkingNavbar title={this.props.pet.name} left={left}/>
+        <ScrollView style={{paddingLeft:8, paddingRight:8}}>
           <View>
             <PetImage source={{uri:this.props.pet.image}} name={this.props.pet.name} denominator={60} molecule={sum.times}/>
             <TouchableOpacity style={{position:'absolute', top:64, left:0, width:48, height:48, justifyContent:'center', alignItems:'center'}} onPress={() => this.handleReload(date.add(-1, 'days'))}>
@@ -95,14 +81,14 @@ export default class HealthView extends React.PureComponent {
             </TouchableOpacity>
           </View>
           <View style={{alignItems:'center'}}>
-            <Label color={Colors.lightBlue} size="xl">{sum.times} <Label color={Colors.gray}>min /</Label> {sum.distances} <Label color={Colors.gray}>m</Label></Label>
+            <Label color={Colors.primary} size="xl">{sum.times} <Label color={Colors.gray}>min /</Label> {sum.distances} <Label color={Colors.gray}>m</Label></Label>
             <Label color={Colors.gray} size="small" style={{marginTop:8}}>{date.format('YYYY年MM月DD日') + ' ' + days[date.day()] + '曜日'}</Label>
           </View>
           <View style={{marginTop:16}}>
-            {this.renderInfo('Walking - お散歩', sum.walks, Colors.lightGreen, '回')}
-            {this.renderInfo('Pee - おしっこ', sum.pees, Colors.blue, '回')}
-            {this.renderInfo('Poo - うんち', sum.poos, Colors.orange, '回')}
-            {this.renderInfo('Food - お食事', sum.foods, Colors.pink, '回')}
+            {this.renderInfo('お散歩', sum.walks, Colors.lightGreen, '回')}
+            {this.renderInfo('おしっこ', sum.pees, Colors.blue, '回')}
+            {this.renderInfo('うんち', sum.poos, Colors.orange, '回')}
+            {this.renderInfo('お食事', 0, Colors.pink, '回')}
           </View>
         </ScrollView>
       </View>

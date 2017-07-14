@@ -1,5 +1,5 @@
 import React from 'react'
-import {StyleSheet, View, Text, Image, TouchableHighlight} from 'react-native'
+import {StyleSheet, View, Text, Image, Switch, TouchableHighlight} from 'react-native'
 import MAIcon from 'react-native-vector-icons/MaterialIcons'
 import Label from './Label'
 import Avatar from './Avatar'
@@ -18,7 +18,11 @@ export default class List extends React.PureComponent {
     border: React.PropTypes.bool,
     chevron: React.PropTypes.bool,
     rightTitle: React.PropTypes.string,
+    bold: React.PropTypes.bool,
     style: React.PropTypes.object,
+    toggle: React.PropTypes.bool,
+    switcher: React.PropTypes.bool,
+    onChangeSwitch: React.PropTypes.func,
   };
 
   static defaultProps = {
@@ -32,6 +36,7 @@ export default class List extends React.PureComponent {
 
   constructor(props) {
     super(props);
+    this.state = {trueSwitchIsOn: !!this.props.toggle};
   }
 
   renderIconContainer() {
@@ -64,12 +69,12 @@ export default class List extends React.PureComponent {
 
     var sub = null;
     if (this.props.subtitle) {
-      sub = <Label color={Colors.gray} size="small" numberOfLines={this.props.titleLines} style={{marginTop:2}}>{this.props.subtitle}</Label>
+      sub = <Label color={Colors.gray} size="small" numberOfLines={this.props.titleLines} style={{marginTop:4}}>{this.props.subtitle}</Label>
     }
 
     return (
       <View style={style}>
-        <Label numberOfLines={this.props.titleLines}>{this.props.title}</Label>
+        <Label numberOfLines={this.props.titleLines} bold={this.props.bold}>{this.props.title}</Label>
         {sub}
       </View>
     );
@@ -101,6 +106,20 @@ export default class List extends React.PureComponent {
     return null;
   }
 
+  renderSwitcher() {
+    if (!!this.props.switcher) {
+      const handler = (value) => {
+        this.setState({trueSwitchIsOn:value});
+        if (this.props.onChangeSwitch) {
+          this.props.onChangeSwitch(value);
+        }
+      };
+      const margin = !!this.props.subtitle ? 12 : 6;
+      return <Switch onValueChange={handler} value={this.state.trueSwitchIsOn} style={{marginTop:margin, marginRight:margin}} onTintColor={Colors.primary}/>;
+    }
+    return null;
+  }
+
   wrap(component) {
     if (this.props.onPress) {
       return (
@@ -114,14 +133,15 @@ export default class List extends React.PureComponent {
 
   render() {
     const border = !!this.props.border ? 0.5 : 0;
+    const icon = !!this.props.icon || !!this.props.avatar ? this.renderIconContainer() : null;
     const component = (
       <View style={[{flex:1, flexDirection:'row'}, this.props.style]}>
-        {this.renderIconContainer()}
-
+        {icon}
         <View style={{flex:1, flexDirection:'row', borderBottomWidth:border, borderBottomColor:Colors.borderColor, paddingRight:8}}>
           {this.renderTitleContainer()}
           {this.renderRightContent()}
           {this.renderChevron()}
+          {this.renderSwitcher()}
         </View>
       </View>
     );

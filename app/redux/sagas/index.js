@@ -9,7 +9,7 @@ import {
 } from './login'
 import {
   handleInitializeMenuContainer,
-  handleSuccessReloadMyPets,
+  // handleSuccessReloadMyPets,
 } from './sidemenu'
 import {
   handleInitializePetFormForColors,
@@ -18,25 +18,21 @@ import {
   handleAddMyPet,
   handleSuccessUploadMyPet,
   handleSuccessPostMyPet,
-  handleArchivePet,
-  handleSuccessArchivePet,
-} from './addMyPetForm'
+} from './form'
 import {
   handleInitializePetDetailScene,
+  handleGetMonthlyWalkings,
+  handleGetWalkingEvents,
+  handleArchivePet,
+  handleSuccessArchivePet,
 } from './detail'
 import {
-  handleGetPetsMarkingByMonth,
-} from './graph'
+  handleAddMarker,
+  handleSaveWalking,
+} from './walking'
 import {
-  handleInitCurrentLocation,
-  handleInitWatchId,
-  handleClearLocationWatch,
-  handleShowMyPets,
-  handleStartMarking,
-  handleFinishMarking,
-  handlePee,
-  handlePoo,
-} from './markingMap'
+  handleSuccessGetUserWalkingEvents,
+} from './marking'
 import * as archives from './archives'
 
 export default function* sagas() {
@@ -48,7 +44,7 @@ export default function* sagas() {
   yield fork(handleLogout);
   // SIDE MENU SCENE
   yield fork(handleInitializeMenuContainer);
-  yield fork(handleSuccessReloadMyPets);
+  // yield fork(handleSuccessReloadMyPets);
   // PET FORM SCENE
   yield fork(handleInitializePetFormForColors);
   yield fork(handleInitializePetFormForBreeds);
@@ -56,20 +52,17 @@ export default function* sagas() {
   yield fork(handleAddMyPet);
   yield fork(handleSuccessUploadMyPet);
   yield fork(handleSuccessPostMyPet);
-  yield fork(handleArchivePet);
-  yield fork(handleSuccessArchivePet);
   // PET DETAIL SCENE
   yield fork(handleInitializePetDetailScene);
-  yield fork(handleGetPetsMarkingByMonth);
-  // MAP
-  yield fork(handleInitCurrentLocation);
-  yield fork(handleInitWatchId);
-  yield fork(handleClearLocationWatch);
-  yield fork(handleShowMyPets);
-  yield fork(handleStartMarking);
-  yield fork(handleFinishMarking);
-  yield fork(handlePee);
-  yield fork(handlePoo);
+  yield fork(handleGetMonthlyWalkings);
+  yield fork(handleGetWalkingEvents);
+  yield fork(handleArchivePet);
+  yield fork(handleSuccessArchivePet);
+  // WALKING SCENE
+  yield fork(handleAddMarker);
+  yield fork(handleSaveWalking);
+  // MARKING SCENE
+  yield fork(handleSuccessGetUserWalkingEvents);
   // for ArchivesScene
   yield fork(archives.handleInitializeArchivesScene);
 }

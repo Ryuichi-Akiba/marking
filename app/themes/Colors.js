@@ -9,6 +9,9 @@ const colors = {
 
   backgroundColor: '#F5F5F5',
   underlayColor: '#F5F5F5',
+
+  primary: '#F06292',
+
   white: '#FFFFFF',
   black: '#000000',
   red: '#F44336',

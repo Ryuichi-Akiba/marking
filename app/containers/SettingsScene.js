@@ -8,6 +8,7 @@ import ScrollViewContainer from '../components/common/ScrollViewContainer'
 import ListGroup from '../components/elements/ListGroup'
 import List from '../components/elements/List'
 import MarkingNavbar from '../components/common/MarkingNavbar'
+import Colors from '../themes/Colors'
 
 class SettingsScene extends React.PureComponent {
   static propTypes = {
@@ -53,16 +54,16 @@ class SettingsScene extends React.PureComponent {
         <MarkingNavbar title="設定" left={{icon:'menu', handler:this.props.openMenu}}/>
         <ScrollViewContainer>
           <ListGroup>
-            <List icon="pets" iconColor="#795548" title="ペットを登録" chevron={true} border={false} onPress={this.viewPetForm.bind(this)}/>
+            <List icon="pets" iconColor={Colors.gray} title="ペットを登録" chevron={true} border={false} onPress={this.viewPetForm.bind(this)}/>
           </ListGroup>
           <ListGroup>
-            <List icon="import-contacts" iconColor="#00BCD4" title="利用規約" chevron={true}/>
-            <List icon="assignment" iconColor="#FFC107" title="プライバシーポリシー" chevron={true}/>
-            <List icon="bug-report" iconColor="#E91E63" title="お問い合わせ・不具合報告" chevron={true}/>
-            <List icon="exposure-plus-1" iconColor="#8BC34A" title="バージョン" rightTitle="1.0.0" border={false}/>
+            <List icon="import-contacts" iconColor={Colors.gray} title="利用規約" chevron={true}/>
+            <List icon="assignment" iconColor={Colors.gray} title="プライバシーポリシー" chevron={true}/>
+            <List icon="bug-report" iconColor={Colors.gray} title="お問い合わせ・不具合報告" chevron={true}/>
+            <List icon="exposure-plus-1" iconColor={Colors.gray} title="バージョン" rightTitle="1.0.0" border={false}/>
           </ListGroup>
           <ListGroup>
-            <List icon="power-settings-new" iconColor="#F44336" title="ログアウト" border={false} onPress={this.logout.bind(this)}/>
+            <List icon="power-settings-new" iconColor={Colors.red} title="ログアウト" border={false} onPress={this.logout.bind(this)}/>
           </ListGroup>
         </ScrollViewContainer>
       </View>

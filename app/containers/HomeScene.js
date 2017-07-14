@@ -33,6 +33,8 @@ class HomeScene extends React.PureComponent {
     rootActions: React.PropTypes.object,
     menuState: React.PropTypes.object,
     menuActions: React.PropTypes.object,
+    // map from other route
+    message: React.PropTypes.string,
   };
 
   constructor(props) {
@@ -42,17 +44,23 @@ class HomeScene extends React.PureComponent {
   componentWillMount() {
     // 最初に必ず来るシーンのため、ルートにあるローディングを常時OFFにして始める
     this.props.rootActions.destroyLoadingScene();
+
+    // メッセージがセットされているのであれば、最初にそれを表示する
+    if (!!this.props.message) {
+      this.props.rootActions.showMessage(this.props.message);
+    }
   }
 
   renderPetList() {
-    var list = [];
-    this.props.menuState.pets.forEach((pet, i) => {
-      const handle = () => {
-        this.props.navigator.push({name:'DetailScene', props:{pet, isNewWindow:true}});
-      };
-      list.push(<List key={i} avatar={{uri:pet.image}} title={pet.name} chevron={true} onPress={handle}/>);
-    });
-    const title = list.length === 0 ? 'さあ、ペットを登録しましょう' : '飼育中のペット';
+    const list = this.props.menuState.pets
+      .filter((pet) => pet.dead !== '1') // 死亡していないペットのみを表示する
+      .map((pet, i) => {
+        const handle = () => {
+          this.props.navigator.push({name:'DetailScene', props:{pet, isNewWindow:true}});
+        };
+        return <List key={i} avatar={{uri:pet.image}} title={pet.name} subtitle={pet.type} chevron={true} onPress={handle}/>;
+      });
+    const title = list.length === 0 ? 'さあ、ペットを登録しよう！' : '飼育中のペット';
 
     return (
       <ListGroup title={title}>
@@ -81,18 +89,18 @@ class HomeScene extends React.PureComponent {
           <View style={{flex:0.5}}>
             <View style={{flex:1, flexDirection:'row', marginTop:8, marginLeft:4, marginRight:4}}>
               {this.renderPanel('update', 'ヘルスケア', Colors.red, () => this.props.navigator.replace({name:'HealthScene'}))}
-              {this.renderPanel('directions-walk', 'お散歩', Colors.lightGreen, () => this.props.navigator.replace({name:'WalkingMap'}))}
+              {this.renderPanel('directions-walk', 'お散歩', Colors.lightGreen, () => this.props.navigator.replace({name:'WalkingSelectScene'}))}
             </View>
             <View style={{flex:1, flexDirection:'row', marginTop:8, marginLeft:4, marginRight:4}}>
               {this.renderPanel('bubble-chart', 'マーキング', Colors.cyan, () => this.props.navigator.replace({name:'MarkingScene'}))}
               {this.renderPanel('public', 'スポット', Colors.blue, () => this.props.navigator.replace({name:'SpotScene'}))}
             </View>
           </View>
-          <View style={{flex:0.5}}>
+          <View style={{flex:0.5, marginBottom:40}}>
             {this.renderPetList()}
-            <ListGroup title="ペットたちとの思い出" style={{marginBottom:80}}>
-              <List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" chevron={true} border={false} onPress={() => this.props.navigator.replace({name:'ArchivesScene'})}/>
-            </ListGroup>
+            {/*<ListGroup title="ペットたちとの思い出" style={{marginBottom:80}}>*/}
+              {/*<List icon="account-balance" iconColor={Colors.purple} title="アーカイブス" chevron={true} border={false} onPress={() => this.props.navigator.replace({name:'ArchivesScene'})}/>*/}
+            {/*</ListGroup>*/}
           </View>
         </ScrollViewContainer>
       </View>

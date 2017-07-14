@@ -1,58 +1,66 @@
-import moment from 'moment'
 import React from 'react'
 import {Navigator, StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity, Alert} from 'react-native'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import MapView from 'react-native-maps'
 import supercluster from 'supercluster'
-import ClusterMarker from '../components/common/ClusterMarker'
-import * as rootActions from '../redux/reducers/root'
-import * as markingActions from '../redux/reducers/marking'
-import ScrollViewContainer from '../components/common/ScrollViewContainer'
-import ListGroup from '../components/elements/ListGroup'
-import List from '../components/elements/List'
-import Label from '../components/elements/Label'
-import MarkingNavbar from '../components/common/MarkingNavbar'
-import Colors from '../themes/Colors'
+import ClusterMarker from '../../components/common/ClusterMarker'
+import * as rootActions from '../../redux/reducers/root'
+import * as detailActions from '../../redux/reducers/detail'
 
-class MarkingScene extends React.PureComponent {
+class DetailMarkingView extends React.PureComponent {
   static propTypes = {
-    // map from route navigation
-    navigator: React.PropTypes.object.isRequired,
-    openMenu: React.PropTypes.func.isRequired,
+    // map from detail scene
+    navigator:     React.PropTypes.object.isRequired,
+    pet:           React.PropTypes.object.isRequired,
     // map from react-redux
-    rootState: React.PropTypes.object,
-    rootActions: React.PropTypes.object,
-    markingState: React.PropTypes.object,
-    markingActions: React.PropTypes.object,
+    rootState:     React.PropTypes.object,
+    rootActions:   React.PropTypes.object,
+    detailState:   React.PropTypes.object,
+    detailActions: React.PropTypes.object,
   };
 
   constructor(props) {
     super(props);
-    this.state = {region:{latitude: 0, longitude: 0, latitudeDelta: 0, longitudeDelta: 0}, cluster:null};
+    this.state = {region:{latitude: 43.2931047, longitude: 5.38509780000004, latitudeDelta: 0.0922/1.2, longitudeDelta: 0.0421/1.2}, cluster:null, poo:null, pee:null};
   }
 
   componentWillMount() {
-    this.props.markingActions.getUserWalkingEvents();
+    this.props.detailActions.getWalkingEvents({pet:this.props.pet});
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.markingState.successGetUserWalkingEvents !== nextProps.markingState.successGetUserWalkingEvents) {
+    if (this.props.detailState.successGetWalkingEvents !== nextProps.detailState.successGetWalkingEvents) {
       // マーキングエリア表示のための散歩情報の取得に成功した場合は、地図にマーカーを描画する
-      if (nextProps.markingState.successGetUserWalkingEvents) {
-        const events = nextProps.markingState.events;
+      if (nextProps.detailState.successGetWalkingEvents) {
+        const events = nextProps.detailState.events;
         console.log(events);
 
         if (!!events && events.length > 0) {
           this.setRegion({latitude:events[0].geometry.coordinates[1], longitude:events[0].geometry.coordinates[0], latitudeDelta: 0.0922/1.2, longitudeDelta: 0.0421/1.2});
-          // FIXME マップポイントはマーカーする場所っぽい（一時的に、関係ない場所の情報を使う）
-          // SuperClusterを使って、マーカーの場所を集約する
-          const cluster = supercluster({radius: 60, maxZoom: 16});
-          cluster.load(events);
-          this.setState({cluster});
         }
 
-        this.props.markingActions.clear();
+        // FIXME マップポイントはマーカーする場所っぽい（一時的に、関係ない場所の情報を使う）
+        const data = events;
+        if (data) {
+          // this.setState({
+          //   mapLock: true
+          // });
+
+          // SuperClusterを使って、マーカーの場所を集約する
+          const cluster = supercluster({
+            radius: 60,
+            maxZoom: 16,
+          });
+          cluster.load(data);
+
+          this.setState({
+            cluster,
+            // mapLock: false
+          });
+        }
+
+        this.props.detailActions.clear();
       }
     }
   }
@@ -77,26 +85,29 @@ class MarkingScene extends React.PureComponent {
 
   onChangeRegionComplete(region) {
     this.setRegion(region);
+    // this.setState({
+    //   moving: false,
+    // });
   }
 
   onChangeRegion(region) {
+    // this.setState({
+    //   moving: true,
+    // });
   }
 
   render() {
     const {region, cluster} = this.state;
 
     return (
-      <View style={{flex:1, flexDirection:'column'}}>
-        <MarkingNavbar title="マーキング" left={{icon:'arrow-back', handler:() => this.props.navigator.replace({name:'HomeScene'})}}/>
-        <View style={{flex:1}}>
-          <MapView style={{...StyleSheet.absoluteFillObject}}
-                   ref={ref => { this.map = ref; }}
-                   region={this.state.region}
-                   onRegionChange={this.onChangeRegion.bind(this)}
-                   onRegionChangeComplete={this.onChangeRegionComplete.bind(this)}>
-            {this.createClusterableMarkers(region, cluster)}
-          </MapView>
-        </View>
+      <View style={{flex:1}}>
+        <MapView style={{...StyleSheet.absoluteFillObject}}
+                 ref={ref => { this.map = ref; }}
+                 region={this.state.region}
+                 onRegionChange={this.onChangeRegion.bind(this)}
+                 onRegionChangeComplete={this.onChangeRegionComplete.bind(this)}>
+          {this.createClusterableMarkers(region, cluster)}
+        </MapView>
       </View>
     );
   }
@@ -138,18 +149,18 @@ class MarkingScene extends React.PureComponent {
 function mapStateToProps(state) {
   return {
     rootState: state.root,
-    markingState: state.marking,
+    detailState: state.detail,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
-    markingActions: bindActionCreators(Object.assign({}, markingActions), dispatch),
+    detailActions: bindActionCreators(Object.assign({}, detailActions), dispatch),
   };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(MarkingScene);
+)(DetailMarkingView);

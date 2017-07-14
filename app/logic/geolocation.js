@@ -1,6 +1,6 @@
 import {Dimensions} from 'react-native';
 import {loadMyPets} from './pet';
-import {postMarkings} from '../common/api/markings';
+import {postMarkings} from '../common/api/walkings';
 
 let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;

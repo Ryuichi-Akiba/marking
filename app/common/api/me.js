@@ -24,3 +24,8 @@ export function uploadMePetsImage(file) {
 export function deleleMePets(petId : string) {
   return del(`/api/v1/me/pets/${petId}`);
 }
+
+// ペットの直近のイベント情報を取得する
+export function getMeRecentlyWalkingEvents() {
+  return get(`/v1/me/events`);
+}

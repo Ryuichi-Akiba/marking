@@ -1,9 +1,9 @@
 import {call, put, take} from 'redux-saga/effects'
-import {postMePets, uploadMePetsImage, deleleMePets} from '../../common/api/me'
+import {postMePets, uploadMePetsImage} from '../../common/api/me'
 import {loadMyPets} from '../../logic/pet'
 import {loadColors} from '../../logic/color'
 import {loadBreeds} from '../../logic/breed'
-import {failureCallApi} from '../reducers/common'
+import {failureCallApi} from '../reducers/root'
 import {
   INITIALIZE_PET_FORM,
   successGetColors,
@@ -16,10 +16,7 @@ import {
   successUploadMyPets,
   successPostMyPets,
   successReloadMyPets,
-  ARCHIVE_PET,
-  SUCCESS_ARCHIVE_PET,
-  successArchivePet,
-} from '../reducers/addMyPetForm'
+} from '../reducers/form'
 
 // フォーム初期化時に（PetForm#INITIALIZE_PET_FORMをフック）、キャッシュにある毛色一覧を取得する
 export function* handleInitializePetFormForColors() {
@@ -99,33 +96,6 @@ export function* handleSuccessUploadMyPet() {
 export function* handleSuccessPostMyPet() {
   while (true) {
     yield take(SUCCESS_POST_MY_PETS);
-    const {payload, error} = yield call(loadMyPets, true);
-    if (payload && !error) {
-      yield put(successReloadMyPets(payload));
-    } else {
-      yield put(failureCallApi(error));
-    }
-  }
-}
-
-// ペットをアーカイブする指示後（PetForm#ARCHIVE_PETをフック）、ペットをアーカイブする処理を呼び出す
-export function* handleArchivePet() {
-  while (true) {
-    const action = yield take(ARCHIVE_PET);
-    const petId = action.payload.id;
-    const {payload, error} = yield call(deleleMePets, petId);
-    if (payload && !error) {
-      yield put(successArchivePet(payload));
-    } else {
-      yield put(failureCallApi(error));
-    }
-  }
-}
-
-// ペットのアーカイブ後（PetForm#SUCCESS_ARCHIVE_PETをフック）、キャッシュにあるペット一覧をリフレッシュする
-export function* handleSuccessArchivePet() {
-  while (true) {
-    yield take(SUCCESS_ARCHIVE_PET);
     const {payload, error} = yield call(loadMyPets, true);
     if (payload && !error) {
       yield put(successReloadMyPets(payload));

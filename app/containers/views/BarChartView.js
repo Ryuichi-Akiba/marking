@@ -1,36 +1,30 @@
 import moment from 'moment'
-import {Map} from 'immutable'
 import React from "react"
 import {StyleSheet, Text, View, ScrollView, Button, Image, Dimensions, TouchableOpacity, Linking} from "react-native"
 import {bindActionCreators} from 'redux'
 import {connect} from "react-redux"
 import Chart from 'react-native-chart'
 import {Bar} from 'react-native-pathjs-charts'
-import MarkingNavbar from '../components/common/MarkingNavbar'
-import * as rootActions from '../redux/reducers/root'
-import * as graphActions from '../redux/reducers/graph'
-import Colors from '../themes/Colors'
+import Colors from '../../themes/Colors'
 
 const window = Dimensions.get('window');
-class BarGraphScene extends React.PureComponent {
+
+export default class BarChartView extends React.PureComponent {
   static propTypes = {
     // map from root scene
-    navigator: React.PropTypes.object.isRequired,
     type: React.PropTypes.string.isRequired,
     pet: React.PropTypes.object.isRequired,
-    // map from redux
-    rootState: React.PropTypes.object,
-    rootActions: React.PropTypes.object,
-    graphState: React.PropTypes.object,
-    graphActions: React.PropTypes.object,
   };
 
   constructor(props) {
     super(props);
   }
 
+  shouldComponentUpdate() {
+    return false;
+  }
+
   componentDidMount() {
-    this.props.graphActions.getWalkingTimes({pet:this.props.pet, date:new Date()});
   }
 
   renderLeftButton() {
@@ -194,48 +188,22 @@ class BarGraphScene extends React.PureComponent {
     ];
     return (
       <View style={{flex:1}}>
-        <MarkingNavbar title="お散歩時間・距離" left={this.renderLeftButton()}/>
-        <ScrollView style={{flex:1, backgroundColor:Colors.white}}>
-          <View style={{flex:1}}>
-            <Chart
-              style={{width:window.width - 32, height:200}}
-              xAxisHeight={32}
-              xAxisTransform={(axis) => this.transformXAxis(axis)}
-              yAxisWidth={32}
-              yAxisShortLabel={true}
-              yAxisUseDecimal={true}
-              showGrid={false}
-              data={this.getWalkingTimeGraphData1()}
-              type="bar"
-              showDataPoint={true}
-              color={Colors.lightGreen}
-              axisColor={Colors.gray}
-              axisLabelColor={Colors.gray}
-            />
-          </View>
-          <View style={{flex:1}}>
-          </View>
-        </ScrollView>
+        <Chart
+          style={{width:window.width - 32, height:200}}
+          xAxisHeight={32}
+          xAxisTransform={(axis) => this.transformXAxis(axis)}
+          yAxisWidth={32}
+          yAxisShortLabel={true}
+          yAxisUseDecimal={true}
+          showGrid={false}
+          data={this.getWalkingTimeGraphData1()}
+          type="bar"
+          showDataPoint={true}
+          color={Colors.lightGreen}
+          axisColor={Colors.gray}
+          axisLabelColor={Colors.gray}
+        />
       </View>
     );
   }
 }
-
-function mapStateToProps(state) {
-  return {
-    rootState: state.root,
-    graphState: state.graph,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    rootActions: bindActionCreators(Object.assign({}, rootActions), dispatch),
-    graphActions: bindActionCreators(Object.assign({}, graphActions), dispatch),
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BarGraphScene);

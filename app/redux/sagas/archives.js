@@ -1,6 +1,6 @@
 import {call, put, take} from 'redux-saga/effects'
 import {loadMyPets} from '../../logic/pet'
-import {failureCallApi} from '../reducers/common'
+import {failureCallApi} from '../reducers/root'
 import {
   INITIALIZE_ARCHIVES_SCENE,
   successGetMyPets,
